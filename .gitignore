@@ -1,0 +1,55 @@
+# ==========================================
+# Lokalne archiwa i materiały oryginalne
+# (Pozostają na dysku lokalnym, niewidoczne w Git)
+# ==========================================
+_archive_original/
+Draft_1/
+Draft_2/
+Draft_3/
+Draft_4/
+Patryka/
+Demo_Matlab*/
+Widar3/
+
+# ==========================================
+# MATLAB - pliki tymczasowe, kopie zapasowe i cache
+# ==========================================
+*.asv
+*.m~
+*.bak
+*.mlx.tmp
+*.slxc
+slprj/
+*.dmr
+
+# ==========================================
+# Pliki binarne i dane generowane podczas pracy
+# ==========================================
+*.mat
+*.dat
+*.p
+*.mex*
+
+# ==========================================
+# Pliki graficzne generowane przez MATLAB
+# ==========================================
+*.fig
+
+# ==========================================
+# Kopie robocze i materiały zewnętrzne (lokalne)
+# ==========================================
+references_local/
+external/
+scratch/
+
+# ==========================================
+# Systemowe i środowiskowe (OS & IDE)
+# ==========================================
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Pliki logów
+*.log
