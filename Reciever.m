@@ -1,135 +1,62 @@
-% Receiver.m
+% Receiver_Pipeline.m
+% Krok 1: Demodulacja i wygenerowanie zespolonej mapy Range-Doppler
 
-clearvars
-close all
+clearvars; close all; clc;
 
-%% Constants
+%% 1. Parametry i Wczytanie Danych
 fc = 5.5e9; 
 c = 3e8;
 fs = wlanSampleRate("CBW20");
+Nfft = 64;
+Ncp = Nfft/4;
 
-Nfft = 64;                 % FFT size
-Ncp = Nfft/4;              % Cyclic Prefix length
-Nsym_len = Nfft + Ncp;     % Total symbol length
+load("waveform.mat");
+load("signal.mat");
 
-%% Load data
-load("waveform.mat")
-load("signal.mat")
+preamble_len = round(20e-6 * fs);
+y_cut = signal(preamble_len+1 : end);
+x_cut = waveform(preamble_len+1 : end);
 
-N = length(signal);
-t = (0:N-1)/fs * 1e6;
+%% 2. Demodulacja i Zero-Forcing
+[F_rx, n_symbols] = demodulate(y_cut, Nfft, Ncp);
+[F_tx, ~]         = demodulate(x_cut, Nfft, Ncp);
 
-% Time domain plot
-figure
-sgtitle('Recieved and Transmitted signal (Time domain)')
-subplot(2,1, 1)
-plot(t, abs(signal)); hold on
-plot(t, abs(waveform)); hold off
-title('before preamble removal')
-xlabel('Time [\mus]'); ylabel('Amplitude')
-legend('Transmitted', 'Recieved')
-xlim([0, 20]); grid on
+H = F_rx ./ (F_tx + 1e-9);
 
-%% Cut prambule
-preamble_time = 8e-6;
-preamble_len = round(preamble_time * fs);
+% Maska 802.11a
+mask_shifted = zeros(Nfft, 1);
+mask_shifted(7:32) = 1; mask_shifted(34:59) = 1;
+H = H .* ifftshift(mask_shifted);
 
-signal = signal(preamble_len+1 : end);
-waveform = waveform(preamble_len+1 : end);
+%% 3. MTI i Łatanie DC
+H_shifted = fftshift(H, 1);
+H_shifted = H_shifted - mean(H_shifted, 2);
+H_shifted(33, :) = (H_shifted(32, :) + H_shifted(34, :)) / 2;
 
-N = length(signal);
-t = (0:N-1)/fs * 1e6;
+%% 4. Okienkowanie
+L_win = 53; n_idx = (0 : L_win-1)';
+a0=0.35875; a1=0.48829; a2=0.14128; a3=0.01168;
+bh_window = a0 - a1*cos(2*pi*n_idx/(L_win-1)) + a2*cos(4*pi*n_idx/(L_win-1)) - a3*cos(6*pi*n_idx/(L_win-1));
 
-% Time domain plot
-subplot(2,1, 2)
-plot(t, abs(signal)); hold on
-plot(t, abs(waveform)); hold off
-title('after preable removal')
-xlabel('Time [\mus]'); ylabel('Amplitude')
-xlim([0, 12]); grid on
+win_f_shifted = zeros(Nfft, 1); win_f_shifted(7:59) = bh_window; 
+win_t = a0 - a1*cos(2*pi*(0:n_symbols-1)/(n_symbols-1)) + a2*cos(4*pi*(0:n_symbols-1)/(n_symbols-1)) - a3*cos(6*pi*(0:n_symbols-1)/(n_symbols-1));
 
+W_2D_shifted = win_f_shifted .* win_t;
+W_2D_unshifted = ifftshift(W_2D_shifted, 1); % Do zapisu dla algorytmu CLEAN!
 
-%% OFDM Demodulation
-[F_rx, n_symbols] = demodulate(signal, Nfft, Ncp);
-[F_tx, ~]         = demodulate(waveform, Nfft, Ncp);
+H_ready = ifftshift(H_shifted .* W_2D_shifted, 1);
 
-figure
-F_plot = fftshift(F_rx, 1);
-imagesc(20*log10(abs(F_plot) + 1e-9));
-colorbar;
-colormap('parula');
-title(sprintf('Demodulated Symbols'));
-xlabel('Symbol Index (Time)');
-ylabel('Subcarrier Index (Frequency)');
-axis xy;
+%% 5. Zespolony Periodogram
+N_per = 256; 
 
-%% Channel estimation
-epsilon = 1e-9;
-H = F_rx ./ (F_tx + epsilon);
+% Dynamiczny dobór M_per: zawsze kolejna potęga dwójki większa niż n_symbols
+% Dzięki temu zachowujemy 100% danych i zyskujemy gęstą, piękną oś prędkości
+M_per = 2^nextpow2(n_symbols); 
+% (Opcjonalnie możesz dodać * 2 na końcu, np. M_per = 2^nextpow2(n_symbols) * 2, jeśli chcesz wyższej rozdzielczości wykresu)
 
-% Guard Band Removal
-active_mask = abs(F_tx(:, 1)) > 0.02;
-H = H .* active_mask;
+CPer_base = fftshift(fft(ifft(H_ready, N_per, 1), M_per, 2), 2);      
 
-% Visualisation
-H_plot = fftshift(H, 1);
-H_dB = 20*log10(abs(H_plot) + epsilon);
-
-figure
-imagesc(1:n_symbols, 1:Nfft, H_dB);
-title('Channel Response (H Matrix)');
-xlabel('Symbol Index (Time)'); ylabel('Subcarrier Index (Freq)');
-colormap(gca, 'jet'); 
-colorbar;
-axis xy;
-med_val = median(H_dB(:));
-clim([med_val - 20, med_val + 20]);
-
-%% FFT
-interpolation_factor = 4;
-N_range_fft = Nfft * interpolation_factor;
-N_doppler_fft = n_symbols * interpolation_factor;
-
-range_profile = ifft(H, N_range_fft, 1); 
-rd_map = fft(range_profile, N_doppler_fft, 2);
-
-%% Shift and Magnitude
-rd_map_shifted = fftshift(rd_map, 2);
-power_map = 20*log10(abs(rd_map_shifted) + epsilon); % [dB]
- 
-% Range Axis
-delta_r = c / (2 * fs);
-max_range = delta_r * Nfft;
-axis_range = linspace(0, max_range, N_range_fft);
-
-% Doppler Axis
-T_sym_total = Nsym_len / fs; 
-v = c / (2 * fc * T_sym_total);
-axis_velocity = linspace(-v/2, v/2, N_doppler_fft);
-
-range_profile_db = 20*log10(abs(range_profile) + epsilon);
-
-%% Visualise results
-figure('Name', 'Range Profile', 'Color', 'white');
-imagesc(1:n_symbols, axis_range, range_profile_db);
-title('Range Profile Map (Range vs Time)');
-xlabel('Symbol Index (Slow Time)'); 
-ylabel('Range [m]');
-colormap(gca, 'jet'); 
-c = colorbar; c.Label.String = 'Power [dB]';
-axis xy;
-
-ylim([0, 200]); 
-max_rp = max(range_profile_db(:));
-clim([max_rp - 50, max_rp]);
-
-figure
-imagesc(axis_velocity, axis_range, power_map);
-title('Range-Doppler Map');
-xlabel('Velocity [m/s]'); ylabel('Range [m]');
-colormap(gca, 'jet');
-col = colorbar; col.Label.String = 'Power [dB]';
-axis xy;
-
-max_val = max(power_map(:));
-clim([max_val - 35, max_val]);
+% Zapisujemy wszystko do pliku
+fprintf('Zapisuję dane do interpretacji...\n');
+save('radar_data.mat', 'CPer_base', 'W_2D_unshifted', 'N_per', 'M_per', 'Nfft', 'n_symbols', 'fs', 'fc', 'Ncp', 'c');
+fprintf('Gotowe. Macierz ma rozmiar %dx%d. Możesz uruchomić interpret.m\n', N_per, M_per);
