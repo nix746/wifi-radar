@@ -78,7 +78,7 @@ Skrypt automatycznie wygeneruje sygnał, przeprowadzi transmisję przez kanał z
 
 ## Autorzy i Podziękowania
 
-- **Główny rozwój i implementacja**: Tymoteusz Woźniak (`nix746`, `tym.wozniak@gmail.com`)
+- **Główny rozwój i implementacja**: Tymon Woźniak (`nix746`, `tym.wozniak@gmail.com`)
 - **Wkład początkowy (Baseline)**: Podziękowania dla **Patryka** za opracowanie wstępnej wersji modułu generacji sygnału 802.11a oraz synchronizacji ramki metodą Schmidl-Cox.
 
 ---
