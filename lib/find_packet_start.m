@@ -1,8 +1,8 @@
 function [start_index, metric] = find_packet_start(signal, threshold)
 % FIND_PACKET_START Detects 802.11 packet start using the Schmidl-Cox autocorrelation metric.
 %
-% Original baseline implementation: Patryk
-% Refactoring & optimization: Tymoteusz Woźniak
+% Original baseline implementation: Patryk Pajerski
+% Refactoring & optimization: Tymon Woźniak
 %
 % Inputs:
 %   signal    - Complex received time-domain baseband signal

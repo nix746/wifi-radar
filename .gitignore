@@ -3,13 +3,6 @@
 # (Pozostają na dysku lokalnym, niewidoczne w Git)
 # ==========================================
 _archive_original/
-Draft_1/
-Draft_2/
-Draft_3/
-Draft_4/
-Patryka/
-Demo_Matlab*/
-Widar3/
 
 # ==========================================
 # MATLAB - pliki tymczasowe, kopie zapasowe i cache
@@ -38,9 +31,7 @@ slprj/
 # ==========================================
 # Kopie robocze i materiały zewnętrzne (lokalne)
 # ==========================================
-references_local/
-external/
-scratch/
+references/
 
 # ==========================================
 # Systemowe i środowiskowe (OS & IDE)
