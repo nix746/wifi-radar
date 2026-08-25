@@ -1,0 +1,31 @@
+
+
+\usepackage[utf8]{inputenc}
+\usepackage[english,polish]{babel} %\foreignlanguage{english}{eng. \textit{english}}
+\usepackage{polski}
+\usepackage{helvet}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{geometry}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{minted}
+\usepackage{amsmath}
+
+\geometry{hmargin={2.5cm, 2cm}, height=10.0in}
+\usepackage{epstopdf}
+
+\usepackage{multicol}
+\usepackage[toc,page]{appendix}
+\usepackage{caption}
+
+\usepackage{emptypage}
+\pretocmd{\section}{\cleardoublepage}{}{}
+
+\input{tex/01_titlePage}
+
+\setminted[c]{frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos}

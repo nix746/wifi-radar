@@ -1,0 +1,48 @@
+\newcommand{\setSupervisor}[1]{
+    \newcommand{\supervisor}{#1}
+}
+\newcommand{\setFaculty}[1]{
+    \newcommand{\faculty}{#1}
+}
+\newcommand{\setMajor}[1]{
+    \newcommand{\major}{#1}
+}
+
+\newcommand{\setDepartment}[1]{
+    \newcommand{\department}{#1}
+}
+
+\newcommand{\setReviewer}[1]{
+    \newcommand{\reviewer}{#1}
+}
+
+\makeatletter
+\renewcommand{\maketitle}{\begin{titlepage}
+        \includegraphics[height=37.5mm]{img/agh_nzw_a_pl_1w_wbr_cmyk}\\
+        \rule{30mm}{0pt}
+        {\large \textsf{\department}}\\
+        \rule{\textwidth}{3pt}\\
+        \rule[2ex]
+        {\textwidth}{1pt}\\
+        \vspace{7ex}
+        \begin{center}
+            {\LARGE \bf \textsf{Praca magisterska}}\\
+            \vspace{13ex}
+            % --------------------------- IMIE I~NAZWISKO -------------------------------
+            {\bf \Large \textsf{\@author}}\\
+            \vspace{3ex}
+            {\sf\small kierunek studiów:} {\bf\small \textsf{\faculty}}\\
+            \vspace{1.5ex}
+            {\sf\small specjalność:} {\bf\small \textsf{\major}}\\
+            \vspace{10ex}
+            %% ------------------------ TYTUL PRACY --------------------------------------
+            {\bf \huge \textsf{\@title}}\\
+            \vspace{14ex}
+            %% ------------------------ OPIEKUN PRACY ------------------------------------
+            {\Large Opiekun: \bf \textsf{\supervisor}}\\
+            \vspace{22ex}
+            {\large \bf \textsf{Kraków, \@date}}
+        \end{center}
+    \end{titlepage}%
+}
+\makeatother

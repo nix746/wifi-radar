@@ -13,8 +13,8 @@ Implementacja pasywnego radaru opartego na sygnałach Wi-Fi w standardzie IEEE 8
 +------------------+      +--------------------+      +-----------------------+      +----------------------+
 ```
 
-1. **`src/transmitter.m`**: Generacja ramki IEEE 802.11a Non-HT (20 MHz, $N_{\text{fft}}=64$, $N_{\text{cp}}=16$).
-2. **`src/channel.m`**: Model kanału z konfigurowalnymi opóźnieniami wielodrożnymi, przesunięciami Dopplera oraz szumem AWGN.
+1. **`src/transmitter.m`**: Generacja ramki IEEE 802.11a (20 MHz, $N_{\text{fft}}=64$, $N_{\text{cp}}=16$).
+2. **`src/channel.m`**: Model kanału z konfigurowalnymi opóźnieniami wielodrogowymi, przesunięciami Dopplera oraz szumem AWGN.
 3. **`src/receiver_pipeline.m`**:
    - Usunięcie preambuły ($20\ \mu\text{s} = 400\ \text{próbek}$),
    - Ręczna demodulacja OFDM i estymacja kanału metodą Zero-Forcing ($H = Y / X$),
@@ -25,7 +25,7 @@ Implementacja pasywnego radaru opartego na sygnałach Wi-Fi w standardzie IEEE 8
    - Obliczenie zespolonego periodogramu Range-Doppler i zapis `radar_data.mat`.
 4. **`src/clean_interpreter.m`**:
    - Iteracyjny algorytm Coherent Successive Target Cancellation (CLEAN),
-   - Skalowanie osi fizycznych: odległość [m] i prędkość radialna [m/s],
+   - Skalowanie osi fizycznych: odległość [m] i prędkość [m/s],
    - Wizualizacja mapy Range-Doppler przed i po usunięciu celów oraz eksport wykresów.
 5. **`src/receiver_correlation.m`**: Alternatywny odbiornik korelacyjny w dziedzinie czasu (filtr dopasowany).
 
@@ -78,8 +78,8 @@ Skrypt automatycznie wygeneruje sygnał, przeprowadzi transmisję przez kanał z
 
 ## Autorzy i Podziękowania
 
-- **Główny rozwój i implementacja**: Tymon Woźniak (`nix746`, `tym.wozniak@gmail.com`)
-- **Wkład początkowy (Baseline)**: Podziękowania dla **Patryka Pajerskiego** za opracowanie wstępnej wersji modułu generacji sygnału 802.11a oraz synchronizacji ramki metodą Schmidl-Cox.
+- **Rozwój i implementacja**: Tymon Woźniak (`nix746`, `tym.wozniak@gmail.com`)
+- **Wkład początkowy**: Podziękowania dla **Patryka Pajerskiego** za opracowanie wstępnej wersji modułu generacji sygnału 802.11a oraz synchronizacji ramki metodą Schmidl-Cox.
 
 ---
 
