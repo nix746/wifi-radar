@@ -32,6 +32,7 @@ slprj/
 # Kopie robocze i materiały zewnętrzne (lokalne)
 # ==========================================
 references/
+artifacts/
 
 # ==========================================
 # Systemowe i środowiskowe (OS & IDE)
