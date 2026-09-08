@@ -1,11 +1,12 @@
 # ==========================================
-# Lokalne archiwa i materiały oryginalne
-# (Pozostają na dysku lokalnym, niewidoczne w Git)
+# Lokalne archiwa
 # ==========================================
 _archive_original/
+setup_git_history.bat
+setup_git_history.ps1
 
 # ==========================================
-# MATLAB - pliki tymczasowe, kopie zapasowe i cache
+# MATLAB
 # ==========================================
 *.asv
 *.m~
@@ -14,6 +15,7 @@ _archive_original/
 *.slxc
 slprj/
 *.dmr
+*.fig
 
 # ==========================================
 # Pliki binarne i dane generowane podczas pracy
@@ -22,17 +24,7 @@ slprj/
 *.dat
 *.p
 *.mex*
-
-# ==========================================
-# Pliki graficzne generowane przez MATLAB
-# ==========================================
-*.fig
-
-# ==========================================
-# Kopie robocze i materiały zewnętrzne (lokalne)
-# ==========================================
-# references/
-# artifacts/
+*.log
 
 # ==========================================
 # Systemowe i środowiskowe (OS & IDE)
@@ -42,6 +34,3 @@ Thumbs.db
 desktop.ini
 .vscode/
 .idea/
-
-# Pliki logów
-*.log
