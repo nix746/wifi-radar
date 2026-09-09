@@ -1,13 +1,15 @@
+% !TeX root = main.tex
 \documentclass[twoside,a4paper,12pt]{article}
 \input{tex/00_preambule.tex}
 
-\author{Jan Kowalski}
-\title{Tytuł}
-\setDepartment{Pełna nazwa wydziału}
-\setFaculty{Informatyka Stosowana}
-\setMajor{Specjalizacja studiów 2 stopnia}
-\setSupervisor{dr inż. promotor}
-\setReviewer{dr inż. recenzent}
+\author{Tymon Woźniak}
+\title{Implementacja i~testowanie efektywności detekcji wybranego algorytmu radaru pasywnego używającego sygnału Wi-Fi}
+\date{2026}
+\setDepartment{Wydział Informatyki, Elektroniki i~Telekomunikacji}
+\setFaculty{Teleinformatyka}
+\setMajor{}
+\setSupervisor{prof. dr hab. inż. Tomasz Zieliński}
+\setReviewer{}
 
 \begin{document}
 \pagestyle{empty}
@@ -36,12 +38,24 @@
 \pagenumbering{arabic}
 
 \include{tex/10_introduction}
-\include{tex/20_first_chapter_RENAME_ME}
-% \include{tex/30_}
-% \include{tex/40_}
+\include{tex/20_pbr}
+\include{tex/30_wifi_phy}
+\include{tex/40_radar_dsp}
+\include{tex/50_simulation_results}
 \include{tex/99_conclusion}
 
+\newpage
 \addcontentsline{toc}{section}{Literatura}
-\bibliography{bibliography.bib}
 \bibliographystyle{plain}
+\nocite{*}
+\bibliography{bibliography}
+
+\newpage
+\addcontentsline{toc}{section}{Spis rysunków}
+\listoffigures
+
+\newpage
+\addcontentsline{toc}{section}{Spis tabel}
+\listoftables
+
 \end{document}

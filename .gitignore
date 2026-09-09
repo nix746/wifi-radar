@@ -4,6 +4,7 @@
 _archive_original/
 setup_git_history.bat
 setup_git_history.ps1
+powershell.bat
 
 # ==========================================
 # MATLAB
@@ -34,3 +35,33 @@ Thumbs.db
 desktop.ini
 .vscode/
 .idea/
+
+# ==========================================
+# LaTeX / BibTeX / Minted
+# ==========================================
+*.aux
+*.bbl
+*.blg
+*.toc
+*.lof
+*.lot
+*.out
+*.synctex.gz
+*.synctex
+*.fls
+*.fdb_latexmk
+*.bcf
+*.run.xml
+*.nav
+*.snm
+*.vrb
+*.idx
+*.ind
+*.ilg
+*-eps-converted-to.pdf
+_minted-*/
+
+# ==========================================
+# Dokumenty wyjściowe (PDF)
+# ==========================================
+*.pdf

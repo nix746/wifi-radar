@@ -89,7 +89,21 @@
 				"env": {}
 			}
 		],
+		"latex-workshop.latex.rootFile.useSubFile": true,
+		"latex-workshop.latex.rootFile.include": [
+			"thesis/main.tex",
+			"**/main.tex"
+		],
 		"latex-workshop.latex.recipes": [
+			{
+				"name": "pdflatex ➞ bibtex ➞ pdflatex × 2",
+				"tools": [
+					"pdflatex",
+					"bibtex",
+					"pdflatex",
+					"pdflatex"
+				]
+			},
 			{
 				"name": "latexmk 🔃",
 				"tools": [
@@ -106,15 +120,6 @@
 				"name": "latexmk (lualatex)",
 				"tools": [
 					"lualatexmk"
-				]
-			},
-			{
-				"name": "pdflatex ➞ bibtex ➞ pdflatex × 2",
-				"tools": [
-					"pdflatex",
-					"bibtex",
-					"pdflatex",
-					"pdflatex"
 				]
 			},
 			{

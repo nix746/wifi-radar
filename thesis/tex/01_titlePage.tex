@@ -1,3 +1,4 @@
+% !TeX root = ../main.tex
 \newcommand{\setSupervisor}[1]{
     \newcommand{\supervisor}{#1}
 }
@@ -26,15 +27,18 @@
         {\textwidth}{1pt}\\
         \vspace{7ex}
         \begin{center}
-            {\LARGE \bf \textsf{Praca magisterska}}\\
+            {\LARGE \bf \textsf{Praca inżynierska}}\\
             \vspace{13ex}
             % --------------------------- IMIE I~NAZWISKO -------------------------------
             {\bf \Large \textsf{\@author}}\\
             \vspace{3ex}
             {\sf\small kierunek studiów:} {\bf\small \textsf{\faculty}}\\
             \vspace{1.5ex}
-            {\sf\small specjalność:} {\bf\small \textsf{\major}}\\
-            \vspace{10ex}
+            \ifx\major\undefined\else\ifx\major\empty\else
+                {\sf\small specjalność:} {\bf\small \textsf{\major}}\\
+                \vspace{1.5ex}
+            \fi\fi
+            \vspace{8ex}
             %% ------------------------ TYTUL PRACY --------------------------------------
             {\bf \huge \textsf{\@title}}\\
             \vspace{14ex}
