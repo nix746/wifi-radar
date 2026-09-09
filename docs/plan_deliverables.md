@@ -2,16 +2,12 @@
 
 Ten dokument rozstrzyga **co** jest celem pracy i repozytorium. Kolejność zadań jest w [`plan_work_order.md`](plan_work_order.md).
 
-Zastępuje rozbieżne szkice w `artifacts/study_plan.md` i `artifacts/write_plan.md`. Dane organizacyjne (autor, kierunek, temat zatwierdzony) biorą się ze zgłoszenia w `references/TW/`, nie z szablonu LaTeX.
-
----
-
 ## 1. Praca
 
 | Pole | Wartość |
 | :--- | :--- |
-| Typ | Praca **inżynierska** (szablon w `thesis/` jest jeszcze ustawiony na magisterską — to do poprawy, nie treść merytoryczna) |
-| Temat roboczy | Pasywny radar Wi-Fi oparty na sygnałach OFDM (IEEE 802.11a) |
+| Typ | Praca **inżynierska** |
+| Temat | Implementacja i testowanie efektywności detekcji wybranego algorytmu radaru pasywnego używającego sygnału Wi-Fi |
 | Opiekun | prof. dr hab. inż. Tomasz Zieliński |
 | Wzorzec układu | Prace z katedry / analogiczna inżynierska K. Szwej (*Radar OFDM z użyciem sygnału DVB-T2*), plus Sorbian (WAT) jako drugi punkt odniesienia rysunków i porównań |
 | Wkład własny | Ten sam paradygmat co Szwej (CIR/CFR vs CAF, MTI, DC, mapa Range–Doppler), przeniesiony na **Wi-Fi 802.11a** i uzupełniony o **Coherent CLEAN** (Braun) |

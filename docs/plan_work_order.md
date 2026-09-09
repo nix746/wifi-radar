@@ -2,10 +2,6 @@
 
 Ten dokument mówi **w jakiej kolejności** robić zadania. *Co* ma powstać, jest tylko w [`plan_deliverables.md`](plan_deliverables.md) — w tym układ rozdziałów, lista rysunków i reguły Zotero.
 
-Stare pliki `artifacts/study_plan.md` i `artifacts/write_plan.md` nie wyznaczają już kolejności (miały dwa różne łańcuchy i dwa układy rozdziałów).
-
----
-
 ## Zasada
 
 Po przyjęciu układu z źródła prawdy idą **trzy tory równoległe**. Schodzą się dwa razy: przy rozdziale 5 (potrzebne figury) i przy wstępie/wnioskach (potrzebna treść i wyniki).
