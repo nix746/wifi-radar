@@ -54,7 +54,7 @@ Zrób najpierw lewą kolumnę, zanim ruszysz prawą. Reszta nie jest bramką.
 Można przeplatać z kodem i z tekstem.
 
 1. Kolekcja Zotero *Wi-Fi Radar*, Better BibTeX, automatyczny eksport do `thesis/bibliography.bib`.
-2. Import PDF-ów z `references/`; przy każdym rekordzie DOI albo URL. Inwentarz tabelaryczny w `docs/references.md`.
+2. Import materiałów z `references/` do Zotero, uzupełnienie metadanych/DOI i bezpośredni eksport do `.bib` (bez ręcznego inwentarza w Markdownie).
 3. Dane ze zgłoszenia w `thesis/main.tex` i stronie tytułowej; zmiana etykiety na pracę inżynierską; program pracy w `03_MasterThesisOutline.tex`.
 4. Szkielet plików rozdziałów według tabeli w źródle prawdy; usunięcie / zastąpienie `20_first_chapter_RENAME_ME.tex`.
 
@@ -109,7 +109,7 @@ Ramy czasowe ze starego planu (~1–2 dni skrypty, ~3–5 dni teoria, ~2–3 dni
 
 ## Weryfikacja na końcu
 
-1. Wzory w rozdz. 3–4 = [`theory_notes.md`](theory_notes.md) = zachowanie `src/`.
-2. Każde `\cite` ma rekord w Zotero i w eksporcie `.bib`; `docs/references.md` ma ten sam klucz; `pdflatex` + BibTeX składa Literaturę.
+1. Wzory w rozdz. 3–4 = zachowanie `src/` (i ściąga z `theory_notes.md`).
+2. Każde `\cite` ma rekord w Zotero i w eksporcie `.bib`; `pdflatex` + BibTeX bezbłędnie składa Literaturę.
 3. Każdy rysunek z katalogu w źródle prawdy jest w `thesis/img/` i ma podpis w rozdz. 5.
 4. `run_full_simulation` plus dwa skrypty badawcze kończą się bez błędu.
