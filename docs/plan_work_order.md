@@ -6,7 +6,7 @@ Ten dokument mówi **w jakiej kolejności** robić zadania. *Co* ma powstać, je
 
 | Tor / Etap | Zakres | Status |
 | :--- | :--- | :--- |
-| **Tor 0** | Golden Master & refaktoryzacja DSP do `lib/` | `[DO ZROBIENIA]` |
+| **Tor 0** | Golden Master & refaktoryzacja DSP do `lib/` | `[ZROBIONE]` |
 | **Tor A** | Infrastruktura (Zotero, dane formalne, szkielet `.tex`) | `[W TRAKCIE]` (szkielet `.tex` gotowy) |
 | **Tor B.1** | Silnik Monte Carlo & estymator $SNR_{\mathrm{out}}$ | `[DO ZROBIENIA]` |
 | **Tor B.2** | Obliczenia i katalog 8 figur do `thesis/img/` | `[DO ZROBIENIA]` |
@@ -70,11 +70,11 @@ Zrób najpierw lewą kolumnę, zanim ruszysz prawą. Reszta nie jest bramką.
 
 Wykonywany przed pisaniem skryptów badawczych i rozdziału 4, aby dostarczyć czyste klocki DSP i listingi.
 
-- [ ] 1. **Utrwalenie wzorca odniesienia („Golden Master”)**: uruchomienie pełnego łańcucha ze stałym ziarnem (`rng(42, 'twister')`) i zapis referencyjnych macierzy (`golden_*.mat`).
-- [ ] 2. **Automatyczny test regresyjny**: skrypt `tests/verify_regression.m` porównujący wyniki nowego kodu z wzorcem z tolerancją `1e-12`.
-- [ ] 3. **Ekstrakcja czystych funkcji DSP do `lib/`**: `lib/estimate_channel_zf.m` (ZF, maskowanie, MTI, DC), `lib/compute_range_doppler_map.m` (okno 2D Blackman–Harris, periodogram 2D), `lib/run_coherent_clean.m` (pętla Coherent CLEAN).
-- [ ] 4. **Skrypty w `src/` jako fasady (pełna kompatybilność)**: wywołują funkcje z `lib/`, zapisują te same pliki `.mat`; `run_full_simulation.m` działa bez modyfikacji.
-- [ ] 5. **Pakiet listingów i styl `minted`**: wygenerowanie 4 zwartych plików kodu do `thesis/listings/` (rozdz. 4.2, 4.3–4.4, 4.5–4.6, 4.7) ze zmiennymi zbieżnymi z notacją pracy ($Y, X, H, \mathbf{W}_{\mathrm{2D}}$); konfiguracja `\setminted[matlab]{...}` w `thesis/tex/00_preambule.tex`.
+- [x] 1. **Utrwalenie wzorca odniesienia („Golden Master”)**: uruchomienie pełnego łańcucha ze stałym ziarnem (`rng(42, 'twister')`) i zapis referencyjnych macierzy (`golden_*.mat`).
+- [x] 2. **Automatyczny test regresyjny**: skrypt `tests/verify_regression.m` porównujący wyniki nowego kodu z wzorcem z tolerancją `1e-12`.
+- [x] 3. **Ekstrakcja czystych funkcji DSP do `lib/`**: `lib/estimate_channel_zf.m` (ZF, maskowanie, MTI, DC), `lib/compute_range_doppler_map.m` (okno 2D Blackman–Harris, periodogram 2D), `lib/run_coherent_clean.m` (pętla Coherent CLEAN).
+- [x] 4. **Skrypty w `src/` jako fasady (pełna kompatybilność)**: wywołują funkcje z `lib/`, zapisują te same pliki `.mat`; `run_full_simulation.m` działa bez modyfikacji.
+- [x] 5. **Pakiet listingów i styl `minted`**: wygenerowanie 4 zwartych plików kodu do `thesis/listings/` (rozdz. 4.2, 4.3–4.4, 4.5–4.6, 4.7) ze zmiennymi zbieżnymi z notacją pracy ($Y, X, H, \mathbf{W}_{\mathrm{2D}}$); konfiguracja `\setminted[matlab]{...}` w `thesis/tex/00_preambule.tex`.
 
 ---
 
