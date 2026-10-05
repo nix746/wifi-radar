@@ -62,6 +62,7 @@ desktop.ini
 _minted-*/
 
 # ==========================================
-# Dokumenty wyjściowe (PDF)
+# Dokumenty wyjściowe 
 # ==========================================
 *.pdf
+*.png
