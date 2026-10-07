@@ -7,7 +7,7 @@ Ten dokument mówi **w jakiej kolejności** robić zadania. *Co* ma powstać, je
 | Tor / Etap | Zakres | Status |
 | :--- | :--- | :--- |
 | **Tor 0** | Golden Master & refaktoryzacja DSP do `lib/` | `[ZROBIONE]` |
-| **Tor A** | Infrastruktura (Zotero, dane formalne, szkielet `.tex`) | `[W TRAKCIE]` (szkielet `.tex` gotowy) |
+| **Tor A** | Infrastruktura (Zotero, dane formalne, szkielet `.tex`) | `[ZROBIONE]` |
 | **Tor B.1** | Silnik Monte Carlo & estymator $SNR_{\mathrm{out}}$ | `[DO ZROBIENIA]` |
 | **Tor B.2** | Obliczenia i katalog 8 figur do `thesis/img/` | `[DO ZROBIENIA]` |
 | **Tor C** | Rozdziały 2–4 w LaTeX (z listingami) | `[DO ZROBIENIA]` |
@@ -83,9 +83,9 @@ Wykonywany przed pisaniem skryptów badawczych i rozdziału 4, aby dostarczyć c
 Można przeplatać z kodem i z tekstem.
 
 - [x] 1. Szkielet plików rozdziałów według tabeli w źródle prawdy (`10_introduction.tex` … `99_conclusion.tex` w `thesis/tex/`).
-- [ ] 2. Kolekcja Zotero *Wi-Fi Radar*, Better BibTeX, automatyczny eksport do `thesis/bibliography.bib`.
-- [ ] 3. Import materiałów z `references/` do Zotero, uzupełnienie metadanych/DOI i bezpośredni eksport do `.bib` (bez ręcznego inwentarza w Markdownie).
-- [ ] 4. Dane ze zgłoszenia w `thesis/main.tex` i stronie tytułowej; zmiana etykiety na pracę inżynierską; program pracy w `03_MasterThesisOutline.tex`.
+- [x] 2. Kolekcja Zotero *Wi-Fi Radar*, Better BibTeX, automatyczny eksport do `thesis/bibliography.bib`.
+- [x] 3. Import materiałów z `references/` do Zotero, uzupełnienie metadanych/DOI i bezpośredni eksport do `.bib` (bez ręcznego inwentarza w Markdownie).
+- [x] 4. Dane ze zgłoszenia w `thesis/main.tex` i stronie tytułowej; zmiana etykiety na pracę inżynierską; program pracy w `03_MasterThesisOutline.tex`.
 
 Tor A nie blokuje toru B ani szkicowania rozdziałów 2–4. Blokuje tylko cytowania bez kluczy i skład całej pracy bez `\include`.
 
@@ -101,8 +101,8 @@ Dzięki Torowi 0 algorytmy DSP są już przetestowanymi, czystymi funkcjami w `l
 - [ ] 3. **Parametryzacja zmiennych eksperymentu**: modulacje MCS (np. BPSK 1/2 vs 16-QAM / 64-QAM), długość ładunku PSDU (krótka ramka vs maksymalna 4095 B), poziomy tłumienia echa celu względem przesłuchu bezpośredniego.
 
 ### B.2. Przeprowadzenie symulacji i eksport katalogu figur do `thesis/img/`
-- [ ] 1. `scripts/generate_szwej_comparison_plots.m` — generacja scen porównawczych CIR vs CAF: mapy 3D (mesh), 2D (`imagesc`), przekroje 1D w osiach odległości i prędkości, stan przed i po MTI oraz przed i po CLEAN.
-- [ ] 2. `scripts/evaluate_snr_curves.m` — wyliczenie i wykreślenie uśrednionych statystycznie krzywych $SNR_{\mathrm{out}} = f(SNR_{\mathrm{in}})$ dla metody CIR oraz CAF.
+- [ ] 1. `scripts/evaluate_wifi_parameters.m` — skrypt uśredniający Monte Carlo, badający jak zmiana parametrów PHY (MCS, PSDU_length) wpływa na dynamikę detekcji; eksport przekrojów i map 2D po operacjach MTI i CLEAN.
+- [ ] 2. `scripts/evaluate_snr_curves.m` — wyliczenie i wykreślenie uśrednionych statystycznie krzywych $SNR_{\mathrm{out}} = f(SNR_{\mathrm{in}})$ dla toru CIR.
 - [ ] 3. **Eksport do składu**: zapis 8 figur z katalogu §4 źródła prawdy bezpośrednio do `thesis/img/` (oraz roboczo do `results/figures/`) w stabilnych nazwach gotowych do `\includegraphics`.
 - [ ] 4. Sprawdzenie, czy `scripts/run_full_simulation.m` nadal bezbłędnie składa pojedynczy łańcuch bazowy.
 
@@ -116,7 +116,7 @@ Dopóki nie ma zestawu figur z §4 źródła prawdy, nie warto pisać rozdziału
 
 | Rozdział | Zależności | Równoległość |
 | :--- | :--- | :--- |
-| 2 PBR | prawie żadne (koncepcja + CAF vs CIR) | można zacząć natychmiast |
+| 2 PBR | prawie żadne (koncepcja + model CIR) | można zacząć natychmiast |
 | 3 PHY 802.11 | notatki + standard; nie czeka na wykresy | niezależny od rozdz. 2 (w tym analiza pakietowości, limitu PSDU i potencjału Multi-Frame CPI) |
 | 4 algorytmy | Tor 0 (listingi z `thesis/listings/` i notacja wzorów) | po szkicu 3 wygodniej, ale nie twarda bramka |
 | 5 wyniki | **Tor B.2 zakończony** (figury w `thesis/img/`) | po 2–4 albo w trakcie domykania 4 (wykresy uśredniane statystycznie Monte Carlo) |
@@ -159,4 +159,4 @@ Postęp pisania rozdziałów:
 - [ ] 2. Wzory w rozdz. 3–4 = zachowanie `src/` i funkcji w `lib/`.
 - [ ] 3. Każde `\cite` ma rekord w Zotero i w eksporcie `.bib`; `pdflatex` + BibTeX bezbłędnie składa Literaturę.
 - [ ] 4. Każdy rysunek z katalogu w źródle prawdy jest w `thesis/img/` i ma podpis w rozdz. 5.
-- [ ] 5. `run_full_simulation` plus dwa skrypty badawcze kończą się bez błędu.
+- [ ] 5. Testy z `tests/verify_regression.m` przechodzą, a nowo napisane skrypty z pętlą Monte Carlo wykonują się bez błędów.

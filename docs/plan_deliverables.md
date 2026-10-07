@@ -10,7 +10,7 @@ Ten dokument rozstrzyga **co** jest celem pracy i repozytorium. Kolejność zada
 | Temat | Implementacja i testowanie efektywności detekcji wybranego algorytmu radaru pasywnego używającego sygnału Wi-Fi |
 | Opiekun | prof. dr hab. inż. Tomasz Zieliński |
 | Wzorzec układu | Prace z katedry / analogiczna inżynierska K. Szwej (*Radar OFDM z użyciem sygnału DVB-T2*), plus Sorbian (WAT) jako drugi punkt odniesienia rysunków i porównań |
-| Wkład własny | Ten sam paradygmat co Szwej (CIR/CFR vs CAF, MTI, DC, mapa Range–Doppler), przeniesiony na **Wi-Fi 802.11a** i uzupełniony o **Coherent CLEAN** (Braun) |
+| Wkład własny | Zastosowanie paradygmatu przetwarzania CIR (estymacja kanału, MTI, kompensacja DC, mapa Range–Doppler) na sygnale **Wi-Fi 802.11a**, pogłębiona analiza statystyczna wpływu parametrów warstwy fizycznej (MCS, PSDU) na detekcję oraz implementacja algorytmu **Coherent CLEAN** (Braun) |
 
 Kod w `src/` jest już nośnikiem metody. Praca ma **opisać i zbadać** ten łańcuch, a nie przebudowywać go od zera.
 
@@ -23,10 +23,10 @@ Sześć rozdziałów. Nie ma osobnego rozdziału „implementacja MATLAB”: śr
 | Nr | Plik LaTeX | Tytuł | Zawartość |
 | :--- | :--- | :--- | :--- |
 | 1 | `thesis/tex/10_introduction.tex` | Wstęp | Cel i zakres, motywacja (iluminator Wi-Fi, brak dedykowanego radaru), teza / pytania badawcze, układ pracy |
-| 2 | `thesis/tex/20_pbr.tex` | Koncepcja bistatycznego radaru pasywnego | Geometria bistatyczna, zjawiska fizyczne, etapy przetwarzania, **CAF vs CFR/CIR**, zalety i ograniczenia Wi-Fi PBR |
+| 2 | `thesis/tex/20_pbr.tex` | Koncepcja bistatycznego radaru pasywnego | Geometria bistatyczna, zjawiska fizyczne, etapy przetwarzania, **model detekcji oparty o Zero-Forcing (CIR)**, zalety i ograniczenia Wi-Fi PBR |
 | 3 | `thesis/tex/30_wifi_phy.tex` | Sygnał Wi-Fi IEEE 802.11 | Rodzina 802.11, OFDM i CP, ramka Non-HT (L-STF, L-LTF, SIGNAL, DATA), parametry radarowe ($B=20\,\mathrm{MHz}$, $\Delta R=7.5\,\mathrm{m}$, $v_{\mathrm{unamb}}\approx 68\,\mathrm{m/s}$), siatka 52 podnośnych i luka DC; analiza transmisji pakietowej (przerwy SIFS/DIFS, limit PSDU 4095 B) i teoretyczny potencjał integracji wielu ramek (Multi-Frame CPI) |
 | 4 | `thesis/tex/40_radar_dsp.tex` | Algorytmy przetwarzania radarowego | Zwięzła rola preambuły i synchronizacji w sprzęcie vs cięcie w symulacji; Zero-Forcing, MTI, interpolacja DC, okno 2D Blackman–Harris ze wzoru, periodogram 2D, Coherent CLEAN |
-| 5 | `thesis/tex/50_simulation_results.tex` | Badania symulacyjne | 5.1 środowisko MATLAB (rola WLAN/Comm Toolbox vs wkład własny w DSP) i scenariusze; 5.2 CIR vs CAF; 5.3 $SNR_{\mathrm{out}}(SNR_{\mathrm{in}})$ uśredniane statystycznie (Monte Carlo po $N$ niezależnych ramkach); 5.4 wpływ modulacji (MCS: BPSK vs QAM) / tłumienia echa / długości ramki; 5.5 CLEAN |
+| 5 | `thesis/tex/50_simulation_results.tex` | Badania symulacyjne | 5.1 środowisko MATLAB (rola WLAN/Comm Toolbox vs wkład własny w DSP) i scenariusze; 5.2 Ewaluacja toru CIR i algorytmu CLEAN; 5.3 $SNR_{\mathrm{out}}(SNR_{\mathrm{in}})$ uśredniane statystycznie (Monte Carlo); 5.4 Głęboka analiza wpływu parametrów PHY: modulacja (BPSK vs QAM) oraz długość ramki (PSDU) na skuteczność radaru |
 | 6 | `thesis/tex/99_conclusion.tex` | Wnioski | Podsumowanie, ograniczenia, dalsze prace (SDR/CSI oraz integracja sekwencji wielu ramek Multi-Frame CPI jako kluczowe perspektywy) |
 
 Front matter (strona tytułowa, oświadczenie, program pracy) znajduje się w plikach `01_`–`03_`, z danymi ze zgłoszenia i etykietą „praca inżynierska”.
@@ -68,7 +68,7 @@ W rozdziale 5.1 wyraźnie rozgranicza się rolę toolboxów i wkładu własnego:
 
 ### 4.2. Skrypty badawcze i katalog figur
 
-Istniejący łańcuch zostaje: `transmitter` → `channel` → `receiver_pipeline` → `clean_interpreter`, plus `receiver_correlation` jako CAF. Bez przebudowy modułów.
+Istniejący łańcuch zostaje: `transmitter` → `channel` → `receiver_pipeline` → `clean_interpreter`. Bez przebudowy modułów (CAF usunięty na rzecz dogłębnych badań statystycznych).
 
 Prace badawcze realizowane są w dwóch krokach (zgodnie z `plan_work_order.md`):
 1. **Silnik eksperymentalny i metryki (Tor B.1)**: analityczny estymator $SNR_{\mathrm{out}}$ (moc w binie celu vs wariancja tła) oraz pętla uśredniania statystycznego Monte Carlo po $N$ niezależnych ramkach (z wariantami MCS i długości PSDU).
@@ -78,22 +78,21 @@ Do dopisania są **dwa skrypty badawcze**:
 
 | Skrypt | Po co |
 | :--- | :--- |
-| `scripts/generate_szwej_comparison_plots.m` | Para CIR vs CAF: mesh 3D, `imagesc` 2D, przekroje 1D; stany przed/po MTI i CLEAN; kilka wartości SNR |
-| `scripts/evaluate_snr_curves.m` | Krzywe $SNR_{\mathrm{out}}=f(SNR_{\mathrm{in}})$ dla CIR i CAF (uśrednianie Monte Carlo po $N$ niezależnych ramkach/szumie), warianty modulacji MCS (BPSK vs QAM) i długości PSDU |
+| `scripts/evaluate_wifi_parameters.m` | Zastępuje stare porównania z CAF; silnik Monte Carlo badający wpływ parametrów PHY (MCS, PSDU) na skuteczność detekcji dla wybranego SNR |
+| `scripts/evaluate_snr_curves.m` | Krzywe $SNR_{\mathrm{out}}=f(SNR_{\mathrm{in}})$ (uśrednianie Monte Carlo po $N$ niezależnych ramkach/szumie), demonstracja zdolności detekcyjnych toru CIR przy zadanym zaszumieniu |
 
 Zapis figur:
 - roboczy: `results/figures/`
 - do składu: `thesis/img/` (PNG i/lub PDF), nazwy stabilne, gotowe do `\includegraphics`
 
 **Katalog rysunków do rozdziału 5**:
-1. Mapa Range–Doppler 2D/3D, metoda CIR, wysoki SNR
-2. Ta sama scena, metoda CAF
-3. Przekrój 1D w osi prędkości (albo odległości) przez wykryty cel, CIR vs CAF
-4. Ta sama para przy średnim i niskim SNR
-5. Mapa przed MTI vs po MTI
-6. Mapa przed CLEAN vs po CLEAN (scena wielocelowa)
-7. $SNR_{\mathrm{out}}$ vs $SNR_{\mathrm{in}}$, CIR i CAF na jednym wykresie
-8. Wariant: tłumienie echa i/lub BPSK vs 64-QAM
+1. Mapa Range–Doppler 2D/3D przed MTI vs po MTI (zobrazowanie kompensacji przesłuchu bezpośredniego i luki DC).
+2. Mapa Range–Doppler przed CLEAN vs po CLEAN (scena wielocelowa z maskowaniem słabych celów).
+3. Przekrój 1D w osi prędkości (albo odległości) przez wykryty cel po ekstrakcji CLEAN.
+4. Wykres krzywych $SNR_{\mathrm{out}} = f(SNR_{\mathrm{in}})$ uśredniony statystycznie (metoda Monte Carlo).
+5. Wykres wpływu długości ramki PSDU (np. krótka kontrolna vs max) na poprawę zysku SNR.
+6. Wykres wpływu schematów modulacji (odporne BPSK vs gęste 64-QAM) na pik celów i szum tła.
+7. Analiza skrajnego wariantu zaszumienia i ekstremalnego tłumienia echa celu w stosunku do DPI.
 
 ### 4.3. Czystość kodu, listingi do pracy i weryfikacja regresyjna
 
@@ -104,7 +103,7 @@ W celu ułatwienia cytowania kodu w pracy (pakiet `minted` w rozdz. 4 i 5.1) ora
    - `lib/compute_range_doppler_map.m` — analityczne okno 2D Blackmana–Harrisa oraz periodogram 2D (IFFT wzdłuż podnośnych, FFT wzdłuż symboli),
    - `lib/run_coherent_clean.m` — pętla koherentnego usuwania listków bocznych celów (Braun).
 2. **Skrypty w `src/` jako fasady uruchomieniowe (100% kompatybilności wstecznej)**:
-   - Skrypty `transmitter.m`, `channel.m`, `receiver_pipeline.m`, `clean_interpreter.m`, `receiver_correlation.m` zachowują swoje nazwy, lokalizacje i format plików `.mat`.
+   - Skrypty `transmitter.m`, `channel.m`, `receiver_pipeline.m`, `clean_interpreter.m` zachowują swoje nazwy, lokalizacje i format plików `.mat`.
    - `scripts/run_full_simulation.m` wykonuje się w niezmieniony sposób.
 3. **Zabezpieczenie wzorcem odniesienia („Golden Master”) i testy regresyjne**:
    - Przed refaktoryzacją utrwala się wzorzec referencyjny ze stałym ziarnem generatora losowego (`golden_*.mat`).
