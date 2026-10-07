@@ -12,6 +12,9 @@ fprintf("====================================================\n");
 fprintf("       Wi-Fi Passive Radar Full Simulation          \n");
 fprintf("====================================================\n\n");
 
+% Enable visualizations for a single simulation run
+ENABLE_VISUALIZATIONS = true;
+
 % Set up paths
 [current_script_dir, ~, ~] = fileparts(mfilename('fullpath'));
 sim_project_root = fullfile(current_script_dir, '..');
