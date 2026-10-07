@@ -30,13 +30,8 @@ waveform = wlanWaveformGenerator(payload_bits, cfgNonHT);
 save("waveform.mat", "waveform", "cfgNonHT", "fs");
 fprintf("  Waveform saved to 'waveform.mat' (%d samples).\n", length(waveform));
 
-%% 4. Power Spectral Density (PSD)
-[pxx, f] = pwelch(waveform, [], [], [], fs, 'centered');
-
-figure('Name', 'Transmitter - Power Spectral Density', 'Color', 'white');
-plot(f/1e6, 10*log10(pxx), 'LineWidth', 1.2);
-title('Power Spectral Density Estimate (IEEE 802.11a Non-HT)');
-xlabel('Frequency [MHz]');
-ylabel('Power [dB/Hz]');
-grid on;
-xlim([-15 15]);
+%% 4. Visualization
+if exist('ENABLE_VISUALIZATIONS', 'var') && ENABLE_VISUALIZATIONS
+    plot_signal_time_domain(waveform, fs, 'Transmitter - Time Domain (I & Q)');
+    plot_power_spectral_density(waveform, fs, 'Transmitter - Power Spectral Density (IEEE 802.11a Non-HT)');
+end

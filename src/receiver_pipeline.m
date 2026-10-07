@@ -52,3 +52,25 @@ save('radar_data.mat', 'CPer_base', 'W_2D_unshifted', 'N_per', 'M_per', ...
 
 fprintf("  Pipeline complete. Radar map matrix: %d (Range bins) x %d (Doppler bins).\n", N_per, M_per);
 fprintf("  Data saved to 'radar_data.mat'. You can now run clean_interpreter.m.\n");
+
+%% 9. Visualization
+if exist('ENABLE_VISUALIZATIONS', 'var') && ENABLE_VISUALIZATIONS
+    plot_constellation(F_rx(:), 'Receiver - Demodulated Constellation (RX)');
+    
+    % 2D Heatmaps (Demodulated Symbols & Channel Response)
+    % Center frequencies (DC at index 33) using fftshift for visualization
+    plot_heatmap(fftshift(F_rx, 1), 'Demodulated Symbols', 'Symbol Index (Time)', 'Subcarrier Index (Frequency)');
+    
+    % Reconstruct raw H matrix (before MTI filter) for full channel visualization
+    H_raw = F_rx ./ (F_tx + 1e-9);
+    plot_heatmap(fftshift(H_raw, 1), 'Channel Response (H Matrix)', 'Symbol Index (Time)', 'Subcarrier Index (Freq)');
+    
+    % Prepare axes for 3D plot
+    delta_r = c / (2 * fs);
+    axis_range = linspace(0, delta_r * Nfft, N_per);
+    T_sym_total = (Nfft + Ncp) / fs;
+    v_unamb = c / (2 * fc * T_sym_total);
+    axis_velocity = linspace(-v_unamb/2, v_unamb/2, M_per);
+    
+    plot_range_doppler_3d(CPer_base, axis_velocity, axis_range, 'Receiver - 3D Range-Doppler Map');
+end
