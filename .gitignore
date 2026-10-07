@@ -66,3 +66,7 @@ _minted-*/
 # ==========================================
 *.pdf
 *.png
+
+# Ignorowanie dużych plików i folderów roboczych
+references/
+results/
