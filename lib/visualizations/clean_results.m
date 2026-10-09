@@ -36,11 +36,7 @@ function clean_results(Per_dB_base, Per_dB_clean, axis_velocity, axis_range, tar
     grid on;
     
     % Save figure
-    [current_dir, ~, ~] = fileparts(mfilename('fullpath'));
-    fig_dir = fullfile(current_dir, '..', '..', 'results', 'figures');
-    if ~exist(fig_dir, 'dir')
-        mkdir(fig_dir);
-    end
+    fig_dir = get_figures_dir();
     safe_title = regexprep(lower(fig_title), '[^a-z0-9]', '_');
     fig_file = fullfile(fig_dir, sprintf('%s.png', safe_title));
     saveas(fig, fig_file);
