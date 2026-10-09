@@ -6,32 +6,36 @@
 
 fprintf(">> Running Transmitter...\n");
 
-%% 1. Wi-Fi Frame Configuration (IEEE 802.11a Non-HT)
+WIFI_STANDARD = '802.11ax'; % Switch between '802.11a' and '802.11ax'
+
+% Add lib directory to path
+[current_dir, ~, ~] = fileparts(mfilename('fullpath'));
+addpath(fullfile(current_dir, '..', 'lib'));
+
+%% 1. Wi-Fi Frame Configuration
 psdu_length = 4095; % Payload length in bytes
+params = get_wifi_params(WIFI_STANDARD, psdu_length);
+cfg = params.cfg;
+fs = params.fs;
 
-cfgNonHT = wlanNonHTConfig();
-cfgNonHT.ChannelBandwidth = 'CBW20'; % 20 MHz channel
-cfgNonHT.MCS = 0;                   % 0: BPSK rate 1/2
-cfgNonHT.PSDULength = psdu_length;
+tx_time = transmitTime(cfg);
 
-fs = wlanSampleRate(cfgNonHT);
-tx_time = transmitTime(cfgNonHT);
-
+fprintf('  Standard:         %s\n', params.standard);
 fprintf('  Sampling Rate:    %.2f MHz\n', fs/1e6);
 fprintf('  Packet Duration:  %.2f us\n', tx_time * 1e6);
-fprintf('  Modulation:       MCS %d (BPSK 1/2)\n', cfgNonHT.MCS);
+fprintf('  Modulation:       MCS %d\n', cfg.MCS);
 fprintf('  Payload Size:     %d bytes\n', psdu_length);
 
 %% 2. Waveform Generation
 payload_bits = randi([0 1], psdu_length * 8, 1);
-waveform = wlanWaveformGenerator(payload_bits, cfgNonHT);
+waveform = wlanWaveformGenerator(payload_bits, cfg);
 
 %% 3. Save Output
-save("waveform.mat", "waveform", "cfgNonHT", "fs");
+save("waveform.mat", "waveform", "cfg", "fs", "WIFI_STANDARD", "params");
 fprintf("  Waveform saved to 'waveform.mat' (%d samples).\n", length(waveform));
 
 %% 4. Visualization
 if exist('ENABLE_VISUALIZATIONS', 'var') && ENABLE_VISUALIZATIONS
     plot_signal_time_domain(waveform, fs, 'Transmitter - Time Domain (I & Q)');
-    plot_power_spectral_density(waveform, fs, 'Transmitter - Power Spectral Density (IEEE 802.11a Non-HT)');
+    plot_power_spectral_density(waveform, fs, sprintf('Transmitter - Power Spectral Density (%s)', WIFI_STANDARD));
 end

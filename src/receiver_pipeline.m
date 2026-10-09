@@ -20,19 +20,44 @@ addpath(fullfile(current_dir, '..', 'lib'));
 if ~isfile("waveform.mat") || ~isfile("signal.mat")
     error("waveform.mat or signal.mat not found. Please run transmitter.m and channel.m first!");
 end
-load("waveform.mat", "waveform", "fs");
+load("waveform.mat", "waveform", "fs", "WIFI_STANDARD");
 load("signal.mat", "signal", "fc", "c");
 
-Nfft = 64;             % 802.11a FFT subcarriers
-Ncp = 16;              % Cyclic prefix length (0.8 us)
-Nsym_len = Nfft + Ncp; % Total OFDM symbol length (80 samples = 4 us)
+if ~exist('WIFI_STANDARD', 'var')
+    WIFI_STANDARD = '802.11a'; % Fallback
+end
 
-%% 2. Preamble Removal (20 us = 400 samples for IEEE 802.11a L-STF, L-LTF, SIGNAL)
-preamble_time = 20e-6;
-preamble_len = round(preamble_time * fs);
+params = get_wifi_params(WIFI_STANDARD);
+cbw = params.cfg.ChannelBandwidth;
+Nfft = params.Nfft;
+Ncp = params.Ncp;
+Nsym_len = Nfft + Ncp;
 
-y_cut = signal(preamble_len + 1 : end);
-x_cut = waveform(preamble_len + 1 : end);
+%% 2. Synchronization & Payload Extraction
+% Detect packet start
+pktOffset = wlanPacketDetect(signal, cbw);
+if isempty(pktOffset)
+    warning('Packet not detected by wlanPacketDetect. Falling back to ideal synchronization.');
+    pktOffset = 0;
+    fineOffset = 0;
+else
+    % Estimate fine symbol timing
+    fineOffset = wlanSymbolTimingEstimate(signal(pktOffset+1:end), cbw);
+end
+
+% Start index of the packet (0-based offset + fine offset + 1 for 1-based indexing)
+% Wait, fineOffset is relative to pktOffset. So total offset is pktOffset + fineOffset.
+sync_idx = pktOffset + fineOffset; 
+
+% Extract payload from synchronized signal
+payload_start_rx = sync_idx + params.payload_start;
+
+if payload_start_rx > length(signal)
+    error('Synchronized payload start is beyond the end of the signal.');
+end
+
+y_cut = signal(payload_start_rx : end);
+x_cut = waveform(params.payload_start : end);
 
 %% 3. Manual OFDM Demodulation
 [F_rx, n_symbols] = demodulate(y_cut, Nfft, Ncp);
@@ -41,7 +66,7 @@ x_cut = waveform(preamble_len + 1 : end);
 fprintf("  Demodulated %d OFDM symbols (%d subcarriers each).\n", n_symbols, Nfft);
 
 %% 4. & 5. Channel Estimation, MTI Filtering and DC Subcarrier Interpolation
-H_shifted = estimate_channel_zf(F_rx, F_tx, Nfft);
+H_shifted = estimate_channel_zf(F_rx, F_tx, params);
 
 %% 6. & 7. 2D Blackman-Harris Windowing and Complex Periodogram Generation
 [CPer_base, W_2D_unshifted, N_per, M_per] = compute_range_doppler_map(H_shifted, Nfft, n_symbols);
