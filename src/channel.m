@@ -8,7 +8,9 @@
 
 fprintf(">> Running Channel Simulation...\n");
 
-USE_TGAX_CHANNEL = true; % Set to true to use realistic indoor multipath clutter (TGax)
+if ~exist('USE_TGAX_CHANNEL', 'var')
+    USE_TGAX_CHANNEL = true; % Default if not run from run_all.m
+end
 
 %% 1. Load Transmitted Waveform
 if ~isfile("waveform.mat")
@@ -56,6 +58,10 @@ if USE_TGAX_CHANNEL
     
     clutter_signal = tgax(waveform);
     
+    % Get intrinsic delay of the TGax channel filter to align targets
+    chInfo = info(tgax);
+    intrinsic_delay = chInfo.ChannelFilterDelay;
+    
     % Match lengths
     if length(clutter_signal) > N
         clutter_signal = clutter_signal(1:N);
@@ -64,12 +70,14 @@ if USE_TGAX_CHANNEL
     end
 else
     clutter_signal = zeros(N, 1);
+    intrinsic_delay = 0;
 end
 
 target_signal = zeros(size(waveform));
 
 for k = 1 : length(taps)
-    delay = delays(k);
+    % Align target delays with the intrinsic delay of the direct path
+    delay = delays(k) + intrinsic_delay;
     gain = taps(k);
     fd = dopplers(k);
     
