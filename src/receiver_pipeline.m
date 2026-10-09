@@ -45,8 +45,7 @@ else
     fineOffset = wlanSymbolTimingEstimate(signal(pktOffset+1:end), cbw);
 end
 
-% Start index of the packet (0-based offset + fine offset + 1 for 1-based indexing)
-% Wait, fineOffset is relative to pktOffset. So total offset is pktOffset + fineOffset.
+% Total synchronization offset
 sync_idx = pktOffset + fineOffset; 
 
 % Extract payload from synchronized signal

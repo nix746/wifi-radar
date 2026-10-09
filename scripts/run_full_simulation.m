@@ -12,7 +12,6 @@ fprintf("====================================================\n");
 fprintf("       Wi-Fi Passive Radar Full Simulation          \n");
 fprintf("====================================================\n\n");
 
-% Enable visualizations for a single simulation run
 ENABLE_VISUALIZATIONS = true;
 USE_TGAX_CHANNEL = true;
 
@@ -29,38 +28,41 @@ sim_orig_dir = pwd;
 cd(sim_src_dir);
 
 standards_to_test = {'802.11a', '802.11ax'};
+environments_to_test = [false, true]; % false = Ideal Channel, true = TGax Clutter
 
 try
-    for i = 1:length(standards_to_test)
-        WIFI_STANDARD = standards_to_test{i};
-        fprintf('\n=======================================================\n');
-        fprintf('=== RUNNING SIMULATION FOR STANDARD: %s ===\n', WIFI_STANDARD);
-        fprintf('=======================================================\n\n');
+    for env_idx = 1:length(environments_to_test)
+        USE_TGAX_CHANNEL = environments_to_test(env_idx);
+        env_name = {'Ideal Channel', 'TGax Multipath'};
+        
+        for std_idx = 1:length(standards_to_test)
+            WIFI_STANDARD = standards_to_test{std_idx};
+            
+            fprintf('\n=======================================================\n');
+            fprintf('=== STANDARD: %s | ENVIRONMENT: %s ===\n', WIFI_STANDARD, env_name{env_idx});
+            fprintf('=======================================================\n\n');
 
-        % Step 1: Transmitter
-        fprintf("[Step 1/4] Generating Wi-Fi %s Frame...\n", WIFI_STANDARD);
-        run(fullfile(sim_src_dir, 'transmitter.m'));
-        fprintf("\n");
+            fprintf("[Step 1/4] Generating Wi-Fi %s Frame...\n", WIFI_STANDARD);
+            run(fullfile(sim_src_dir, 'transmitter.m'));
+            fprintf("\n");
 
-        % Step 2: Channel
-        fprintf("[Step 2/4] Simulating Multipath Channel with Doppler...\n");
-        run(fullfile(sim_src_dir, 'channel.m'));
-        fprintf("\n");
+            fprintf("[Step 2/4] Simulating Multipath Channel with Doppler...\n");
+            run(fullfile(sim_src_dir, 'channel.m'));
+            fprintf("\n");
 
-        % Step 3: Receiver Pipeline
-        fprintf("[Step 3/4] Processing Range-Doppler Periodogram...\n");
-        run(fullfile(sim_src_dir, 'receiver_pipeline.m'));
-        fprintf("\n");
+            fprintf("[Step 3/4] Processing Range-Doppler Periodogram...\n");
+            run(fullfile(sim_src_dir, 'receiver_pipeline.m'));
+            fprintf("\n");
 
-        % Step 4: Target Detection & CLEAN
-        fprintf("[Step 4/4] Detecting Targets and Running CLEAN Algorithm...\n");
-        run(fullfile(sim_src_dir, 'clean_interpreter.m'));
-        fprintf("\n");
+            fprintf("[Step 4/4] Detecting Targets and Running CLEAN Algorithm...\n");
+            run(fullfile(sim_src_dir, 'clean_interpreter.m'));
+            fprintf("\n");
 
-        if i < length(standards_to_test)
-            fprintf('Simulation for %s complete.\n', WIFI_STANDARD);
-            fprintf('Check the generated figures. Press any key in the Command Window to run the next standard...\n');
-            pause;
+            is_last_run = (env_idx == length(environments_to_test)) && (std_idx == length(standards_to_test));
+            if ~is_last_run
+                fprintf('Simulation complete. Press any key to run the next configuration...\n');
+                pause;
+            end
         end
     end
 catch ME
