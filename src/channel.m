@@ -9,7 +9,7 @@
 fprintf(">> Running Channel Simulation...\n");
 
 if ~exist('USE_TGAX_CHANNEL', 'var')
-    USE_TGAX_CHANNEL = true; % Default if not run from run_all.m
+    USE_TGAX_CHANNEL = true;
 end
 
 %% 1. Load Transmitted Waveform

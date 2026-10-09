@@ -12,7 +12,6 @@
 
 fprintf(">> Running Receiver Pipeline...\n");
 
-% Ensure lib directory is on MATLAB search path
 [current_dir, ~, ~] = fileparts(mfilename('fullpath'));
 addpath(fullfile(current_dir, '..', 'lib'));
 
@@ -95,11 +94,7 @@ if exist('ENABLE_VISUALIZATIONS', 'var') && ENABLE_VISUALIZATIONS
     plot_heatmap(fftshift(H_raw, 1), sprintf('Channel Response (H Matrix) (%s)', WIFI_STANDARD), 'Symbol Index (Time)', 'Subcarrier Index (Freq)');
     
     % Prepare axes for 3D plot
-    delta_r = c / (2 * fs);
-    axis_range = linspace(0, delta_r * Nfft, N_per);
-    T_sym_total = (Nfft + Ncp) / fs;
-    v_unamb = c / (2 * fc * T_sym_total);
-    axis_velocity = linspace(-v_unamb/2, v_unamb/2, M_per);
+    [axis_range, axis_velocity] = calculate_physical_axes(fs, fc, Nfft, Ncp, N_per, M_per, c);
     
     plot_range_doppler_3d(CPer_base, axis_velocity, axis_range, sprintf('Receiver - 3D Range-Doppler Map (%s)', WIFI_STANDARD));
 end

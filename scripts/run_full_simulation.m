@@ -15,7 +15,6 @@ fprintf("====================================================\n\n");
 ENABLE_VISUALIZATIONS = true;
 USE_TGAX_CHANNEL = true;
 
-% Set up paths
 [current_script_dir, ~, ~] = fileparts(mfilename('fullpath'));
 sim_project_root = fullfile(current_script_dir, '..');
 sim_src_dir = fullfile(sim_project_root, 'src');
@@ -28,7 +27,7 @@ sim_orig_dir = pwd;
 cd(sim_src_dir);
 
 standards_to_test = {'802.11a', '802.11ax'};
-environments_to_test = [false, true]; % false = Ideal Channel, true = TGax Clutter
+environments_to_test = [false, true];
 
 try
     for env_idx = 1:length(environments_to_test)
@@ -70,7 +69,6 @@ catch ME
     rethrow(ME);
 end
 
-% Return to project root
 cd(sim_project_root);
 fprintf("====================================================\n");
 fprintf("All simulations completed successfully.\n");

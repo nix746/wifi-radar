@@ -27,15 +27,7 @@ Per_dB_base  = 10*log10((1 / (Nfft * n_symbols)) * abs(CPer_base).^2  + 1e-9);
 Per_dB_clean = 10*log10((1 / (Nfft * n_symbols)) * abs(CPer_clean).^2 + 1e-9);
 
 %% 4. Calibrated Physical Axes
-% Range Axis [m]
-delta_r = c / (2 * fs);
-max_range = delta_r * Nfft;
-axis_range = linspace(0, max_range, N_per);
-
-% Velocity / Doppler Axis [m/s]
-T_sym_total = (Nfft + Ncp) / fs;
-v_unamb = c / (2 * fc * T_sym_total);
-axis_velocity = linspace(-v_unamb/2, v_unamb/2, M_per);
+[axis_range, axis_velocity] = calculate_physical_axes(fs, fc, Nfft, Ncp, N_per, M_per, c);
 
 % Print detected target physical coordinates
 fprintf("  Detected Targets (Physical Coordinates):\n");

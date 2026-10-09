@@ -7,10 +7,9 @@
 fprintf(">> Running Transmitter...\n");
 
 if ~exist('WIFI_STANDARD', 'var')
-    WIFI_STANDARD = '802.11ax'; % Default if not run from run_all.m
+    WIFI_STANDARD = '802.11ax';
 end
 
-% Add lib directory to path
 [current_dir, ~, ~] = fileparts(mfilename('fullpath'));
 addpath(fullfile(current_dir, '..', 'lib'));
 
