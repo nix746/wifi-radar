@@ -78,22 +78,22 @@ H_shifted = estimate_channel_zf(F_rx, F_tx, params);
 
 %% 8. Save Data for Interpretation
 save('radar_data.mat', 'CPer_base', 'W_2D_unshifted', 'N_per', 'M_per', ...
-     'Nfft', 'n_symbols', 'fs', 'fc', 'Ncp', 'c');
+     'Nfft', 'n_symbols', 'fs', 'fc', 'Ncp', 'c', 'WIFI_STANDARD');
 
 fprintf("  Pipeline complete. Radar map matrix: %d (Range bins) x %d (Doppler bins).\n", N_per, M_per);
 fprintf("  Data saved to 'radar_data.mat'. You can now run clean_interpreter.m.\n");
 
 %% 9. Visualization
 if exist('ENABLE_VISUALIZATIONS', 'var') && ENABLE_VISUALIZATIONS
-    plot_constellation(F_rx(:), 'Receiver - Demodulated Constellation (RX)');
+    plot_constellation(F_rx(:), sprintf('Receiver - Demodulated Constellation (RX) (%s)', WIFI_STANDARD));
     
     % 2D Heatmaps (Demodulated Symbols & Channel Response)
     % Center frequencies (DC at index 33) using fftshift for visualization
-    plot_heatmap(fftshift(F_rx, 1), 'Demodulated Symbols', 'Symbol Index (Time)', 'Subcarrier Index (Frequency)');
+    plot_heatmap(fftshift(F_rx, 1), sprintf('Demodulated Symbols (%s)', WIFI_STANDARD), 'Symbol Index (Time)', 'Subcarrier Index (Frequency)');
     
     % Reconstruct raw H matrix (before MTI filter) for full channel visualization
     H_raw = F_rx ./ (F_tx + 1e-9);
-    plot_heatmap(fftshift(H_raw, 1), 'Channel Response (H Matrix)', 'Symbol Index (Time)', 'Subcarrier Index (Freq)');
+    plot_heatmap(fftshift(H_raw, 1), sprintf('Channel Response (H Matrix) (%s)', WIFI_STANDARD), 'Symbol Index (Time)', 'Subcarrier Index (Freq)');
     
     % Prepare axes for 3D plot
     delta_r = c / (2 * fs);
@@ -102,5 +102,5 @@ if exist('ENABLE_VISUALIZATIONS', 'var') && ENABLE_VISUALIZATIONS
     v_unamb = c / (2 * fc * T_sym_total);
     axis_velocity = linspace(-v_unamb/2, v_unamb/2, M_per);
     
-    plot_range_doppler_3d(CPer_base, axis_velocity, axis_range, 'Receiver - 3D Range-Doppler Map');
+    plot_range_doppler_3d(CPer_base, axis_velocity, axis_range, sprintf('Receiver - 3D Range-Doppler Map (%s)', WIFI_STANDARD));
 end

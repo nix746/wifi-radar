@@ -1,7 +1,11 @@
-function plot_clean_results(Per_dB_base, Per_dB_clean, axis_velocity, axis_range, targets_found)
+function plot_clean_results(Per_dB_base, Per_dB_clean, axis_velocity, axis_range, targets_found, fig_title)
     % PLOT_CLEAN_RESULTS Plots the Range-Doppler maps before and after CLEAN
     
-    fig = figure('Name', 'Wi-Fi Radar - Target Detection & CLEAN Cancellation', ...
+    if nargin < 6
+        fig_title = 'Wi-Fi Radar - Target Detection & CLEAN Cancellation';
+    end
+    
+    fig = figure('Name', fig_title, ...
                  'Color', 'white', 'Position', [100, 100, 1200, 520]);
 
     c_lims = [max(Per_dB_base(:)) - 60, max(Per_dB_base(:))];
@@ -37,7 +41,8 @@ function plot_clean_results(Per_dB_base, Per_dB_clean, axis_velocity, axis_range
     if ~exist(fig_dir, 'dir')
         mkdir(fig_dir);
     end
-    fig_file = fullfile(fig_dir, 'range_doppler_clean_results.png');
+    safe_title = regexprep(lower(fig_title), '[^a-z0-9]', '_');
+    fig_file = fullfile(fig_dir, sprintf('%s.png', safe_title));
     saveas(fig, fig_file);
     fprintf("  Result plot saved to: %s\n", fig_file);
 end

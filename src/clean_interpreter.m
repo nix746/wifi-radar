@@ -47,5 +47,10 @@ end
 
 %% 5. Visualization (Before vs After CLEAN)
 if exist('ENABLE_VISUALIZATIONS', 'var') && ENABLE_VISUALIZATIONS
-    plot_clean_results(Per_dB_base, Per_dB_clean, axis_velocity, axis_range, targets_found);
+    if exist('WIFI_STANDARD', 'var')
+        fig_title = sprintf('Wi-Fi Radar - Target Detection & CLEAN Cancellation (%s)', WIFI_STANDARD);
+    else
+        fig_title = 'Wi-Fi Radar - Target Detection & CLEAN Cancellation';
+    end
+    plot_clean_results(Per_dB_base, Per_dB_clean, axis_velocity, axis_range, targets_found, fig_title);
 end

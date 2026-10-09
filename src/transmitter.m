@@ -6,7 +6,9 @@
 
 fprintf(">> Running Transmitter...\n");
 
-WIFI_STANDARD = '802.11ax'; % Switch between '802.11a' and '802.11ax'
+if ~exist('WIFI_STANDARD', 'var')
+    WIFI_STANDARD = '802.11ax'; % Default if not run from run_all.m
+end
 
 % Add lib directory to path
 [current_dir, ~, ~] = fileparts(mfilename('fullpath'));
@@ -36,6 +38,5 @@ fprintf("  Waveform saved to 'waveform.mat' (%d samples).\n", length(waveform));
 
 %% 4. Visualization
 if exist('ENABLE_VISUALIZATIONS', 'var') && ENABLE_VISUALIZATIONS
-    plot_signal_time_domain(waveform, fs, 'Transmitter - Time Domain (I & Q)');
     plot_power_spectral_density(waveform, fs, sprintf('Transmitter - Power Spectral Density (%s)', WIFI_STANDARD));
 end
