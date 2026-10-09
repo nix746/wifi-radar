@@ -71,15 +71,15 @@ function radar_data = step3_receiver(signal, waveform, fs, fc, c, WIFI_STANDARD,
 
     %% 6. Visualization
     if ENABLE_VISUALIZATIONS
-        constellation_diagram(F_rx(:), sprintf('Receiver - Demodulated Constellation (RX) (%%s)', WIFI_STANDARD));
+        constellation_diagram(F_rx(:), sprintf('Receiver - Demodulated Constellation (RX) (%s)', WIFI_STANDARD));
         
-        radar_heatmap(fftshift(F_rx, 1), sprintf('Demodulated Symbols (%%s)', WIFI_STANDARD), 'Symbol Index (Time)', 'Subcarrier Index (Frequency)');
+        radar_heatmap(fftshift(F_rx, 1), sprintf('Demodulated Symbols (%s)', WIFI_STANDARD), 'Symbol Index (Time)', 'Subcarrier Index (Frequency)');
         
         H_raw = F_rx ./ (F_tx + 1e-9);
-        radar_heatmap(fftshift(H_raw, 1), sprintf('Channel Response (H Matrix) (%%s)', WIFI_STANDARD), 'Symbol Index (Time)', 'Subcarrier Index (Freq)');
+        radar_heatmap(fftshift(H_raw, 1), sprintf('Channel Response (H Matrix) (%s)', WIFI_STANDARD), 'Symbol Index (Time)', 'Subcarrier Index (Freq)');
         
         [axis_range, axis_velocity] = calculate_physical_axes(fs, fc, Nfft, Ncp, N_per, M_per, c);
         
-        range_doppler_3d(CPer_base, axis_velocity, axis_range, sprintf('Receiver - 3D Range-Doppler Map (%%s)', WIFI_STANDARD));
+        range_doppler_3d(CPer_base, axis_velocity, axis_range, sprintf('Receiver - 3D Range-Doppler Map (%s)', WIFI_STANDARD));
     end
 end

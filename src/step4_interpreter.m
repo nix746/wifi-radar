@@ -45,7 +45,7 @@ function targets_found = step4_interpreter(radar_data, fs, fc, c, WIFI_STANDARD,
 
     %% 5. Visualization (Before vs After CLEAN)
     if ENABLE_VISUALIZATIONS
-        fig_title = sprintf('Wi-Fi Radar - Target Detection & CLEAN Cancellation (%%s)', WIFI_STANDARD);
+        fig_title = sprintf('Wi-Fi Radar - Target Detection & CLEAN Cancellation (%s)', WIFI_STANDARD);
         clean_results(Per_dB_base, Per_dB_clean, axis_velocity, axis_range, targets_found, fig_title);
     end
 end

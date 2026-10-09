@@ -34,6 +34,6 @@ function [waveform, fs, params, cfg] = step1_transmitter(WIFI_STANDARD, ENABLE_V
 
     %% 3. Visualization
     if ENABLE_VISUALIZATIONS
-        power_spectral_density(waveform, fs, sprintf('Transmitter - Power Spectral Density (%%s)', WIFI_STANDARD));
+        power_spectral_density(waveform, fs, sprintf('Transmitter - Power Spectral Density (%s)', WIFI_STANDARD));
     end
 end

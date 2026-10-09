@@ -6,7 +6,8 @@
 %   4. Target Detection & Cancellation (CLEAN Interpreter)
 
 clc;
-close all;
+clear variables;
+close all force;
 
 fprintf("====================================================\n");
 fprintf("       Wi-Fi Passive Radar Full Simulation          \n");
@@ -52,6 +53,7 @@ for env_idx = 1:length(environments_to_test)
         if ~is_last_run
             fprintf('Simulation complete. Press any key to run the next configuration...\n');
             pause;
+            close all force;
         end
     end
 end

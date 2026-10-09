@@ -37,7 +37,7 @@ function clean_results(Per_dB_base, Per_dB_clean, axis_velocity, axis_range, tar
     
     % Save figure
     [current_dir, ~, ~] = fileparts(mfilename('fullpath'));
-    fig_dir = fullfile(current_dir, '..', 'results', 'figures');
+    fig_dir = fullfile(current_dir, '..', '..', 'results', 'figures');
     if ~exist(fig_dir, 'dir')
         mkdir(fig_dir);
     end

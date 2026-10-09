@@ -17,7 +17,7 @@ function radar_heatmap(matrix_data, fig_title, x_label, y_label)
     ylabel(y_label);
     
     [current_dir, ~, ~] = fileparts(mfilename('fullpath'));
-    fig_dir = fullfile(current_dir, '..', 'results', 'figures');
+    fig_dir = fullfile(current_dir, '..', '..', 'results', 'figures');
     if ~exist(fig_dir, 'dir'), mkdir(fig_dir); end
     safe_title = regexprep(lower(fig_title), '[^a-z0-9]', '_');
     fig_file = fullfile(fig_dir, sprintf('%s.png', safe_title));
