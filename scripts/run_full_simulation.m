@@ -33,19 +33,19 @@ for env_idx = 1:length(environments_to_test)
         fprintf('=======================================================\n\n');
 
         fprintf("[Step 1/4] Generating Wi-Fi %s Frame...\n", WIFI_STANDARD);
-        [waveform, fs, params, cfg] = transmitter(WIFI_STANDARD, ENABLE_VISUALIZATIONS);
+        [waveform, fs, params, cfg] = step1_transmitter(WIFI_STANDARD, ENABLE_VISUALIZATIONS);
         fprintf("\n");
 
         fprintf("[Step 2/4] Simulating Multipath Channel with Doppler...\n");
-        [rx_signal, fc, c] = channel(waveform, fs, USE_TGAX_CHANNEL);
+        [rx_signal, fc, c] = step2_channel(waveform, fs, USE_TGAX_CHANNEL);
         fprintf("\n");
 
         fprintf("[Step 3/4] Processing Range-Doppler Periodogram...\n");
-        radar_data = receiver_pipeline(rx_signal, waveform, fs, fc, c, WIFI_STANDARD, ENABLE_VISUALIZATIONS);
+        radar_data = step3_receiver(rx_signal, waveform, fs, fc, c, WIFI_STANDARD, ENABLE_VISUALIZATIONS);
         fprintf("\n");
 
         fprintf("[Step 4/4] Detecting Targets and Running CLEAN Algorithm...\n");
-        targets_found = clean_interpreter(radar_data, fs, fc, c, WIFI_STANDARD, ENABLE_VISUALIZATIONS);
+        targets_found = step4_interpreter(radar_data, fs, fc, c, WIFI_STANDARD, ENABLE_VISUALIZATIONS);
         fprintf("\n");
 
         is_last_run = (env_idx == length(environments_to_test)) && (std_idx == length(standards_to_test));

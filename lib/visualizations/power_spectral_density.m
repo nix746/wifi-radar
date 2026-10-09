@@ -1,4 +1,4 @@
-function plot_power_spectral_density(waveform, fs, fig_title)
+function power_spectral_density(waveform, fs, fig_title)
     % PLOT_POWER_SPECTRAL_DENSITY Visualizes the PSD of a waveform
     
     [pxx, f] = pwelch(waveform, [], [], [], fs, 'centered');

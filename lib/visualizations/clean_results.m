@@ -1,4 +1,4 @@
-function plot_clean_results(Per_dB_base, Per_dB_clean, axis_velocity, axis_range, targets_found, fig_title)
+function clean_results(Per_dB_base, Per_dB_clean, axis_velocity, axis_range, targets_found, fig_title)
     % PLOT_CLEAN_RESULTS Plots the Range-Doppler maps before and after CLEAN
     
     if nargin < 6

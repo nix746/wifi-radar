@@ -1,4 +1,4 @@
-function plot_constellation(symbols, fig_title)
+function constellation_diagram(symbols, fig_title)
     % PLOT_CONSTELLATION Visualizes the constellation diagram of complex symbols
     
     figure('Name', fig_title, 'Color', 'white', 'Position', [100, 100, 500, 500]);

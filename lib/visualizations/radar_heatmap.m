@@ -1,4 +1,4 @@
-function plot_heatmap(matrix_data, fig_title, x_label, y_label)
+function radar_heatmap(matrix_data, fig_title, x_label, y_label)
     % PLOT_HEATMAP Plots a 2D matrix as a heatmap (useful for F_rx and H)
     
     figure('Name', fig_title, 'Color', 'white', 'Position', [100, 100, 600, 450]);

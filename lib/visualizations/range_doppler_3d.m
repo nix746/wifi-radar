@@ -1,4 +1,4 @@
-function plot_range_doppler_3d(RD_Map, axis_velocity, axis_range, fig_title)
+function range_doppler_3d(RD_Map, axis_velocity, axis_range, fig_title)
     % PLOT_RANGE_DOPPLER_3D Visualizes the 3D mesh of the Range-Doppler map
     
     RD_Map_dB = 20*log10(abs(RD_Map) + 1e-9);

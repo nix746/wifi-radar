@@ -1,4 +1,4 @@
-function [signal, fc, c] = channel(waveform, fs, USE_TGAX_CHANNEL)
+function [signal, fc, c] = step2_channel(waveform, fs, USE_TGAX_CHANNEL)
 % CHANNEL Simulates a multipath radar channel with delay, Doppler shifts, and AWGN noise.
 %
 % Input:

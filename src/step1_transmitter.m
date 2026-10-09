@@ -1,4 +1,4 @@
-function [waveform, fs, params, cfg] = transmitter(WIFI_STANDARD, ENABLE_VISUALIZATIONS)
+function [waveform, fs, params, cfg] = step1_transmitter(WIFI_STANDARD, ENABLE_VISUALIZATIONS)
 % TRANSMITTER Generates IEEE 802.11a/g/ax compliant OFDM baseband waveform.
 %
 % Inputs:
@@ -34,6 +34,6 @@ function [waveform, fs, params, cfg] = transmitter(WIFI_STANDARD, ENABLE_VISUALI
 
     %% 3. Visualization
     if ENABLE_VISUALIZATIONS
-        plot_power_spectral_density(waveform, fs, sprintf('Transmitter - Power Spectral Density (%%s)', WIFI_STANDARD));
+        power_spectral_density(waveform, fs, sprintf('Transmitter - Power Spectral Density (%%s)', WIFI_STANDARD));
     end
 end
