@@ -9,7 +9,7 @@ function plot_heatmap(matrix_data, fig_title, x_label, y_label)
     
     imagesc(matrix_dB);
     axis xy; % Origin at bottom-left
-    colormap('jet');
+    colormap('parula');
     colorbar;
     
     title(fig_title);
