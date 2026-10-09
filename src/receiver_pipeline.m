@@ -13,7 +13,8 @@
 fprintf(">> Running Receiver Pipeline...\n");
 
 [current_dir, ~, ~] = fileparts(mfilename('fullpath'));
-addpath(fullfile(current_dir, '..', 'lib'));
+addpath(fullfile(current_dir, '..'));
+init_paths();
 
 %% 1. Load Transmitted Waveform and Received Signal
 if ~isfile("waveform.mat") || ~isfile("signal.mat")

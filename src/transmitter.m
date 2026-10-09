@@ -11,7 +11,8 @@ if ~exist('WIFI_STANDARD', 'var')
 end
 
 [current_dir, ~, ~] = fileparts(mfilename('fullpath'));
-addpath(fullfile(current_dir, '..', 'lib'));
+addpath(fullfile(current_dir, '..'));
+init_paths();
 
 %% 1. Wi-Fi Frame Configuration
 psdu_length = 4095; % Payload length in bytes

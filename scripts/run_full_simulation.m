@@ -16,12 +16,8 @@ ENABLE_VISUALIZATIONS = true;
 USE_TGAX_CHANNEL = true;
 
 [current_script_dir, ~, ~] = fileparts(mfilename('fullpath'));
-sim_project_root = fullfile(current_script_dir, '..');
-sim_src_dir = fullfile(sim_project_root, 'src');
-sim_lib_dir = fullfile(sim_project_root, 'lib');
-
-addpath(sim_src_dir);
-addpath(sim_lib_dir);
+addpath(fullfile(current_script_dir, '..'));
+[sim_project_root, sim_src_dir, sim_lib_dir, ~] = init_paths();
 
 sim_orig_dir = pwd;
 cd(sim_src_dir);
