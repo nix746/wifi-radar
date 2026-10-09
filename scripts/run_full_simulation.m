@@ -20,7 +20,7 @@ addpath(fullfile(current_script_dir, '..'));
 init_paths();
 
 % Initialize unique timestamped directory for this run
-timestamp_str = datestr(now, 'yyyy-mm-dd_HH-MM-SS');
+timestamp_str = char(datetime('now', 'Format', 'yyyy-MM-dd_HH-mm-ss'));
 run_root_dir = fullfile(current_script_dir, '..', 'results', 'figures', sprintf('run_%s', timestamp_str));
 if ~exist(run_root_dir, 'dir')
     mkdir(run_root_dir);

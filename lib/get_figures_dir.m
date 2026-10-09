@@ -12,7 +12,7 @@ function fig_dir = get_figures_dir(subfolder)
     if isempty(base_dir)
         [lib_dir, ~, ~] = fileparts(mfilename('fullpath'));
         project_root = fullfile(lib_dir, '..');
-        timestamp_str = datestr(now, 'yyyy-mm-dd_HH-MM-SS');
+        timestamp_str = char(datetime('now', 'Format', 'yyyy-MM-dd_HH-mm-ss'));
         base_dir = fullfile(project_root, 'results', 'figures', sprintf('run_%s', timestamp_str));
         setappdata(0, 'wifi_radar_figures_dir', base_dir);
     end
