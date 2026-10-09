@@ -22,12 +22,12 @@ Sześć rozdziałów. Nie ma osobnego rozdziału „implementacja MATLAB”: śr
 
 | Nr | Plik LaTeX | Tytuł | Zawartość |
 | :--- | :--- | :--- | :--- |
-| 1 | `thesis/tex/10_introduction.tex` | Wstęp | Cel i zakres, motywacja (iluminator Wi-Fi, brak dedykowanego radaru), teza / pytania badawcze, układ pracy |
-| 2 | `thesis/tex/20_pbr.tex` | Koncepcja bistatycznego radaru pasywnego | Geometria bistatyczna, zjawiska fizyczne, etapy przetwarzania, **model detekcji oparty o Zero-Forcing (CIR)**, zalety i ograniczenia Wi-Fi PBR |
-| 3 | `thesis/tex/30_wifi_phy.tex` | Sygnał Wi-Fi IEEE 802.11 | Rodzina 802.11, OFDM i CP, ramka Non-HT (L-STF, L-LTF, SIGNAL, DATA), parametry radarowe ($B=20\,\mathrm{MHz}$, $\Delta R=7.5\,\mathrm{m}$, $v_{\mathrm{unamb}}\approx 68\,\mathrm{m/s}$), siatka 52 podnośnych i luka DC; analiza transmisji pakietowej (przerwy SIFS/DIFS, limit PSDU 4095 B) i teoretyczny potencjał integracji wielu ramek (Multi-Frame CPI) |
-| 4 | `thesis/tex/40_radar_dsp.tex` | Algorytmy przetwarzania radarowego | Zwięzła rola preambuły i synchronizacji w sprzęcie vs cięcie w symulacji; Zero-Forcing, MTI, interpolacja DC, okno 2D Blackman–Harris ze wzoru, periodogram 2D, Coherent CLEAN |
-| 5 | `thesis/tex/50_simulation_results.tex` | Badania symulacyjne | 5.1 środowisko MATLAB (rola WLAN/Comm Toolbox vs wkład własny w DSP) i scenariusze; 5.2 Ewaluacja toru CIR i algorytmu CLEAN; 5.3 $SNR_{\mathrm{out}}(SNR_{\mathrm{in}})$ uśredniane statystycznie (Monte Carlo); 5.4 Głęboka analiza wpływu parametrów PHY: modulacja (BPSK vs QAM) oraz długość ramki (PSDU) na skuteczność radaru |
-| 6 | `thesis/tex/99_conclusion.tex` | Wnioski | Podsumowanie, ograniczenia, dalsze prace (SDR/CSI oraz integracja sekwencji wielu ramek Multi-Frame CPI jako kluczowe perspektywy) |
+| 1 | `thesis/tex/10_introduction.tex` | Wstęp | Cel i zakres (rozszerzenie o 802.11ax i kanał TGax), motywacja (iluminator Wi-Fi, nowsze generacje OFDM), teza / pytania badawcze, układ pracy |
+| 2 | `thesis/tex/20_pbr.tex` | Koncepcja bistatycznego radaru pasywnego | Geometria bistatyczna, zjawiska fizyczne (DPI, clutter stacjonarny, kanał syntetyczny vs TGax Model-B), etapy przetwarzania, **model detekcji oparty o Zero-Forcing (CIR)**, zalety i ograniczenia |
+| 3 | `thesis/tex/30_wifi_phy.tex` | Sygnał Wi-Fi IEEE 802.11 | Rodzina 802.11 i ewolucja PHY (802.11a vs 802.11ax), OFDM i CP, ramki Non-HT oraz HE-SU, tabela porównawcza parametrów radarowych ($B=20\,\mathrm{MHz}$, $\Delta R=7.5\,\mathrm{m}$, $v_{\mathrm{unamb}}\approx 68\,\mathrm{m/s}$ vs $16.7\,\mathrm{m/s}$), siatka podnośnych i luka DC (1 vs 3 podnośne); analiza transmisji pakietowej |
+| 4 | `thesis/tex/40_radar_dsp.tex` | Algorytmy przetwarzania radarowego | Synchronizacja pakietu (Schmidl--Cox vs detekcja wlanPacketDetect); Zero-Forcing z dynamiczną maską podnośnych (52 vs 242), filtr MTI, adaptacyjna interpolacja DC, okno 2D Blackman–Harris, periodogram 2D, Coherent CLEAN |
+| 5 | `thesis/tex/50_simulation_results.tex` | Badania symulacyjne | 5.1 środowisko MATLAB (architektura modularna, kanał syntetyczny vs realistyczny TGax Model-B, macierz 4 scenariuszy); 5.2 Porównanie standardów 802.11a i 802.11ax (analiza aliasingu Dopplera); 5.3 Wpływ clutteru wielodrogowego TGax na skuteczność MTI; 5.4 Krzywe $SNR_{\mathrm{out}}(SNR_{\mathrm{in}})$ (Monte Carlo); 5.5 Skuteczność Coherent CLEAN w scenariuszach wielocelowych |
+| 6 | `thesis/tex/99_conclusion.tex` | Wnioski | Podsumowanie, ograniczenia (aliasing Dopplera w ax, pasmo 20 MHz), dalsze prace (SDR/CSI, szersze pasma 802.11ax, Multi-Frame CPI) |
 
 Front matter (strona tytułowa, oświadczenie, program pracy) znajduje się w plikach `01_`–`03_`, z danymi ze zgłoszenia i etykietą „praca inżynierska”.
 

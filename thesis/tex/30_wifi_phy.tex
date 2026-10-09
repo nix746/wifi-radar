@@ -3,24 +3,28 @@
 \label{sec:wifi_phy}
 
 % ------------------------------------------------------------------------
-% Rodzina standardów IEEE 802.11
-% Modulacja OFDM i prefiks cykliczny (CP)
-% Struktura ramki Non-HT (L-STF, L-LTF, SIGNAL, DATA)
-% Parametry radarowe sygnału 802.11a (B=20 MHz, dR=7.5 m, v_unamb approx 68 m/s)
-% Siatka 52 podnośnych i problem nośnej stałoprądowej DC
+% Rodzina standardów IEEE 802.11 i ewolucja warstwy fizycznej (802.11a -> 802.11ax)
+% Modulacja OFDM i prefiks cykliczny (zasada działania, okres FFT, rola CP)
+% Struktura ramki fizycznej: Non-HT (802.11a) oraz HE-SU (802.11ax)
+% Parametry radarowe sygnałów IEEE 802.11a i IEEE 802.11ax:
+%   - tabela porównawcza parametrów (pasmo, Nfft, d_f, Tsym, Tcp, dR, v_unamb)
+%   - drastyczny spadek prędkości jednoznacznej w 802.11ax (ok. 16.7 m/s vs 68.2 m/s)
+% Siatka podnośnych OFDM i problem luki nośnych stałoprądowych (DC):
+%   - 1 wyzerowana nośna w 802.11a vs 3 nośne w 802.11ax i ich wpływ na wyciek widmowy
+% Analiza transmisji pakietowej (przerwy SIFS/DIFS, limit PSDU) i potencjał Multi-Frame CPI
 % ------------------------------------------------------------------------
 
-\subsection{Rodzina standardów IEEE 802.11}
+\subsection{Rodzina standardów IEEE 802.11 i ewolucja warstwy fizycznej}
 \label{subsec:wifi_standards}
 
 \subsection{Modulacja OFDM i prefiks cykliczny}
 \label{subsec:wifi_ofdm_cp}
 
-\subsection{Struktura ramki fizycznej Non-HT (802.11a)}
+\subsection{Struktura ramki fizycznej: Non-HT (802.11a) oraz HE-SU (802.11ax)}
 \label{subsec:wifi_frame_structure}
 
-\subsection{Parametry radarowe sygnału IEEE 802.11a}
+\subsection{Porównanie parametrów radarowych sygnałów IEEE 802.11a i IEEE 802.11ax}
 \label{subsec:wifi_radar_parameters}
 
-\subsection{Siatka podnośnych OFDM i problem nośnej stałoprądowej (DC)}
+\subsection{Siatka podnośnych OFDM i problem luki nośnych stałoprądowych (DC)}
 \label{subsec:wifi_subcarriers_dc}
