@@ -8,6 +8,8 @@
 
 fprintf(">> Running Channel Simulation...\n");
 
+USE_TGAX_CHANNEL = true; % Set to true to use realistic indoor multipath clutter (TGax)
+
 %% 1. Load Transmitted Waveform
 if ~isfile("waveform.mat")
     error("waveform.mat not found. Please run transmitter.m first!");
@@ -18,10 +20,18 @@ N = length(waveform);
 t = (0 : N-1).' / fs;
 
 %% 2. Target & Multipath Parameters
-% Target definitions: [Direct path (0m, 0 Hz), Target 1, Target 2]
-taps     = [ 1.0,   0.05,   0.04   ]; % Relative complex amplitudes
-delays   = [ 0,     7,      14     ]; % Delays in samples
-dopplers = [ 0,    -500,    1200   ]; % Doppler frequency shifts [Hz]
+if USE_TGAX_CHANNEL
+    % When using TGax, it provides the direct path leakage and static background clutter.
+    % We only define the moving radar targets here: [Target 1, Target 2]
+    taps     = [ 0.05,   0.04   ]; % Relative complex amplitudes
+    delays   = [ 7,      14     ]; % Delays in samples
+    dopplers = [ -500,    1200   ]; % Doppler frequency shifts [Hz]
+else
+    % Ideal channel: [Direct path (0m, 0 Hz), Target 1, Target 2]
+    taps     = [ 1.0,   0.05,   0.04   ]; % Relative complex amplitudes
+    delays   = [ 0,     7,      14     ]; % Delays in samples
+    dopplers = [ 0,    -500,    1200   ]; % Doppler frequency shifts [Hz]
+end
 
 c = 3e8;
 fc = 5.5e9;
@@ -35,8 +45,28 @@ for k = 1 : length(taps)
         k, delays(k), range_m, dopplers(k), vel_ms, taps(k));
 end
 
-%% 3. Channel Application (Linear Delay & Doppler Modulation)
-signal = zeros(size(waveform));
+%% 3. Channel Application (Background Clutter + Targets)
+if USE_TGAX_CHANNEL
+    fprintf("  Generating realistic TGax background clutter (Model-B)...\n");
+    tgax = wlanTGaxChannel;
+    tgax.SampleRate = fs;
+    tgax.DelayProfile = 'Model-B'; % Typical indoor office environment
+    tgax.LargeScaleFadingEffect = 'None';
+    tgax.NormalizeChannelOutputs = false; % Keep realistic power levels
+    
+    clutter_signal = tgax(waveform);
+    
+    % Match lengths
+    if length(clutter_signal) > N
+        clutter_signal = clutter_signal(1:N);
+    elseif length(clutter_signal) < N
+        clutter_signal = [clutter_signal; zeros(N - length(clutter_signal), 1)];
+    end
+else
+    clutter_signal = zeros(N, 1);
+end
+
+target_signal = zeros(size(waveform));
 
 for k = 1 : length(taps)
     delay = delays(k);
@@ -49,8 +79,10 @@ for k = 1 : length(taps)
     end
 
     doppler_factor = exp(1j * 2 * pi * fd * t);
-    signal = signal + (gain * delayed_signal .* doppler_factor);
+    target_signal = target_signal + (gain * delayed_signal .* doppler_factor);
 end
+
+signal = clutter_signal + target_signal;
 
 %% 4. Additive White Gaussian Noise (AWGN)
 SNR_dB = 25;

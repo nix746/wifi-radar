@@ -60,8 +60,13 @@ y_cut = signal(payload_start_rx : end);
 x_cut = waveform(params.payload_start : end);
 
 %% 3. Manual OFDM Demodulation
-[F_rx, n_symbols] = demodulate(y_cut, Nfft, Ncp);
-[F_tx, ~]         = demodulate(x_cut, Nfft, Ncp);
+[F_rx, n_symbols_rx] = demodulate(y_cut, Nfft, Ncp);
+[F_tx, n_symbols_tx] = demodulate(x_cut, Nfft, Ncp);
+
+% Match sizes (in case channel delay caused y_cut to have fewer complete symbols)
+n_symbols = min(n_symbols_rx, n_symbols_tx);
+F_rx = F_rx(:, 1:n_symbols);
+F_tx = F_tx(:, 1:n_symbols);
 
 fprintf("  Demodulated %d OFDM symbols (%d subcarriers each).\n", n_symbols, Nfft);
 
