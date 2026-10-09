@@ -1,4 +1,4 @@
-function plot_constellation(symbols, fig_title)
+function constellation_diagram(symbols, fig_title)
     % PLOT_CONSTELLATION Visualizes the constellation diagram of complex symbols
     
     figure('Name', fig_title, 'Color', 'white', 'Position', [100, 100, 500, 500]);
@@ -16,10 +16,9 @@ function plot_constellation(symbols, fig_title)
         ylim([-max_val max_val]);
     end
     
-    [current_dir, ~, ~] = fileparts(mfilename('fullpath'));
-    fig_dir = fullfile(current_dir, '..', 'results', 'figures');
-    if ~exist(fig_dir, 'dir'), mkdir(fig_dir); end
+    fig_dir = get_figures_dir();
     safe_title = regexprep(lower(fig_title), '[^a-z0-9]', '_');
     fig_file = fullfile(fig_dir, sprintf('%s.png', safe_title));
     saveas(gcf, fig_file);
+    fprintf("  Result plot saved to: %s\n", fig_file);
 end

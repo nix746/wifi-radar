@@ -1,19 +1,21 @@
 % !TeX root = ../main.tex
-\section{Algorytmy przetwarzania}
+\section{Algorytmy przetwarzania radarowego}
 \label{sec:radar_dsp}
 
 % ------------------------------------------------------------------------
-% Synchronizacja pakietu (Schmidl-Cox)
-% Estymacja kanału metodą Zero-Forcing
-% Filtr MTI (usuwanie przesłuchu bezpośredniego i składowej stałej)
-% Interpolacja luki częstotliwości stałoprądowej DC
-% Okienkowanie 2D Blackman-Harris
-% Dwuwymiarowy periodogram Range-Doppler
-% Algorytm Coherent CLEAN (usuwanie celów)
+% Synchronizacja pakietu i wyznaczanie początku ramki:
+%   - algorytm Schmidla--Coxa a estymacja wlanPacketDetect i wlanSymbolTimingEstimate
+% Estymacja transmitancji kanału metodą Zero-Forcing:
+%   - dzielenie symbol po symbolu i dynamiczna maska podnośnych (52 vs 242)
+% Tłumienie przesłuchu bezpośredniego i ech stałych (filtr MTI w czasie wolnym)
+% Rekonstrukcja nośnych stałoprądowych (adaptacyjna interpolacja DC dla 802.11a i 802.11ax)
+% Dwuwymiarowe okienkowanie Blackmana--Harrisa (analityczny wzór, tłumienie listków ~92 dB)
+% Dwuwymiarowy periodogram Range--Doppler (IFFT po podnośnych, FFT po symbolach)
+% Koherentne usuwanie celów (algorytm Coherent CLEAN)
 % ------------------------------------------------------------------------
 
-\subsection{Synchronizacja pakietu metodą Schmidla--Coxa}
-\label{subsec:dsp_schmidl_cox}
+\subsection{Synchronizacja pakietu i wyznaczanie początku ramki}
+\label{subsec:dsp_sync}
 
 \subsection{Estymacja transmitancji kanału metodą Zero-Forcing}
 \label{subsec:dsp_zero_forcing}
@@ -21,7 +23,7 @@
 \subsection{Tłumienie przesłuchu bezpośredniego i ech stałych (filtr MTI)}
 \label{subsec:dsp_mti}
 
-\subsection{Rekonstrukcja nośnej stałoprądowej (interpolacja DC)}
+\subsection{Rekonstrukcja nośnych stałoprądowych (interpolacja DC)}
 \label{subsec:dsp_dc_interp}
 
 \subsection{Dwuwymiarowe okienkowanie Blackmana--Harrisa}

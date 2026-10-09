@@ -1,4 +1,4 @@
-function plot_range_doppler_3d(RD_Map, axis_velocity, axis_range, fig_title)
+function range_doppler_3d(RD_Map, axis_velocity, axis_range, fig_title)
     % PLOT_RANGE_DOPPLER_3D Visualizes the 3D mesh of the Range-Doppler map
     
     RD_Map_dB = 20*log10(abs(RD_Map) + 1e-9);
@@ -15,10 +15,9 @@ function plot_range_doppler_3d(RD_Map, axis_velocity, axis_range, fig_title)
     colormap('jet');
     colorbar;
     
-    [current_dir, ~, ~] = fileparts(mfilename('fullpath'));
-    fig_dir = fullfile(current_dir, '..', 'results', 'figures');
-    if ~exist(fig_dir, 'dir'), mkdir(fig_dir); end
+    fig_dir = get_figures_dir();
     safe_title = regexprep(lower(fig_title), '[^a-z0-9]', '_');
     fig_file = fullfile(fig_dir, sprintf('%s.png', safe_title));
     saveas(gcf, fig_file);
+    fprintf("  Result plot saved to: %s\n", fig_file);
 end

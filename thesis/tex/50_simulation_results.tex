@@ -4,23 +4,30 @@
 
 % ------------------------------------------------------------------------
 % 5.1 Środowisko symulacyjne MATLAB i architektura eksperymentu
-% 5.2 Porównanie metod estymacji: CIR a CAF
-% 5.3 Efektywność detekcji w funkcji wejściowego SNR (SNR_out vs SNR_in)
-% 5.4 Wpływ parametrów transmisji (modulacja, tłumienie echa, długość ramki)
+%     - struktura modułowa (step1_transmitter -> step2_channel -> step3_receiver -> step4_interpreter)
+%     - centralna parametryzacja w get_wifi_params.m
+%     - model kanału syntetycznego vs znormalizowany model wewnątrzbudynkowy TGax Model-B
+%     - matryca 4 scenariuszy testowych (802.11a / 802.11ax x Ideal / TGax)
+% 5.2 Porównanie charakterystyk detekcji: standard IEEE 802.11a a IEEE 802.11ax
+%     - rozdzielczość odległościowa vs prędkość jednoznaczna v_unamb
+%     - zjawisko aliasingu Dopplera w 802.11ax (dłuższy symbol OFDM)
+% 5.3 Wpływ realistycznego kanału wielodrogowego TGax Model-B na jakość detekcji
+%     - tłumienie stacjonarnego clutteru wewnątrzbudynkowego i przesłuchu bezpośredniego (MTI)
+% 5.4 Efektywność detekcji w funkcji wejściowego stosunku sygnału do szumu (krzywe SNR)
 % 5.5 Skuteczność algorytmu Coherent CLEAN w scenariuszach wielocelowych
 % ------------------------------------------------------------------------
 
 \subsection{Środowisko symulacyjne MATLAB i architektura eksperymentu}
 \label{subsec:sim_environment}
 
-\subsection{Porównanie charakterystyk detekcji: metoda CIR a CAF}
-\label{subsec:sim_cir_vs_caf}
+\subsection{Porównanie charakterystyk detekcji: standard IEEE 802.11a a IEEE 802.11ax}
+\label{subsec:sim_standards_comparison}
+
+\subsection{Wpływ realistycznego kanału wielodrogowego TGax Model-B na jakość detekcji}
+\label{subsec:sim_tgax_channel_effects}
 
 \subsection{Efektywność detekcji w funkcji wejściowego stosunku sygnału do szumu}
 \label{subsec:sim_snr_curves}
-
-\subsection{Wpływ modulacji, tłumienia echa i długości ramki na jakość detekcji}
-\label{subsec:sim_transmission_params}
 
 \subsection{Skuteczność algorytmu Coherent CLEAN w scenariuszach wielocelowych}
 \label{subsec:sim_clean_performance}

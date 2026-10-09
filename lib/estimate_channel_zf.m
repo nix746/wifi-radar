@@ -1,20 +1,29 @@
-function [H_shifted] = estimate_channel_zf(F_rx, F_tx, Nfft)
+function [H_shifted] = estimate_channel_zf(F_rx, F_tx, params)
     % ESTIMATE_CHANNEL_ZF 
     % Zero-Forcing channel estimation, mask application, MTI filter, and DC gap repair.
     
     epsilon = 1e-9;
     H = F_rx ./ (F_tx + epsilon);
 
-    % Active subcarrier mask for IEEE 802.11a (52 data/pilot subcarriers, excluding guard bands)
-    mask_shifted = zeros(Nfft, 1);
-    mask_shifted(7:32)  = 1; % Lower subcarriers [-26 to -1]
-    mask_shifted(34:59) = 1; % Upper subcarriers [1 to 26]
-    H = H .* ifftshift(mask_shifted);
+    % Apply active subcarrier mask
+    H = H .* ifftshift(params.active_mask);
 
     % MTI Filter: eliminate static reflection at direct path (0 m, 0 Hz)
     H_shifted = fftshift(H, 1);
     H_shifted = H_shifted - mean(H_shifted, 2);
 
-    % DC carrier repair: interpolate DC gap at carrier index 33 to prevent spectral leakage
-    H_shifted(33, :) = (H_shifted(32, :) + H_shifted(34, :)) / 2;
+    % DC carrier repair: interpolate DC gap to prevent spectral leakage
+    dc = params.dc_indices;
+    if length(dc) == 1
+        % Single DC carrier (e.g., 802.11a)
+        H_shifted(dc, :) = (H_shifted(dc-1, :) + H_shifted(dc+1, :)) / 2;
+    else
+        % Multiple DC nulls (e.g., 802.11ax)
+        left_val = H_shifted(dc(1)-1, :);
+        right_val = H_shifted(dc(end)+1, :);
+        step = (right_val - left_val) / (length(dc) + 1);
+        for i = 1:length(dc)
+            H_shifted(dc(i), :) = left_val + i * step;
+        end
+    end
 end
