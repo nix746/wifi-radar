@@ -47,6 +47,13 @@ Pliki rozdziałów (`10_introduction.tex` … `99_conclusion.tex`) znajdują si�
 | Eksport LaTeX | `thesis/bibliography.bib` | Bezpośredni eksport z Zotero — jedyne źródło literatury dla LaTeX-a |
 | Kopie robocze PDF | `references/` | Materiały robocze (`compendiums/`, `shorts/`, `TW/`, `TZ/`) do importu do Zotero |
 
+> [!CAUTION]
+> **ZAKAZ RĘCZNEJ EDYCJI `thesis/bibliography.bib`**:
+> Plik `thesis/bibliography.bib` jest generowany i synchronizowany **wyłącznie automatycznie z programu Zotero** (za pomocą wtyczki Better BibTeX / auto-export).
+> - **Nie wolno dotykać ani modyfikować tego pliku ręcznie** — ani bezpośrednio w edytorze kodu, ani przez agentów AI.
+> - Wszelkie zmiany (dodawanie nowych pozycji, modyfikacje pól, poprawki autorów, tytułów, dat) muszą być wprowadzane **wyłącznie w aplikacji Zotero**, a następnie propagowane do repozytorium przez automatyczny eksport.
+> - Ręczna zmiana w pliku `.bib` zostanie bezpowrotnie nadpisana przy kolejnej synchronizacji z Zotero.
+
 > [!IMPORTANT]
 > **Status demonstracji i toolboxów MathWorks**: Przykłady demonstracyjne z `_archive_original/` oraz pakiety narzędziowe (WLAN Toolbox, Communications Toolbox) **nie wchodzą do bibliografii jako artykuły naukowe**. Ich wykorzystanie opisuje się w tekście pracy w rozdziale **5.1** (z ewentualnym jednym ogólnym cytowaniem środowiska MATLAB, jeśli wymagane).
 
