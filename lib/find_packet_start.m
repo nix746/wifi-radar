@@ -1,4 +1,4 @@
-function [start_index, metric] = find_packet_start(signal, threshold)
+function [start_index, metric] = find_packet_start(signal, threshold, fs)
 % FIND_PACKET_START Detects 802.11 packet start using the Schmidl-Cox autocorrelation metric.
 %
 % Original baseline implementation: Patryk Pajerski
@@ -7,16 +7,22 @@ function [start_index, metric] = find_packet_start(signal, threshold)
 % Inputs:
 %   signal    - Complex received time-domain baseband signal
 %   threshold - Detection threshold for normalized metric (default: 0.75)
+%   fs        - Sampling frequency in Hz (default: 20e6)
 %
 % Outputs:
 %   start_index - Sample index indicating the packet start (or [] if undetected)
 %   metric      - Normalized autocorrelation metric array
 
-    L = 16; % Auto-correlation delay for 802.11a L-STF periodic short training symbols
-    
-    if nargin < 2
+    if nargin < 2 || isempty(threshold)
         threshold = 0.75;
     end
+
+    if nargin < 3 || isempty(fs)
+        fs = 20e6;
+    end
+
+    % Auto-correlation delay for 802.11 L-STF periodic short training symbols (0.8 us)
+    L = round(0.8e-6 * fs);
 
     signal = signal(:);
     N = length(signal);
@@ -56,3 +62,5 @@ function [start_index, metric] = find_packet_start(signal, threshold)
         start_index = max(1, idx - L);
     end
 end
+
+
