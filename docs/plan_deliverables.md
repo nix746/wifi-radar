@@ -92,7 +92,7 @@ Zamiast czasochłonnego i mało informatywnego uśredniania statystycznego Monte
 | **E2** | **Aliasing Dopplera** | Długość symbolu OFDM a prędkość jednoznaczna | 802.11a ($T_{\mathrm{sym}}=4\,\mu\mathrm{s}$) vs 802.11ax ($T_{\mathrm{sym}}=13.6\,\mu\mathrm{s}$) | Cel szybki ($v=25\,\mathrm{m/s}$): poprawna detekcja w 'a' vs fałszywa prędkość (aliasing) w 'ax' |
 | **E3** | **Modulacja i szum** | Efekt *noise enhancement* w Zero-Forcing | MCS 0 (BPSK) vs MCS 3 (16-QAM) vs MCS 7 (64-QAM) oraz poziomy SNR ($+25, +10, -5\,\mathrm{dB}$) | Podbicie tła szumowego i spadek kontrastu przy wyższych rzędach MCS; granica zysku integracji |
 | **E4** | **Clutter TGax i MTI** | Tłumienie stacjonarnego echa wielodrogowego | Idealny AWGN vs TGax Model-B vs TGax Model-D | Wycinanie stacjonarnego profilu kanału przez MTI; rola interpolacji luki DC |
-| **E5** | **Dynamika i CLEAN** | Odkrywanie słabych celów w listkach bocznych | Cel silny ($0\,\mathrm{dB}$) + cel zamaskowany ($-30\,\mathrm{dB}$) | Odkrycie słabego celu schowanego pod listkami bocznymi po koherentnej eliminacji |
+| **E5** | **Dynamika i Coherent CLEAN** | Odkrywanie słabych celów w listkach bocznych oraz ewaluacja dynamicznego warunku stopu | Cel silny ($0\,\mathrm{dB}$), cel zamaskowany ($-30\,\mathrm{dB}$) oraz dodatkowe cele w scenariuszu wielocelowym ($N \ge 3$) | 1. Odkrycie słabego celu schowanego w listkach bocznych.<br>2. Skuteczność dynamicznego warunku stopu (próg szumu wg Brauna) bez znajomości $N_{\mathrm{cel}}$.<br>3. Odporność na *over-cleaning* (fałszywe cele z szumu). |
 
 ### 4.4. Skrypty eksperymentów i katalog figur do rozdziału 5
 
@@ -101,7 +101,7 @@ Struktura skryptów badawczych w `scripts/`:
 - `scripts/exp2_doppler_aliasing.m` — scenariusz E2 (mapy 2D Range–Doppler dla 'a' i 'ax'),
 - `scripts/exp3_modulation_noise.m` — scenariusz E3 (przekroje tła szumowego dla MCS 0/3/7 i poziomów SNR),
 - `scripts/exp4_tgax_clutter.m` — scenariusz E4 (mapy przed/po MTI w kanale TGax Model-B i D),
-- `scripts/exp5_coherent_clean.m` — scenariusz E5 (mapy przed/po CLEAN oraz profil prędkości dla skrajnej dynamiki celów),
+- `scripts/exp5_coherent_clean.m` — scenariusz E5 (implementacja i ewaluacja algorytmu Coherent CLEAN: dekonwolucja przy skrajnej dynamice $>30\,\mathrm{dB}$, weryfikacja dynamicznego kryterium stopu dla scenariusza wielocelowego $N \ge 3$ oraz profil prędkości listków bocznych),
 - `scripts/run_all_experiments.m` — master runner wykonujący wszystkie eksperymenty i eksportujący figury.
 
 Zapis figur:
@@ -126,7 +126,7 @@ W celu ułatwienia cytowania kodu w pracy (pakiet `minted` w rozdz. 4 i 5.1) ora
    - `lib/demodulate.m` — demodulacja OFDM i usuwanie CP,
    - `lib/estimate_channel_zf.m` — estymacja Zero-Forcing, maska podnośnych, MTI i interpolacja luki DC,
    - `lib/compute_range_doppler_map.m` — analityczne okno 2D Blackmana–Harrisa oraz periodogram 2D,
-   - `lib/run_coherent_clean.m` — pętla Coherent CLEAN (Braun),
+   - `lib/run_coherent_clean.m` — pętla Coherent CLEAN (Braun) ze wsparciem zarówno stałej liczby iteracji `num_targets` (dla wstecznej zgodności testów regresyjnych), jak i dynamicznego kryterium progowego stopu (próg szumowy / limit iteracji),
    - `lib/calculate_physical_axes.m` — skalowanie fizycznych osi odległości i prędkości.
 2. **Skrypty w `src/` jako fasady uruchomieniowe (100% kompatybilności wstecznej)**:
    - Skrypty `step1_transmitter.m`, `step2_channel.m`, `step3_receiver.m`, `step4_interpreter.m` zachowują kompatybilność.

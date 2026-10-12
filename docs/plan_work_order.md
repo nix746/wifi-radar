@@ -100,7 +100,11 @@ Dzięki Torowi 0 algorytmy DSP są już przetestowanymi, czystymi funkcjami w `l
 - [ ] 2. `scripts/exp2_doppler_aliasing.m` — scenariusz E2: badanie prędkości jednoznacznej i zjawiska aliasingu Dopplera w 802.11a vs 802.11ax dla szybkiego celu drogowego ($v = 25\,\mathrm{m/s}$).
 - [ ] 3. `scripts/exp3_modulation_noise.m` — scenariusz E3: demonstracja efektu *noise enhancement* przy estymacji ZF dla MCS 0, 3 i 7 oraz zysku integracji przy skrajnym zaszumieniu ($\mathrm{SNR}_{\mathrm{in}} = -5\,\mathrm{dB}$).
 - [ ] 4. `scripts/exp4_tgax_clutter.m` — scenariusz E4: ocena tłumienia stacjonarnego echa wielodrogowego w kanale TGax Model-B i D przez filtr MTI oraz rola interpolacji luki DC.
-- [ ] 5. `scripts/exp5_coherent_clean.m` — scenariusz E5: weryfikacja algorytmu Coherent CLEAN w obecności celów o dużej dynamice mocy ($>30\,\mathrm{dB}$ różnicy) i odkrywanie słabego celu w listkach bocznych.
+- [ ] 5. `scripts/exp5_coherent_clean.m` — scenariusz E5: weryfikacja i testowanie skuteczności algorytmu Coherent CLEAN:
+  - rozszerzenie `lib/run_coherent_clean.m` o dynamiczne kryterium stopu (próg tła szumowego $\gamma_{\mathrm{th}}$ wg Brauna + limit $N_{\max}$) z zachowaniem zgodności dla `num_targets`,
+  - demonstracja odkrywania słabego celu zamaskowanego w listkach bocznych dominującego odbicia ($>30\,\mathrm{dB}$ dynamiki mocy),
+  - test skuteczności automatycznej detekcji w scenariuszu wielocelowym ($N \ge 3$ cele),
+  - analiza odporności na zjawisko *over-cleaning* (eliminacja ryzyka detekcji fałszywych celów z szumu).
 - [ ] 6. `scripts/run_all_experiments.m` — nadrzędny runner automatycznie uruchamiający wszystkie 5 eksperymentów.
 
 ### B.2. Przeprowadzenie symulacji i eksport katalogu 9 figur do `thesis/img/`
