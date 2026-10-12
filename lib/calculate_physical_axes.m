@@ -8,11 +8,15 @@ function [axis_range, axis_velocity] = calculate_physical_axes(fs, fc, Nfft, Ncp
 %   Ncp   - Cyclic prefix length (samples)
 %   N_per - Number of points in range axis (Periodogram rows)
 %   M_per - Number of points in velocity axis (Periodogram columns)
-%   c     - Speed of light (m/s)
+%   c     - (Optional) Speed of light (m/s, default: 3e8)
 %
 % Outputs:
 %   axis_range    - 1D array of range bins (m)
 %   axis_velocity - 1D array of velocity/Doppler bins (m/s)
+
+    if nargin < 7 || isempty(c)
+        c = 3e8;
+    end
 
     % Range Axis [m]
     delta_r = c / (2 * fs);

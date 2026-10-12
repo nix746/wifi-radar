@@ -1,4 +1,4 @@
-function radar_data = step3_receiver(signal, waveform, fs, fc, c, WIFI_STANDARD, ENABLE_VISUALIZATIONS)
+function radar_data = step3_receiver(signal, waveform, fs, fc, WIFI_STANDARD, ENABLE_VISUALIZATIONS)
 % RECEIVER_PIPELINE
 % Stage 1: OFDM Demodulation, Zero-Forcing Channel Estimation, MTI, DC Repair, 
 % 2D Blackman-Harris Windowing, and Complex Range-Doppler Periodogram Generation.
@@ -8,7 +8,6 @@ function radar_data = step3_receiver(signal, waveform, fs, fc, c, WIFI_STANDARD,
 %   waveform     - Transmitted waveform
 %   fs           - Sampling frequency
 %   fc           - Carrier frequency
-%   c            - Speed of light
 %   WIFI_STANDARD - Standard string
 %   ENABLE_VISUALIZATIONS - boolean
 % Output:
@@ -78,7 +77,7 @@ function radar_data = step3_receiver(signal, waveform, fs, fc, c, WIFI_STANDARD,
         H_raw = F_rx ./ (F_tx + 1e-9);
         radar_heatmap(fftshift(H_raw, 1), sprintf('Channel Response (H Matrix) (%s)', WIFI_STANDARD), 'Symbol Index (Time)', 'Subcarrier Index (Freq)');
         
-        [axis_range, axis_velocity] = calculate_physical_axes(fs, fc, Nfft, Ncp, N_per, M_per, c);
+        [axis_range, axis_velocity] = calculate_physical_axes(fs, fc, Nfft, Ncp, N_per, M_per);
         
         range_doppler_3d(CPer_base, axis_velocity, axis_range, sprintf('Receiver - 3D Range-Doppler Map (%s)', WIFI_STANDARD));
     end
