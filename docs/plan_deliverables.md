@@ -50,7 +50,7 @@ Pliki rozdziałów (`10_introduction.tex` … `99_conclusion.tex`) znajdują si�
 > [!CAUTION]
 > **ZAKAZ RĘCZNEJ EDYCJI `thesis/bibliography.bib`**:
 > Plik `thesis/bibliography.bib` jest generowany i synchronizowany **wyłącznie automatycznie z programu Zotero** (za pomocą wtyczki Better BibTeX / auto-export).
-> - **Nie wolno dotykać ani modyfikować tego pliku ręcznie** — ani bezpośrednio w edytorze kodu, ani przez agentów AI.
+> - **Nie wolno dotykać ani modyfikować tego pliku ręcznie**
 > - Wszelkie zmiany (dodawanie nowych pozycji, modyfikacje pól, poprawki autorów, tytułów, dat) muszą być wprowadzane **wyłącznie w aplikacji Zotero**, a następnie propagowane do repozytorium przez automatyczny eksport.
 > - Ręczna zmiana w pliku `.bib` zostanie bezpowrotnie nadpisana przy kolejnej synchronizacji z Zotero.
 
