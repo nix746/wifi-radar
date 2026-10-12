@@ -60,7 +60,7 @@ for env_idx = 1:length(environments_to_test)
         fprintf("\n");
 
         fprintf("[Step 2/4] Simulating Multipath Channel with Doppler...\n");
-        [rx_signal, fc, c] = step2_channel(waveform, fs, USE_TGAX_CHANNEL);
+        [rx_signal, fc, c] = step2_channel(waveform, fs, USE_TGAX_CHANNEL, cfg);
         fprintf("\n");
 
         fprintf("[Step 3/4] Processing Range-Doppler Periodogram...\n");
