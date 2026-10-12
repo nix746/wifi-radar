@@ -4,30 +4,43 @@
 
 % ------------------------------------------------------------------------
 % 5.1 Środowisko symulacyjne MATLAB i architektura eksperymentu
-%     - struktura modułowa (step1_transmitter -> step2_channel -> step3_receiver -> step4_interpreter)
+%     - modułowa architektura łańcucha DSP (step1_transmitter -> step2_channel -> step3_receiver -> step4_interpreter)
 %     - centralna parametryzacja w get_wifi_params.m
-%     - model kanału syntetycznego vs znormalizowany model wewnątrzbudynkowy TGax Model-B
-%     - matryca 4 scenariuszy testowych (802.11a / 802.11ax x Ideal / TGax)
-% 5.2 Porównanie charakterystyk detekcji: standard IEEE 802.11a a IEEE 802.11ax
-%     - rozdzielczość odległościowa vs prędkość jednoznaczna v_unamb
-%     - zjawisko aliasingu Dopplera w 802.11ax (dłuższy symbol OFDM)
-% 5.3 Wpływ realistycznego kanału wielodrogowego TGax Model-B na jakość detekcji
-%     - tłumienie stacjonarnego clutteru wewnątrzbudynkowego i przesłuchu bezpośredniego (MTI)
-% 5.4 Efektywność detekcji w funkcji wejściowego stosunku sygnału do szumu (krzywe SNR)
-% 5.5 Skuteczność algorytmu Coherent CLEAN w scenariuszach wielocelowych
+%     - model kanału syntetycznego vs znormalizowane modele TGax (Model-B, Model-D)
+%     - matryca 5 przekrojowych scenariuszy badawczych (E1–E5)
+% 5.2 Wpływ szerokości pasma na rozdzielczość odległościową (Eksperyment E1)
+%     - analityczna zdolność rozdzielcza Delta R w funkcji pasma B (20, 40, 80 MHz)
+%     - separacja bliskich obiektów oddalonych o 3 m
+% 5.3 Porównanie standardów IEEE 802.11a i IEEE 802.11ax: prędkość jednoznaczna i aliasing Dopplera (Eksperyment E2)
+%     - wpływ długości symbolu OFDM (4.0 us vs 13.6 us) na v_unamb
+%     - zjawisko zawijania widma prędkości (aliasing) przy szybkim ruchu drogowym (v = 25 m/s)
+% 5.4 Wpływ rzędu modulacji i zjawisko wzmocnienia szumu w estymacji Zero-Forcing (Eksperyment E3)
+%     - stała obwiednia BPSK vs zmienna energia symboli 16-QAM i 64-QAM
+%     - podbicie wariancji tła szumowego (noise enhancement) w estymatorze H = Y ./ X
+%     - granica czułości detekcji i zysk integracji przy ujemnym SNR wejściowym
+% 5.5 Tłumienie clutteru wielodrogowego TGax i kompensacja luki DC (Eksperyment E4)
+%     - stacjonarny profil kanałów biurowych TGax Model-B oraz halowych Model-D
+%     - wycinanie zerowej prędkości przez filtr MTI
+%     - zapobieganie wyciekowi widmowemu w odległości poprzez interpolację luki DC
+% 5.6 Skuteczność algorytmu Coherent CLEAN w scenariuszach o dużej dynamice mocy (Eksperyment E5)
+%     - maskowanie słabych celów przez listki boczne okna Blackmana-Harrisa silnego odbicia (>30 dB)
+%     - iteracyjna dekonwolucja koherentna i odkrywanie słabego celu
 % ------------------------------------------------------------------------
 
 \subsection{Środowisko symulacyjne MATLAB i architektura eksperymentu}
 \label{subsec:sim_environment}
 
-\subsection{Porównanie charakterystyk detekcji: standard IEEE 802.11a a IEEE 802.11ax}
+\subsection{Wpływ szerokości pasma na rozdzielczość odległościową}
+\label{subsec:sim_bandwidth_resolution}
+
+\subsection{Porównanie standardów 802.11a i 802.11ax: prędkość jednoznaczna i aliasing Dopplera}
 \label{subsec:sim_standards_comparison}
 
-\subsection{Wpływ realistycznego kanału wielodrogowego TGax Model-B na jakość detekcji}
+\subsection{Wpływ rzędu modulacji i zjawisko wzmocnienia szumu w estymacji Zero-Forcing}
+\label{subsec:sim_modulation_noise}
+
+\subsection{Tłumienie clutteru wielodrogowego TGax i kompensacja luki DC}
 \label{subsec:sim_tgax_channel_effects}
 
-\subsection{Efektywność detekcji w funkcji wejściowego stosunku sygnału do szumu}
-\label{subsec:sim_snr_curves}
-
-\subsection{Skuteczność algorytmu Coherent CLEAN w scenariuszach wielocelowych}
+\subsection{Skuteczność algorytmu Coherent CLEAN w scenariuszach o dużej dynamice mocy}
 \label{subsec:sim_clean_performance}
