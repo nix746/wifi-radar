@@ -11,7 +11,10 @@
 % Rekonstrukcja nośnych stałoprądowych (adaptacyjna interpolacja DC dla 802.11a i 802.11ax)
 % Dwuwymiarowe okienkowanie Blackmana--Harrisa (analityczny wzór, tłumienie listków ~92 dB)
 % Dwuwymiarowy periodogram Range--Doppler (IFFT po podnośnych, FFT po symbolach)
-% Koherentne usuwanie celów (algorytm Coherent CLEAN)
+% Koherentne usuwanie celów (algorytm Coherent CLEAN):
+%   - zasada koherentnej dekonwolucji PSF w domenie Range--Doppler
+%   - warunki stopu wg Brauna (kryterium progowe szumu tła vs sztywna liczba iteracji)
+%   - przeciwdziałanie zjawisku over-cleaning (ochrona przed dekonwolucją szumu)
 % ------------------------------------------------------------------------
 
 \subsection{Synchronizacja pakietu i wyznaczanie początku ramki}
