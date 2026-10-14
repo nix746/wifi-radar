@@ -1,21 +1,40 @@
-function radar_data = step3_receiver(signal, waveform, fs, fc, WIFI_STANDARD, ENABLE_VISUALIZATIONS)
+function radar_data = step3_receiver(signal, waveform, fs, fc, WIFI_STANDARD, ENABLE_VISUALIZATIONS, cbw)
 % RECEIVER_PIPELINE
 % Stage 1: OFDM Demodulation, Zero-Forcing Channel Estimation, MTI, DC Repair, 
 % 2D Blackman-Harris Windowing, and Complex Range-Doppler Periodogram Generation.
 %
 % Inputs:
-%   signal       - Received signal
-%   waveform     - Transmitted waveform
-%   fs           - Sampling frequency
-%   fc           - Carrier frequency
-%   WIFI_STANDARD - Standard string
+%   signal                - Received signal
+%   waveform              - Transmitted waveform
+%   fs                    - Sampling frequency
+%   fc                    - Carrier frequency
+%   WIFI_STANDARD         - Standard string ('802.11a', '802.11ax') or params struct
 %   ENABLE_VISUALIZATIONS - boolean
+%   cbw                   - (Optional) Channel bandwidth string ('CBW20', 'CBW40', 'CBW80', 'CBW160')
 % Output:
-%   radar_data   - Struct containing periodogram and parameters
+%   radar_data            - Struct containing periodogram and parameters
 
     fprintf(">> Running Receiver Pipeline...\n");
 
-    params = get_wifi_params(WIFI_STANDARD);
+    if isstruct(WIFI_STANDARD) && isfield(WIFI_STANDARD, 'standard')
+        params = WIFI_STANDARD;
+        WIFI_STANDARD = params.standard;
+    else
+        if nargin < 7 || isempty(cbw)
+            % Infer bandwidth automatically from sampling frequency
+            if fs >= 150e6
+                cbw = 'CBW160';
+            elseif fs >= 75e6
+                cbw = 'CBW80';
+            elseif fs >= 35e6
+                cbw = 'CBW40';
+            else
+                cbw = 'CBW20';
+            end
+        end
+        params = get_wifi_params(WIFI_STANDARD, 4095, cbw);
+    end
+
     cbw = params.cfg.ChannelBandwidth;
     Nfft = params.Nfft;
     Ncp = params.Ncp;
@@ -48,7 +67,7 @@ function radar_data = step3_receiver(signal, waveform, fs, fc, WIFI_STANDARD, EN
     F_rx = F_rx(:, 1:n_symbols);
     F_tx = F_tx(:, 1:n_symbols);
 
-    fprintf("  Demodulated %d OFDM symbols (%d subcarriers each).\n", n_symbols, Nfft);
+    fprintf("  Demodulated %d OFDM symbols (%d subcarriers each, %s).\n", n_symbols, Nfft, cbw);
 
     %% 3. Channel Estimation, MTI Filtering and DC Subcarrier Interpolation
     H_shifted = estimate_channel_zf(F_rx, F_tx, params);
@@ -70,15 +89,15 @@ function radar_data = step3_receiver(signal, waveform, fs, fc, WIFI_STANDARD, EN
 
     %% 6. Visualization
     if ENABLE_VISUALIZATIONS
-        constellation_diagram(F_rx(:), sprintf('Receiver - Demodulated Constellation (RX) (%s)', WIFI_STANDARD));
+        constellation_diagram(F_rx(:), sprintf('Receiver - Demodulated Constellation (RX) (%s, %s)', WIFI_STANDARD, cbw));
         
-        radar_heatmap(fftshift(F_rx, 1), sprintf('Demodulated Symbols (%s)', WIFI_STANDARD), 'Symbol Index (Time)', 'Subcarrier Index (Frequency)');
+        radar_heatmap(fftshift(F_rx, 1), sprintf('Demodulated Symbols (%s, %s)', WIFI_STANDARD, cbw), 'Symbol Index (Time)', 'Subcarrier Index (Frequency)');
         
         H_raw = F_rx ./ (F_tx + 1e-9);
-        radar_heatmap(fftshift(H_raw, 1), sprintf('Channel Response (H Matrix) (%s)', WIFI_STANDARD), 'Symbol Index (Time)', 'Subcarrier Index (Freq)');
+        radar_heatmap(fftshift(H_raw, 1), sprintf('Channel Response (H Matrix) (%s, %s)', WIFI_STANDARD, cbw), 'Symbol Index (Time)', 'Subcarrier Index (Freq)');
         
         [axis_range, axis_velocity] = calculate_physical_axes(fs, fc, Nfft, Ncp, N_per, M_per);
         
-        range_doppler_3d(CPer_base, axis_velocity, axis_range, sprintf('Receiver - 3D Range-Doppler Map (%s)', WIFI_STANDARD));
+        range_doppler_3d(CPer_base, axis_velocity, axis_range, sprintf('Receiver - 3D Range-Doppler Map (%s, %s)', WIFI_STANDARD, cbw));
     end
 end

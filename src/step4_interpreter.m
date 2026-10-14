@@ -1,4 +1,4 @@
-function targets_found = step4_interpreter(radar_data, fs, fc, WIFI_STANDARD, ENABLE_VISUALIZATIONS)
+function targets_found = step4_interpreter(radar_data, fs, fc, WIFI_STANDARD, ENABLE_VISUALIZATIONS, num_targets)
 % CLEAN_INTERPRETER
 % Stage 2: Target Detection, Coherent Successive Target Cancellation (CLEAN),
 % Physical Axis Calibration, and High-Resolution Visualization.
@@ -9,6 +9,7 @@ function targets_found = step4_interpreter(radar_data, fs, fc, WIFI_STANDARD, EN
 %   fc            - Carrier frequency
 %   WIFI_STANDARD - Standard string
 %   ENABLE_VISUALIZATIONS - boolean
+%   num_targets   - (Optional) Number of moving targets to detect and cancel (default: 2)
 
     fprintf(">> Running CLEAN Target Interpreter...\n");
 
@@ -22,7 +23,9 @@ function targets_found = step4_interpreter(radar_data, fs, fc, WIFI_STANDARD, EN
     Ncp = radar_data.Ncp;
 
     %% 2. Iterative Coherent Target Cancellation (CLEAN Algorithm)
-    num_targets = 2; % Number of moving targets to detect and cancel
+    if nargin < 6 || isempty(num_targets)
+        num_targets = 2; % Default number of moving targets to detect and cancel
+    end
     fprintf("  Executing CLEAN algorithm for %d targets...\n", num_targets);
 
     [CPer_clean, targets_found] = run_coherent_clean(CPer_base, W_2D_unshifted, N_per, M_per, Nfft, n_symbols, num_targets);
@@ -34,12 +37,16 @@ function targets_found = step4_interpreter(radar_data, fs, fc, WIFI_STANDARD, EN
     %% 4. Calibrated Physical Axes
     [axis_range, axis_velocity] = calculate_physical_axes(fs, fc, Nfft, Ncp, N_per, M_per);
 
+    % Quality metric: Peak-to-Noise Floor Ratio on the map before CLEAN
+    pnfr = compute_pnfr(CPer_base, targets_found);
+
     % Print detected target physical coordinates
     fprintf("  Detected Targets (Physical Coordinates):\n");
     for i = 1 : size(targets_found, 1)
         r_m = axis_range(targets_found(i, 1));
         v_ms = axis_velocity(targets_found(i, 2));
-        fprintf("    Target %d: Range = %.2f m, Velocity = %+.2f m/s\n", i, r_m, v_ms);
+        fprintf("    Target %d: Range = %.2f m, Velocity = %+.2f m/s, PNFR = %.1f dB\n", ...
+            i, r_m, v_ms, pnfr.pnfr_dB(i));
     end
 
     %% 5. Visualization (Before vs After CLEAN)
