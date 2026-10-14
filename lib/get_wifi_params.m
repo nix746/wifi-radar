@@ -1,15 +1,23 @@
-function params = get_wifi_params(standard, psdu_length)
+function params = get_wifi_params(standard, psdu_length, cbw, mcs)
 % GET_WIFI_PARAMS Returns configuration and parameters for the selected Wi-Fi standard.
 %
 % Inputs:
 %   standard    - '802.11a' or '802.11ax'
 %   psdu_length - Payload length in bytes (default 4095)
+%   cbw         - Channel bandwidth: 'CBW20' (default), 'CBW40', 'CBW80', 'CBW160'
+%   mcs         - Modulation and coding scheme index (default: 0)
 %
 % Output:
 %   params      - Struct containing configuration object, FFT size, CP length, masks, etc.
 
-    if nargin < 2
+    if nargin < 2 || isempty(psdu_length)
         psdu_length = 4095;
+    end
+    if nargin < 3 || isempty(cbw)
+        cbw = 'CBW20';
+    end
+    if nargin < 4 || isempty(mcs)
+        mcs = 0;
     end
 
     params = struct();
@@ -18,9 +26,13 @@ function params = get_wifi_params(standard, psdu_length)
     switch standard
         case '802.11a'
             % IEEE 802.11a/g (Non-HT)
+            if ~strcmp(cbw, 'CBW20')
+                warning('Standard 802.11a only supports 20 MHz bandwidth (CBW20). Overriding %s -> CBW20.', cbw);
+                cbw = 'CBW20';
+            end
             cfg = wlanNonHTConfig();
             cfg.ChannelBandwidth = 'CBW20';
-            cfg.MCS = 0; % BPSK 1/2
+            cfg.MCS = min(mcs, 7); % 802.11a supports MCS 0-7
             cfg.PSDULength = psdu_length;
             
             params.cfg = cfg;
@@ -46,35 +58,35 @@ function params = get_wifi_params(standard, psdu_length)
         case '802.11ax'
             % IEEE 802.11ax (High Efficiency - Single User)
             cfg = wlanHESUConfig();
-            cfg.ChannelBandwidth = 'CBW20';
-            cfg.MCS = 0; % BPSK 1/2
+            cfg.ChannelBandwidth = cbw;
+            cfg.MCS = mcs;
             cfg.GuardInterval = 0.8; % 0.8 us CP
             cfg.APEPLength = psdu_length;
             
             params.cfg = cfg;
-            params.fs = wlanSampleRate(cfg); % 20 MHz
-            params.Nfft = 256;
+            params.fs = wlanSampleRate(cfg);
+            
+            % Query standard OFDM information for the given bandwidth
+            ofdminfo = wlanHEOFDMInfo('HE-Data', cfg);
+            params.Nfft = ofdminfo.FFTLength;
             
             % Calculate CP length in samples
-            % For 20 MHz fs and 0.8 us GI, CP is 16 samples
             params.Ncp = round(cfg.GuardInterval * 1e-6 * params.fs); 
             
             % Preamble parameters
             ind = wlanFieldIndices(cfg);
             params.payload_start = ind.HEData(1);
             
-            % Active subcarrier mask for 802.11ax 20 MHz (242 tones)
-            % Tones: [-122:-2, 2:122]
-            % FFT center in MATLAB is at index 129 (1 + Nfft/2)
+            % Active subcarrier mask in centered (fftshift) domain
+            center = 1 + params.Nfft / 2;
             mask = zeros(params.Nfft, 1);
-            center = 129;
-            mask(center-122 : center-2) = 1;
-            mask(center+2 : center+122) = 1;
+            mask(center + ofdminfo.ActiveFrequencyIndices) = 1;
             params.active_mask = mask;
             
-            % DC indices (indices around DC that are nulled out)
-            % Typically -1, 0, 1 for 802.11ax
-            params.dc_indices = [center-1, center, center+1];
+            % DC indices for interpolation (center nulls around DC)
+            zero_band_nulls = setdiff(min(ofdminfo.ActiveFrequencyIndices):max(ofdminfo.ActiveFrequencyIndices), ofdminfo.ActiveFrequencyIndices);
+            dc_nulls = zero_band_nulls(abs(zero_band_nulls) <= 15);
+            params.dc_indices = center + dc_nulls;
             
         otherwise
             error('Unsupported standard. Choose ''802.11a'' or ''802.11ax''.');
