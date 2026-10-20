@@ -10,13 +10,16 @@ function clean_results(Per_dB_base, Per_dB_clean, axis_velocity, axis_range, tar
 
     c_lims = [max(Per_dB_base(:)) - 60, max(Per_dB_base(:))];
 
+    v_lims = [axis_velocity(1), axis_velocity(end)];
+    r_max = min(150, axis_range(end));
+
     % Subplot 1: Original Range-Doppler Map
     subplot(1, 2, 1);
     imagesc(axis_velocity, axis_range, Per_dB_base);
     axis xy; colormap('jet');
     title('1. Original Range-Doppler Map (Before CLEAN)');
     xlabel('Velocity [m/s]'); ylabel('Range [m]');
-    ylim([0 150]); xlim([-60 60]); clim(c_lims);
+    ylim([0 r_max]); xlim(v_lims); clim(c_lims);
     hold on;
     if ~isempty(targets_found)
         plot(axis_velocity(targets_found(:, 2)), axis_range(targets_found(:, 1)), ...
@@ -31,7 +34,7 @@ function clean_results(Per_dB_base, Per_dB_clean, axis_velocity, axis_range, tar
     axis xy; colormap('jet');
     title('2. Residual Background (After Coherent CLEAN)');
     xlabel('Velocity [m/s]'); ylabel('Range [m]');
-    ylim([0 150]); xlim([-60 60]); clim(c_lims);
+    ylim([0 r_max]); xlim(v_lims); clim(c_lims);
     cbar = colorbar; cbar.Label.String = 'Power [dB]';
     grid on;
     

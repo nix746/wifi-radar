@@ -9,7 +9,7 @@ function power_spectral_density(waveform, fs, fig_title)
     xlabel('Frequency [MHz]');
     ylabel('Power [dB/Hz]');
     grid on;
-    xlim([-15 15]);
+    xlim([-fs/2 fs/2] / 1e6);
     
     fig_dir = get_figures_dir();
     safe_title = regexprep(lower(fig_title), '[^a-z0-9]', '_');

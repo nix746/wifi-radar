@@ -73,7 +73,7 @@ function radar_data = step3_receiver(signal, waveform, fs, fc, WIFI_STANDARD, EN
     H_shifted = estimate_channel_zf(F_rx, F_tx, params);
 
     %% 4. 2D Blackman-Harris Windowing and Complex Periodogram Generation
-    [CPer_base, W_2D_unshifted, N_per, M_per] = compute_range_doppler_map(H_shifted, Nfft, n_symbols);
+    [CPer_base, W_2D_unshifted, N_per, M_per] = compute_range_doppler_map(H_shifted, Nfft, n_symbols, params.active_mask);
 
     %% 5. Pack Data for Interpretation
     radar_data = struct();
