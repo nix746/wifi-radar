@@ -9,7 +9,6 @@ Zaprojektowanie, implementacja w MATLABie i testy efektywności detekcji celów 
 ## Spis treści
 ```text
 Strona tytułowa
-Oświadczenie studenta o samodzielnym wykonaniu pracy (czy to jest potrzebne?)
 Spis treści
 
 1. Wstęp
