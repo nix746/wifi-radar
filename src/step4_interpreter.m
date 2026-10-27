@@ -1,4 +1,4 @@
-function targets_found = step4_interpreter(radar_data, fs, fc, WIFI_STANDARD, ENABLE_VISUALIZATIONS, num_targets)
+function [targets_found, CPer_clean, threshold] = step4_interpreter(radar_data, fs, fc, WIFI_STANDARD, ENABLE_VISUALIZATIONS, num_targets, margin_dB)
 % CLEAN_INTERPRETER
 % Stage 2: Target Detection, Coherent Successive Target Cancellation (CLEAN),
 % Physical Axis Calibration, and High-Resolution Visualization.
@@ -10,6 +10,16 @@ function targets_found = step4_interpreter(radar_data, fs, fc, WIFI_STANDARD, EN
 %   WIFI_STANDARD - Standard string
 %   ENABLE_VISUALIZATIONS - boolean
 %   num_targets   - (Optional) Number of moving targets to detect and cancel (default: 2)
+%   margin_dB     - (Optional) Stopping threshold margin above median noise floor [dB]
+%
+% Outputs:
+%   targets_found - [Nx2] Matrix of detected grid indices [range_idx, doppler_idx]
+%   CPer_clean    - Residual periodogram after cancellation
+%   threshold     - Stopping threshold applied (if margin_dB given)
+
+    if nargin < 7
+        margin_dB = [];
+    end
 
     fprintf(">> Running CLEAN Target Interpreter...\n");
 
@@ -26,9 +36,9 @@ function targets_found = step4_interpreter(radar_data, fs, fc, WIFI_STANDARD, EN
     if nargin < 6 || isempty(num_targets)
         num_targets = 2; % Default number of moving targets to detect and cancel
     end
-    fprintf("  Executing CLEAN algorithm for %d targets...\n", num_targets);
+    fprintf("  Executing CLEAN algorithm (max targets: %d)...\n", num_targets);
 
-    [CPer_clean, targets_found] = run_coherent_clean(CPer_base, W_2D_unshifted, N_per, M_per, Nfft, n_symbols, num_targets);
+    [CPer_clean, targets_found, threshold] = run_coherent_clean(CPer_base, W_2D_unshifted, N_per, M_per, Nfft, n_symbols, num_targets, margin_dB);
 
     %% 3. Power Scaling and Decibel Conversion
     Per_dB_base  = 10*log10((1 / (Nfft * n_symbols)) * abs(CPer_base).^2  + 1e-9);
