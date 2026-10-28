@@ -1,36 +1,34 @@
 # Kolejność pracy
 
-Ten dokument mówi **w jakiej kolejności** robić zadania. *Co* ma powstać, jest tylko w [`plan_deliverables.md`](plan_deliverables.md) — w tym układ rozdziałów, lista rysunków i reguły Zotero.
+Ten dokument mówi **w jakiej kolejności** robić zadania. *Co* ma powstać, jest tylko w [`plan_deliverables.md`](plan_deliverables.md) — w tym układ 5 rozdziałów wg [`milestone_1.md`](milestone_1.md), lista rysunków i reguły Zotero.
 
 ## Status realizacji prac (Dashboard)
 
 | Krok | Zakres | Status |
 | :---: | :--- | :---: |
 | **Tor 0** | Golden Master & refaktoryzacja potoku DSP do `lib/` | `[ZROBIONE]` |
-| **Tor A** | Infrastruktura pracy (Zotero, dane formalne AGH, szkielet `.tex`) | `[ZROBIONE]` |
+| **Tor A** | Infrastruktura pracy (Zotero, dane formalne AGH, szkielet 5 rozdziałów `.tex`) | `[ZROBIONE]` |
 | **Krok 1** | Adaptacyjny algorytm CLEAN (`lib/run_coherent_clean.m`) i test regresyjny | `[ZROBIONE]` |
-| **Krok 2** | Eksperyment DSP-1: Konstelacja RX i korekcja kanału (Rys. 4.1) | `[DO ZROBIENIA]` |
-| **Krok 3** | Eksperyment DSP-2: Macierz transmitancji $\hat{H}(k,l)$ w dziedzinie czas–częstotliwość (Rys. 4.2) | `[DO ZROBIENIA]` |
-| **Krok 4** | Eksperyment DSP-3: Trójwymiarowy periodogram Range–Doppler (Rys. 4.3) | `[DO ZROBIENIA]` |
-| **Krok 5** | Eksperyment SIM-0: Bazowa mapa 2D Range–Doppler w paśmie 40 MHz (Rys. 5.1) | `[DO ZROBIENIA]` |
-| **Krok 6** | Eksperyment SIM-1 (E1): Rozdzielczość pasma a stała moc AP i szum termiczny (Rys. 5.2) | `[DO ZROBIENIA]` |
-| **Krok 7** | Eksperyment SIM-2 (E2): Długość symbolu OFDM a aliasing Dopplera (802.11a vs ax) (Rys. 5.3) | `[DO ZROBIENIA]` |
-| **Krok 8** | Eksperyment SIM-3 (E3): Rząd modulacji MCS a wzmocnienie szumu ZF i kontrast PNFR (Rys. 5.4) | `[DO ZROBIENIA]` |
-| **Krok 9** | Eksperyment SIM-4 (E4): Tłumienie stacjonarnego clutteru TGax (A, C, E) filtrem MTI (Rys. 5.5) | `[DO ZROBIENIA]` |
-| **Krok 10** | Eksperyment SIM-5 (E5): Dekonwolucja Coherent CLEAN i adaptacyjny próg MAD (Rys. 5.6) | `[DO ZROBIENIA]` |
-| **Krok 11** | Eksperyment SIM-6 (MC): Statystyczna analiza Monte Carlo — $P_D(\text{SNR})$ i zliczanie celów (Rys. 5.7, 5.8) | `[DO ZROBIENIA]` |
-| **Krok 12** | Redakcja Rozdziału 4 w LaTeX (`40_radar_dsp.tex`) sekcja po sekcji | `[DO ZROBIENIA]` |
-| **Krok 13** | Redakcja Rozdziału 5 w LaTeX (`50_simulation_results.tex`) sekcja po sekcji | `[DO ZROBIENIA]` |
-| **Krok 14** | Redakcja Rozdziałów 2 i 3 w LaTeX (`20_pbr.tex`, `30_wifi_phy.tex`) | `[DO ZROBIENIA]` |
-| **Krok 15** | Domknięcie: Wstęp, Wnioski, program pracy, weryfikacja bibliografii | `[DO ZROBIENIA]` |
+| **Krok 2** | Eksperyment IMPL-1: Macierz transmitancji $\hat{H}(k,l)$ w dziedzinie czas–częstotliwość (Rys. 3.1) | `[DO ZROBIENIA]` |
+| **Krok 3** | Eksperyment IMPL-2: Dwuwymiarowa mapa periodogramu Range–Doppler (Rys. 3.2) | `[DO ZROBIENIA]` |
+| **Krok 4** | Eksperyment SIM-1 (E1): Granica rozdzielczości odległościowej pasma (20, 40, 80, 160 MHz) (Rys. 4.1) | `[DO ZROBIENIA]` |
+| **Krok 5** | Eksperyment SIM-2 (E2): Granica prędkości jednoznacznej: 802.11a vs ax (aliasing Dopplera) (Rys. 4.2) | `[DO ZROBIENIA]` |
+| **Krok 6** | Eksperyment SIM-3 (E3): Granica modulacji MCS i wzmocnienie szumu ZF (Rys. 4.3) | `[DO ZROBIENIA]` |
+| **Krok 7** | Eksperyment SIM-4 (E4): Wpływ otoczenia wielodrogowego TGax (A, C, E) i filtr MTI (Rys. 4.4) | `[DO ZROBIENIA]` |
+| **Krok 8** | Eksperyment SIM-5 (E5): Granica dynamiki mocy i Coherent CLEAN z progiem MAD (Rys. 4.5) | `[DO ZROBIENIA]` |
+| **Krok 9** | Eksperyment SIM-6 (MC): Granica czułości SNR – analiza statystyczna Monte Carlo $P_D(\text{SNR})$ (Rys. 4.6) | `[DO ZROBIENIA]` |
+| **Krok 10** | Redakcja Rozdziału 3 w LaTeX (`30_radar_implementation.tex`) sekcja po sekcji | `[DO ZROBIENIA]` |
+| **Krok 11** | Redakcja Rozdziału 4 w LaTeX (`40_simulation_results.tex`) sekcja po sekcji | `[DO ZROBIENIA]` |
+| **Krok 12** | Redakcja Rozdziału 2 w LaTeX (`20_passive_radar.tex`) sekcja po sekcji | `[DO ZROBIENIA]` |
+| **Krok 13** | Domknięcie: Wstęp (`10_introduction.tex`), Wnioski (`50_conclusion.tex`), program pracy, weryfikacja bibliografii | `[DO ZROBIENIA]` |
 
 ---
 
-## Standard wykonania każdego kroku eksperymentalnego (Kroki 2–11)
+## Standard wykonania każdego kroku eksperymentalnego (Kroki 2–9)
 
-Aby zapewnić pełną kontrolę nad poprawnością badań i unikać hurtowych zmian, **każdy eksperyment realizowany jest w osobnym kroku** według 4-etapowego protokołu:
+Aby zapewnić pełną kontrolę nad poprawnością badań i unikać zbędnego rozdmuchiwania pracy, **każdy eksperyment bada konkretny blok lub granicę fizyczną radaru** według 4-etapowego protokołu:
 
-1. **Stworzenie/dopracowanie skryptu testowego** w `scripts/figures/ch.../`:
+1. **Stworzenie/dopracowanie skryptu testowego** w `scripts/figures/ch3_impl/` lub `scripts/figures/ch4_sim/`:
    - Zwięzły, czytelny kod MATLAB wywołujący potok `step1_transmitter` – `step4_interpreter` oraz bibliotekę `lib/`,
    - Precyzyjnie sparametryzowany scenariusz fizyczny (odległości celów, prędkości, SNR, model TGax, standard Wi-Fi).
 2. **Wygenerowanie i zapis grafiki**:
@@ -48,40 +46,38 @@ Aby zapewnić pełną kontrolę nad poprawnością badań i unikać hurtowych zm
 
 ```mermaid
 flowchart TD
-    D["Źródło prawdy (plan_deliverables.md)"]
+    D["Źródło prawdy (plan_deliverables.md wg milestone_1.md)"]
     K1["Krok 1: Adaptacyjny CLEAN w lib/ [ZROBIONE]"]
     
-    subgraph EXP_DSP["Eksperymenty DSP (Rozdział 4)"]
-        K2["Krok 2: Eksperyment DSP-1 (Rys. 4.1 Konstelacja RX)"]
-        K3["Krok 3: Eksperyment DSP-2 (Rys. 4.2 Macierz transmitancji H)"]
-        K4["Krok 4: Eksperyment DSP-3 (Rys. 4.3 Periodogram 3D)"]
+    subgraph EXP_IMPL["Ilustracje implementacji (Rozdział 3)"]
+        K2["Krok 2: Eksperyment IMPL-1 (Rys. 3.1 Macierz H: MTI i DC)"]
+        K3["Krok 3: Eksperyment IMPL-2 (Rys. 3.2 Periodogram Range-Doppler)"]
     end
 
-    subgraph EXP_SIM["Eksperymenty symulacyjne (Rozdział 5)"]
-        K5["Krok 5: Eksperyment SIM-0 (Rys. 5.1 Mapa 2D Range-Doppler)"]
-        K6["Krok 6: Eksperyment SIM-1 / E1 (Rys. 5.2 Rozdzielczość pasma i szum)"]
-        K7["Krok 7: Eksperyment SIM-2 / E2 (Rys. 5.3 Aliasing Dopplera 802.11a vs ax)"]
-        K8["Krok 8: Eksperyment SIM-3 / E3 (Rys. 5.4 Wzmocnienie szumu ZF dla MCS)"]
-        K9["Krok 9: Eksperyment SIM-4 / E4 (Rys. 5.5 Clutter TGax i filtr MTI)"]
-        K10["Krok 10: Eksperyment SIM-5 / E5 (Rys. 5.6 CLEAN i próg adaptacyjny MAD)"]
-        K11["Krok 11: Eksperyment SIM-6 / MC (Rys. 5.7 i 5.8 Monte Carlo: PD i zliczanie)"]
+    subgraph EXP_SIM["Badania symulacyjne granic radaru (Rozdział 4)"]
+        K4["Krok 4: E1 (Rys. 4.1 Granica odległości: pasmo 20-160 MHz)"]
+        K5["Krok 5: E2 (Rys. 4.2 Granica prędkości: aliasing 802.11a vs ax)"]
+        K6["Krok 6: E3 (Rys. 4.3 Granica modulacji: wzmocnienie szumu ZF dla MCS)"]
+        K7["Krok 7: E4 (Rys. 4.4 Wpływ otoczenia: wielodrogowość TGax i filtr MTI)"]
+        K8["Krok 8: E5 (Rys. 4.5 Granica dynamiki: Coherent CLEAN i próg MAD)"]
+        K9["Krok 9: E6/MC (Rys. 4.6 Granica czułości: Monte Carlo PD vs SNR)"]
     end
 
-    subgraph LATEX["Redakcja tekstu pracy w LaTeX"]
-        K12["Krok 12: Redakcja Rozdziału 4 sekcja po sekcji"]
-        K13["Krok 13: Redakcja Rozdziału 5 podrozdział po podrozdziale"]
-        K14["Krok 14: Redakcja Rozdziałów 2 i 3"]
-        K15["Krok 15: Wstęp, Wnioski, program pracy i kompilacja PDF"]
+    subgraph LATEX["Redakcja tekstu pracy w LaTeX (5 rozdziałów)"]
+        K10["Krok 10: Redakcja Rozdziału 3 (Implementacja radaru)"]
+        K11["Krok 11: Redakcja Rozdziału 4 (Badania symulacyjne)"]
+        K12["Krok 12: Redakcja Rozdziału 2 (Radar Pasywny)"]
+        K13["Krok 13: Wstęp (Rozdz. 1), Wnioski (Rozdz. 5), bibliografia i PDF"]
     end
 
     D --> K1
     K1 --> K2
-    K2 --> K3 --> K4 --> K5
-    K5 --> K6 --> K7 --> K8 --> K9 --> K10 --> K11
+    K2 --> K3
+    K3 --> K4 --> K5 --> K6 --> K7 --> K8 --> K9
+    K9 --> K10
+    K10 --> K11
     K11 --> K12
     K12 --> K13
-    K13 --> K14
-    K14 --> K15
 ```
 
 ---
@@ -95,71 +91,46 @@ flowchart TD
 
 ---
 
-### Krok 2: Eksperyment DSP-1 — Konstelacja RX i korekcja kanału (Rys. 4.1)
-- [ ] 1. **Skrypt testowy**: `scripts/figures/ch4_dsp/gen_fig_4_1_constellation_rx.m`.
-  - Scenariusz: IEEE 802.11ax, CBW20, MCS 0 (BPSK), kanał TGax Model-C, SNR = 25 dB.
-  - Wykres: Dwa panele obok siebie — punkty odebrane $F_{\text{rx}}$ przed korekcją transmitancji kanału vs po korekcji Zero-Forcing ($F_{\text{rx}} ./ \hat{H}$).
-- [ ] 2. **Plik wynikowy**: `thesis/img/ch4_dsp/rys_4_1_konstelacja_rx.png`.
+### Krok 2: Eksperyment IMPL-1 — Macierz transmitancji $\hat{H}(k,l)$ w dziedzinie czas–częstotliwość (Rys. 3.1)
+- [ ] 1. **Skrypt testowy**: `scripts/figures/ch3_impl/gen_fig_3_1_channel_matrix_h.m`.
+  - Scenariusz: Ekstrakcja estymowanej transmitancji $\hat{H}(k,l) = Y(k,l) ./ X(k,l)$ w standardzie IEEE 802.11ax (CBW20, Model-C).
+  - Wykres: Dwa panele (heatmaps 2D amplitudy w dB):
+    - (a) Surowa macierz transmitancji przed MTI – widoczna dominująca składowa stała (przesłuch DPI) oraz wyciek luki DC wokół częstotliwości środkowej.
+    - (b) Po filtracji MTI w czasie wolnym i liniowej interpolacji podnośnych DC – wycięcie składowej stałej, ciągłość widmowa i widoczna modulacja fazowa ruchomego celu.
+- [ ] 2. **Plik wynikowy**: `thesis/img/ch3_impl/rys_3_1_macierz_transmitancji_h.png`.
 - [ ] 3. **Weryfikacja poprawności**:
-  - Przed korekcją: widoczne zniekształcenia fazowo-amplitudowe wywołane selektywnością częstotliwościową kanału TGax Model-C.
-  - Po korekcji: punkty BPSK ściśle skupione w obszarach decyzyjnych $\{-1, +1\}$.
+  - Wycięcie przesłuchu bezpośredniego (DPI) o ponad 45 dB,
+  - Ciągłość widmowa wzdłuż osi częstotliwości po zlikwidowaniu luki DC.
 - [ ] 4. **Weryfikacja czytelności i estetyki**:
-  - Podpisy osi: „Część rzeczywista (I)”, „Część urojona (Q)”, tytuły podwykresów: „(a) Przed korekcją transmitancji”, „(b) Po korekcji Zero-Forcing”, 100% język polski, kontrastowe punkty.
+  - Osie: „Numer symbolu OFDM (czas wolny)”, „Częstotliwość / Numer podnośnej”, etykieta paska kolorów: „Moc transmitancji [dB]”, 100% język polski, profesjonalna mapa barw (`parula` / `viridis`).
 - [ ] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
 
 ---
 
-### Krok 3: Eksperyment DSP-2 — Macierz transmitancji $\hat{H}(k,l)$ w dziedzinie czas–częstotliwość (Rys. 4.2)
-- [ ] 1. **Skrypt testowy**: `scripts/figures/ch4_dsp/gen_fig_4_2_channel_matrix_h.m`.
-  - Scenariusz: Ekstrakcja estymowanej transmitancji $\hat{H}(k,l) = Y(k,l) ./ X(k,l)$ w siatce podnośnych $k$ i symboli OFDM $l$, interpolacja podnośnych DC.
-  - Wykres: Heatmapa 2D amplitudy transmitancji $|\hat{H}(k,l)|$ w decybelach z interpolowaną luką DC.
-- [ ] 2. **Plik wynikowy**: `thesis/img/ch4_dsp/rys_4_2_macierz_transmitancji_h.png`.
-- [ ] 3. **Weryfikacja poprawności**:
-  - Ciągłość widmowa wzdłuż osi częstotliwości po eliminacji wycieku DC,
-  - Zmienność wzdłuż osi symboli odzwierciedlająca rotację fazy wywołaną przesunięciem Dopplera celu ruchomego.
-- [ ] 4. **Weryfikacja czytelności i estetyki**:
-  - Osie: „Numer symbolu OFDM (czas wolny)”, „Numer podnośnej (częstotliwość)”, etykieta paska kolorów: „Amplituda transmitancji [dB]”, 100% język polski.
-- [ ] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
-
----
-
-### Krok 4: Eksperyment DSP-3 — Trójwymiarowy periodogram Range–Doppler (Rys. 4.3)
-- [ ] 1. **Skrypt testowy**: `scripts/figures/ch4_dsp/gen_fig_4_3_range_doppler_3d.m`.
-  - Scenariusz: Wyznaczenie periodogramu 2D za pomocą analitycznego okna 2D Blackmana–Harrisa (-92 dB) i dwuwymiarowego IFFT/FFT.
-  - Wykres: Wykres powierzchniowy 3D (`surf`) z rzutem poziomic mocy na płaszczyznę bazową.
-- [ ] 2. **Plik wynikowy**: `thesis/img/ch4_dsp/rys_4_3_periodogram_3d.png`.
+### Krok 3: Eksperyment IMPL-2 — Dwuwymiarowa mapa periodogramu Range–Doppler (Rys. 3.2)
+- [ ] 1. **Skrypt testowy**: `scripts/figures/ch3_impl/gen_fig_3_2_range_doppler.m`.
+  - Scenariusz: Przekształcenie przefiltrowanej macierzy $\hat{H}$ oknem 2D Blackmana–Harrisa (-92 dB) i dwuwymiarową transformacją IFFT/FFT w mapę Range–Doppler.
+  - Wykres: Płaska mapa 2D Range–Doppler (rzut z góry z poziomicami/heatmapą) z wyskalowanymi osiami fizycznymi (odległość bistatyczna w metrach, prędkość radialna w m/s) oraz oznaczonymi celami.
+- [ ] 2. **Plik wynikowy**: `thesis/img/ch3_impl/rys_3_2_mapa_range_doppler.png`.
 - [ ] 3. **Weryfikacja poprawności**:
   - Wyciszenie listków bocznych do poziomu poniżej $-80\text{--}-90\ \text{dB}$,
-  - Wyraźne wyodrębnienie wzniesień odpowiadających celom na fizycznych osiach odległości i prędkości.
+  - Wyraźne wyodrębnienie wzniesień odpowiadających celom na fizycznych osiach odległości i prędkości, brak anomalii prędkości ($|v| \le 100\ \text{km/h}$).
 - [ ] 4. **Weryfikacja czytelności i estetyki**:
-  - Starannie dobrany kąt rzutu 3D (brak zasłaniania piku drugiego celu), osie z jednostkami: „Odległość bistatyczna [m]”, „Prędkość radialna [m/s]”, „Moc znormalizowana [dB]”, 100% język polski.
+  - Osie: „Prędkość radialna [m/s]”, „Odległość bistatyczna [m]”, pasek kolorów: „Moc znormalizowana [dB]”, czytelne znaczniki celów, 100% język polski.
 - [ ] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
 
 ---
 
-### Krok 5: Eksperyment SIM-0 — Bazowa mapa 2D Range–Doppler (Rys. 5.1)
-- [ ] 1. **Skrypt testowy**: `scripts/figures/ch5_sim/gen_fig_5_1_range_doppler_2d.m`.
-  - Scenariusz: Standard 802.11ax, pasmo 40 MHz, Model-A (warunki bezechowe), cele: pieszy ($15\ \text{m}$, $+1.2\ \text{m/s}$), pojazd ($45\ \text{m}$, $-3.5\ \text{m/s}$).
-  - Wykres: Płaska mapa 2D Range–Doppler (rzut z góry) z naniesionymi markerami detekcji i adnotacjami współrzędnych.
-- [ ] 2. **Plik wynikowy**: `thesis/img/ch5_sim/rys_5_1_mapa_range_doppler_2d.png`.
-- [ ] 3. **Weryfikacja poprawności**:
-  - Zgodność współrzędnych pików z zadanymi parametrami fizycznymi celów, brak fałszywych detekcji w komorze bezechowej.
-- [ ] 4. **Weryfikacja czytelności i estetyki**:
-  - Kontrastowa mapa barwna, czytelne znaczniki celów (np. krzyżyki/okręgi z etykietami), osie: „Prędkość radialna [m/s]”, „Odległość bistatyczna [m]”, pasek kolorów: „Moc [dB]”, 100% język polski.
-- [ ] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
-
----
-
-### Krok 6: Eksperyment SIM-1 (E1) — Rozdzielczość pasma a stała moc AP i szum termiczny (Rys. 5.2)
-- [ ] 1. **Skrypt testowy**: `scripts/figures/ch5_sim/gen_fig_5_2_bandwidth_cut.m`.
-  - Scenariusz: Dwa bliskie cele o separacji $\Delta R = 3.75\ \text{m}$ ($R_1 = 15.0\ \text{m}$, $R_2 = 18.75\ \text{m}$) w kanale Model-C.
+### Krok 4: Eksperyment SIM-1 (E1) — Granica rozdzielczości odległościowej pasma (Rys. 4.1)
+- [ ] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_1_bandwidth_cut.m`.
+  - Scenariusz: Dwa bliskie cele o separacji $\Delta R = 3{,}75\ \text{m}$ ($R_1 = 15{,}0\ \text{m}$, $R_2 = 18{,}75\ \text{m}$) w kanale Model-C.
   - Test pasm: 20 MHz, 40 MHz, 80 MHz, 160 MHz.
   - **Fizyka zjawiska**: Stała moc nadajnika AP ($100\ \text{mW}$ EIRP); moc szumu $P_N = k_B T B F$ rośnie o $+3\ \text{dB}$ na każde podwojenie pasma (+9.03 dB dla 160 MHz wzgl. 20 MHz).
   - Wykres: Zestawienie 4 przekrojów odległościowych (1D range cuts) na jednym wykresie.
-- [ ] 2. **Plik wynikowy**: `thesis/img/ch5_sim/rys_5_2_przekroj_odleglosci_pasma.png`.
+- [ ] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_1_przekroj_odleglosci_pasma.png`.
 - [ ] 3. **Weryfikacja poprawności**:
-  - W 20 MHz ($\Delta R_{\text{teor}} = 7.5\ \text{m}$): obiekty zlane w jeden szeroki pik,
-  - W 40 MHz ($\Delta R_{\text{teor}} = 3.75\ \text{m}$): widoczne kryterium Rayleigha (styk pików),
+  - W 20 MHz ($\Delta R_{\text{teor}} = 7{,}5\ \text{m}$): obiekty zlane w jeden szeroki pik,
+  - W 40 MHz ($\Delta R_{\text{teor}} = 3{,}75\ \text{m}$): widoczne kryterium Rayleigha (styk pików),
   - W 80 i 160 MHz: pełna separacja dwóch odrębnych pików,
   - Wyraźnie widoczne podwyższenie dna szumowego o 9 dB dla 160 MHz odzwierciedlające fizykę stałej mocy AP.
 - [ ] 4. **Weryfikacja czytelności i estetyki**:
@@ -168,15 +139,15 @@ flowchart TD
 
 ---
 
-### Krok 7: Eksperyment SIM-2 (E2) — Długość symbolu OFDM a aliasing Dopplera (802.11a vs ax) (Rys. 5.3)
-- [ ] 1. **Skrypt testowy**: `scripts/figures/ch5_sim/gen_fig_5_3_doppler_aliasing.m`.
-  - Scenariusz: Szybki obiekt $v = +20.0\ \text{m/s}$ ($72\ \text{km/h}$, typowy pojazd).
-  - Porównanie: 802.11a ($T_{\text{sym}} = 4.0\ \mu\text{s}$, $v_{\text{unamb}} = \pm 56.8\ \text{m/s}$) vs 802.11ax ($T_{\text{sym}} = 13.6\ \mu\text{s}$, $v_{\text{unamb}} = \pm 16.7\ \text{m/s}$).
+### Krok 5: Eksperyment SIM-2 (E2) — Granica prędkości jednoznacznej: 802.11a vs ax (Rys. 4.2)
+- [ ] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_2_doppler_aliasing.m`.
+  - Scenariusz: Szybki obiekt $v = +20{,}0\ \text{m/s}$ ($72\ \text{km/h}$, typowy pojazd).
+  - Porównanie: 802.11a ($T_{\text{sym}} = 4{,}0\ \mu\text{s}$, $v_{\text{unamb}} = \pm 56{,}8\ \text{m/s}$) vs 802.11ax ($T_{\text{sym}} = 13{,}6\ \mu\text{s}$, $v_{\text{unamb}} = \pm 16{,}7\ \text{m/s}$).
   - Wykres: Dwa panele przekroju profilu Dopplera (lub nałożone profile) z pionowymi liniami wskazującymi prędkość rzeczywistą oraz granice jednoznaczności.
-- [ ] 2. **Plik wynikowy**: `thesis/img/ch5_sim/rys_5_3_aliasing_dopplera_porownanie.png`.
+- [ ] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_2_aliasing_dopplera.png`.
 - [ ] 3. **Weryfikacja poprawności**:
-  - W 802.11a: poprawny pik przy $+20.0\ \text{m/s}$,
-  - W 802.11ax: zawinięcie widma (aliasing) do pozorne prędkości $20.0 - 2 \cdot 16.7 = -13.4\ \text{m/s}$,
+  - W 802.11a: poprawny pik przy $+20{,}0\ \text{m/s}$,
+  - W 802.11ax: zawinięcie widma (aliasing) do pozornej prędkości $20{,}0 - 2 \cdot 16{,}7 = -13{,}4\ \text{m/s}$,
   - Udowodnienie kompromisu: większa odporność na wielodrogowość w ax kosztem 4-krotnie węższego zakresu prędkości jednoznacznej.
 - [ ] 4. **Weryfikacja czytelności i estetyki**:
   - Oś X: „Prędkość radialna [m/s]”, oś Y: „Moc [dB]”, linie przerywane z adnotacjami granic jednoznaczności $v_{\text{unamb}}$, legenda, 100% język polski.
@@ -184,14 +155,14 @@ flowchart TD
 
 ---
 
-### Krok 8: Eksperyment SIM-3 (E3) — Wzmocnienie szumu ZF w funkcji rzędu MCS (Rys. 5.4)
-- [ ] 1. **Skrypt testowy**: `scripts/figures/ch5_sim/gen_fig_5_4_noise_enhancement.m`.
+### Krok 6: Eksperyment SIM-3 (E3) — Granica modulacji MCS i wzmocnienie szumu ZF (Rys. 4.3)
+- [ ] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_3_noise_enhancement.m`.
   - Scenariusz: IEEE 802.11ax, CBW40, Model-C. Zestawienie MCS: MCS 0 (BPSK), MCS 3 (16-QAM), MCS 7 (64-QAM), MCS 11 (1024-QAM) przy losowym ładunku danych 4095 B.
   - Wykres: Dwie zsynchronizowane osie Y — współczynnik wzmocnienia szumu $\zeta_{\text{ZF}} = \mathbb{E}[1/|X|^2]$ [dB] oraz zmierzony kontrast celu PNFR [dB].
-- [ ] 2. **Plik wynikowy**: `thesis/img/ch5_sim/rys_5_4_wzmocnienie_szumu_mcs.png`.
+- [ ] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_3_wzmocnienie_szumu_mcs.png`.
 - [ ] 3. **Weryfikacja poprawności**:
   - $\zeta_{\text{ZF}} = 0\ \text{dB}$ dla stałoamplitudowej modulacji BPSK,
-  - Monotoniczny wzrost $\zeta_{\text{ZF}}$ do $>4.2\ \text{dB}$ dla 1024-QAM (zjawisko dzielenia przez symbole bliskie zera w ZF),
+  - Monotoniczny wzrost $\zeta_{\text{ZF}}$ do $>4{,}2\ \text{dB}$ dla 1024-QAM (zjawisko dzielenia przez symbole bliskie zera w ZF),
   - Zgodny ze spadkiem kontrastu spadek PNFR celu.
 - [ ] 4. **Weryfikacja czytelności i estetyki**:
   - Oś X: „Rząd modulacji (indeks MCS)”, lewa oś Y: „Współczynnik wzmocnienia szumu \zeta_{ZF} [dB]”, prawa oś Y: „Kontrast celu PNFR [dB]”, czytelne markery i siatka, 100% język polski.
@@ -199,14 +170,14 @@ flowchart TD
 
 ---
 
-### Krok 9: Eksperyment SIM-4 (E4) — Tłumienie stacjonarnego clutteru wielodrogowego TGax (A, C, E) filtrem MTI (Rys. 5.5)
-- [ ] 1. **Skrypt testowy**: `scripts/figures/ch5_sim/gen_fig_5_5_tgax_mti_cut.m`.
+### Krok 7: Eksperyment SIM-4 (E4) — Wpływ otoczenia wielodrogowego TGax (A, C, E) i filtr MTI (Rys. 4.4)
+- [ ] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_4_tgax_mti_cut.m`.
   - Scenariusz: Zastosowanie reprezentatywnej triady modeli TGax:
     - Model-A ($\tau_{\text{rms}} = 0\ \text{ns}$, komora bezechowa),
     - Model-C ($\tau_{\text{rms}} = 30\ \text{ns}$, typowe biuro/mieszkanie),
     - Model-E ($\tau_{\text{rms}} = 100\ \text{ns}$, duża hala/magazyn).
   - Wykres: Przekrój profilu prędkości Dopplera przed i po filtracji MTI w czasie wolnym dla wszystkich trzech modeli.
-- [ ] 2. **Plik wynikowy**: `thesis/img/ch5_sim/rys_5_5_tlumienie_clutteru_mti.png`.
+- [ ] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_4_tlumienie_clutteru_mti.png`.
 - [ ] 3. **Weryfikacja poprawności**:
   - Skuteczne wycięcie składowej stałej przesłuchu bezpośredniego i odbić stacjonarnych ($f_D = 0$) o $\ge 45\text{--}50\ \text{dB}$,
   - Brak tłumienia piku celu ruchomego ($f_D \neq 0$),
@@ -217,8 +188,8 @@ flowchart TD
 
 ---
 
-### Krok 10: Eksperyment SIM-5 (E5) — Koherentna dekonwolucja CLEAN i adaptacyjny próg MAD (Rys. 5.6)
-- [ ] 1. **Skrypt testowy**: `scripts/figures/ch5_sim/gen_fig_5_6_clean_cut.m`.
+### Krok 8: Eksperyment SIM-5 (E5) — Granica dynamiki mocy i Coherent CLEAN (Rys. 4.5)
+- [ ] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_5_clean_cut.m`.
   - Scenariusz: Duża asymetria mocy celów w kanale Model-C:
     - Cel silny: $0\ \text{dB}$ (np. metalowy pojazd, duży RCS),
     - Cel słaby: $-30\ \text{dB}$ (np. pieszy o małym RCS) zamaskowany w listkach bocznych celu silnego.
@@ -226,7 +197,7 @@ flowchart TD
     1. Sygnał surowy (przed CLEAN) — widoczny tylko cel silny,
     2. Po 1. iteracji CLEAN — odjęcie celu silnego, odsłonięcie słabego pieszego,
     3. Po 2. iteracji CLEAN z poziomą linią progu adaptacyjnego MAD ($T_{\text{stop}}$).
-- [ ] 2. **Plik wynikowy**: `thesis/img/ch5_sim/rys_5_6_clean_prog_adaptacyjny.png`.
+- [ ] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_5_clean_prog_adaptacyjny.png`.
 - [ ] 3. **Weryfikacja poprawności**:
   - Skuteczna eliminacja listków bocznych funkcji PSF celu silnego,
   - Ujawnienie ukrytego celu słabego z poprawną pozycją odległościową,
@@ -237,57 +208,50 @@ flowchart TD
 
 ---
 
-### Krok 11: Eksperyment SIM-6 (MC) — Statystyczna analiza Monte Carlo: krzywe $P_D(\text{SNR})$ i zliczanie celów (Rys. 5.7, 5.8)
-- [ ] 1. **Skrypty testowe**: `scripts/figures/ch5_sim/gen_fig_5_7_stat_pd_vs_snr.m` oraz `gen_fig_5_8_stat_accuracy_vs_snr.m`.
-  - Scenariusz: Próba statystyczna Monte Carlo ($N_{\text{prób}} = 30$, $\text{SNR} \in [0, 30]\ \text{dB}$ z krokiem 5 dB) w realistycznym kanale Model-C przy dwóch celach o różnym RCS.
-  - Wykresy:
-    - Rys. 5.7: Prawdopodobieństwo prawidłowej detekcji $P_D$ w funkcji SNR osobno dla celu silnego i słabego.
-    - Rys. 5.8: Prawdopodobieństwo poprawnego zliczenia dokładnie 2 celów $P(N_{\text{det}} == 2)$ oraz odsetek fałszywych alarmów $P_{\text{FA}}$.
-- [ ] 2. **Pliki wynikowe**:
-  - `thesis/img/ch5_sim/rys_5_7_statystyka_pd_vs_snr.png`,
-  - `thesis/img/ch5_sim/rys_5_8_statystyka_dokladnosc_zliczenia.png`.
+### Krok 9: Eksperyment SIM-6 (MC) — Granica czułości SNR: analiza Monte Carlo $P_D(\text{SNR})$ (Rys. 4.6)
+- [ ] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_6_stat_pd_vs_snr.m`.
+  - Scenariusz: Próba statystyczna Monte Carlo ($N_{\text{prób}} = 30$, $\text{SNR} \in [0, 30]\ \text{dB}$ z krokiem 5 dB) w realistycznym kanale Model-C przy dwóch celach (silny $0\ \text{dB}$ i słaby $-30\ \text{dB}$).
+  - Wykres: Krzywe prawdopodobieństwa prawidłowej detekcji $P_D$ w funkcji SNR osobno dla celu silnego i słabego pieszego.
+- [ ] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_6_statystyka_pd_vs_snr.png`.
 - [ ] 3. **Weryfikacja poprawności**:
-  - Monotoniczny wzrost $P_D \to 1.0$ wraz ze wzrostem SNR (przesunięcie progu detekcji pieszego o ok. 10–12 dB względem pojazdu),
-  - Skuteczność zliczania dążąca do 100% powyżej SNR = 15–20 dB,
-  - Odsetek fałszywych alarmów równy 0% dzięki adaptacyjnemu progowi odcięcia MAD.
+  - Monotoniczny wzrost $P_D \to 1{,}0$ wraz ze wzrostem SNR (przesunięcie progu detekcji pieszego o ok. 10–12 dB względem pojazdu),
+  - Wskazanie minimalnego progu SNR wymaganego do detekcji człowieka w środowisku biurowym.
 - [ ] 4. **Weryfikacja czytelności i estetyki**:
-  - Oś X: „Stosunek sygnału do szumu (SNR) [dB]”, oś Y: „Prawdopodobieństwo detekcji P_D” / „Odsetek prób [%]”, siatka, czytelne znaczniki punktów pomiarowych, legenda, 100% język polski.
+  - Oś X: „Stosunek sygnału do szumu (SNR) [dB]”, oś Y: „Prawdopodobieństwo detekcji P_D”, siatka, czytelne znaczniki punktów pomiarowych, legenda, 100% język polski.
 - [ ] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
 
 ---
 
-### Krok 12: Redakcja Rozdziału 4 w LaTeX (`thesis/tex/40_radar_dsp.tex`)
-Redakcja partiami, z bezpośrednim dołączaniem zweryfikowanych rysunków 4.1–4.3 i listingów z `lib/`:
-- [ ] 1. Podrozdział 4.1: Synchronizacja pakietu i wyznaczanie początku ramki (Schmidl–Cox, L-LTF, Rysunek 4.1).
-- [ ] 2. Podrozdział 4.2: Estymacja transmitancji Zero-Forcing i maska podnośnych (Rysunek 4.2).
-- [ ] 3. Podrozdział 4.3: Tłumienie przesłuchu bezpośredniego i ech stałych (filtr MTI).
-- [ ] 4. Podrozdział 4.4: Rekonstrukcja nośnych stałoprądowych (interpolacja DC).
-- [ ] 5. Podrozdział 4.5: Dwuwymiarowe okienkowanie Blackmana–Harrisa (-92 dB).
-- [ ] 6. Podrozdział 4.6: Dwuwymiarowy periodogram Range–Doppler i osie fizyczne (Rysunek 4.3).
-- [ ] 7. Podrozdział 4.7: Koherentne usuwanie celów (Coherent CLEAN z progiem MAD).
+### Krok 10: Redakcja Rozdziału 3 w LaTeX (`thesis/tex/30_radar_implementation.tex`)
+- [ ] 1. Podrozdział 3.1: Środowisko symulacyjne MATLAB i toolboxy (WLAN Toolbox, Communications Toolbox, wkład własny).
+- [ ] 2. Podrozdział 3.2: Implementacja kanału (`step2_channel.m`, triada modeli TGax A/C/E, cele ruchome).
+- [ ] 3. Podrozdział 3.3: Implementacja odbiornika (`step3_receiver.m`, demodulacja, ZF, filtr MTI, interpolacja DC — włączenie Rysunku 3.1).
+- [ ] 4. Podrozdział 3.4: Implementacja interpretera (`step4_interpreter.m`, okienkowanie 2D, periodogram Range–Doppler — włączenie Rysunku 3.2, pętla Coherent CLEAN z progiem MAD, osie fizyczne).
 
 ---
 
-### Krok 13: Redakcja Rozdziału 5 w LaTeX (`thesis/tex/50_simulation_results.tex`)
-Redakcja partiami pod zweryfikowane wykresy 5.1–5.8:
-- [ ] 1. Podrozdział 5.1: Środowisko symulacyjne MATLAB, triada TGax A/C/E, fizyka mocy AP (Rysunek 5.1).
-- [ ] 2. Podrozdział 5.2: Eksperyment E1 — Wpływ pasma na rozdzielczość odległościową (Rysunek 5.2).
-- [ ] 3. Podrozdział 5.3: Eksperyment E2 — Porównanie standardów 802.11a i ax, aliasing Dopplera (Rysunek 5.3).
-- [ ] 4. Podrozdział 5.4: Eksperyment E3 — Wpływ rzędu modulacji MCS i wzmocnienie szumu ZF (Rysunek 5.4).
-- [ ] 5. Podrozdział 5.5: Eksperyment E4 — Tłumienie clutteru wielodrogowego TGax i MTI (Rysunek 5.5).
-- [ ] 6. Podrozdział 5.6: Eksperyment E5 — Skuteczność Coherent CLEAN i próg adaptacyjny (Rysunek 5.6).
-- [ ] 7. Podrozdział 5.7: Analiza statystyczna Monte Carlo — krzywe $P_D(\text{SNR})$ i zliczanie celów (Rysunki 5.7 i 5.8).
+### Krok 11: Redakcja Rozdziału 4 w LaTeX (`thesis/tex/40_simulation_results.tex`)
+- [ ] 1. Podrozdział 4.1: Scenariusze testowe (parametryzacja, stała moc AP 100 mW EIRP, degradacja szumowa 9 dB dla 160 MHz).
+- [ ] 2. Podrozdział 4.2: Eksperyment E1 — Wpływ pasma na rozdzielczość odległościową (Rysunek 4.1).
+- [ ] 3. Podrozdział 4.3: Eksperyment E2 — Porównanie standardów 802.11a i ax, aliasing Dopplera (Rysunek 4.2).
+- [ ] 4. Podrozdział 4.4: Eksperyment E3 — Wpływ rzędu modulacji MCS i wzmocnienie szumu ZF (Rysunek 4.3).
+- [ ] 5. Podrozdział 4.5: Eksperyment E4 — Tłumienie clutteru wielodrogowego TGax i MTI (Rysunek 4.4).
+- [ ] 6. Podrozdział 4.6: Eksperyment E5 — Skuteczność Coherent CLEAN, próg adaptacyjny MAD (Rysunek 4.5) oraz analiza Monte Carlo (Rysunek 4.6).
 
 ---
 
-### Krok 14: Redakcja Rozdziałów 2 i 3
-- [ ] 1. Rozdział 2 (`thesis/tex/20_pbr.tex`): Koncepcja bistatycznego radaru pasywnego, geometria, bilans mocy, paradygmat CIR.
-- [ ] 2. Rozdział 3 (`thesis/tex/30_wifi_phy.tex`): Warstwa fizyczna 802.11a i 802.11ax, ramki, podnośne, trade-offs radarowe.
+### Krok 12: Redakcja Rozdziału 2 w LaTeX (`thesis/tex/20_passive_radar.tex`)
+- [ ] 1. Podrozdział 2.1–2.2: Sygnał Wi-Fi 802.11 oraz modulacja OFDM (ortogonalność, prefiks cykliczny, ramki Non-HT i HE-SU).
+- [ ] 2. Podrozdział 2.3: Podstawy radaru pasywnego (geometria bistatyczna, bilans mocy, DPI, clutter).
+- [ ] 3. Podrozdział 2.4: Estymacja kanału (paradygmat CIR vs funkcja wzajemnej niejednoznaczności CAF, estymator Zero-Forcing).
+- [ ] 4. Podrozdział 2.5: Filtracja ech stałych (filtr MTI w czasie wolnym, kompensacja luki nośnych DC).
+- [ ] 5. Podrozdział 2.6: Wyznaczanie mapy Range–Doppler (okno 2D Blackmana–Harrisa, IFFT/FFT).
+- [ ] 6. Podrozdział 2.7: Detekcja i ekstrakcja celów (algorytm Coherent CLEAN, estymacja tła szumowego MAD).
 
 ---
 
-### Krok 15: Domknięcie i weryfikacja końcowa
-- [ ] 1. Wstęp (`10_introduction.tex`) i Wnioski (`99_conclusion.tex`).
+### Krok 13: Domknięcie i weryfikacja końcowa
+- [ ] 1. Wstęp (Rozdział 1, `10_introduction.tex`) i Wnioski (Rozdział 5, `50_conclusion.tex`).
 - [ ] 2. Program pracy (`03_MasterThesisOutline.tex`).
-- [ ] 3. Synchronizacja bibliografii Zotero -> `thesis/bibliography.bib` (lub zweryfikowane wpisy).
-- [ ] 4. Pełna kompilacja `pdflatex` + `bibtex` (`thesis/main.pdf`) bez ostrzeżeń o brakujących etykietach czy cytowaniach.
+- [ ] 3. Synchronizacja bibliografii Zotero -> `thesis/bibliography.bib`.
+- [ ] 4. Pełna kompilacja `pdflatex` + `bibtex` (`thesis/main.pdf`) bez ostrzeżeń.
