@@ -16,36 +16,33 @@ Spis treści
    1.2. Motywacja
    1.3. Teza i pytania badawcze
    1.4. Układ pracy
-
-2. Sygnał Wi-Fi 802.11
-   2.1. Standardy IEEE 802.11 
-   2.2. Modulacja OFDM
-   2.3. Struktura ramki Non-HT oraz HE-SU
    
-3. Przetwarzanie sygnałów w radarze Wi-Fi
-   3.1. Podstawy radaru pasywnego i zjawiska propagacyjne
-   3.2. Estymacja kanału (Zero-Forcing)
-   3.3. Filtracja ech stałych (MTI)
-   3.4. Wyznaczanie mapy Range–Doppler i rekonstrukcja nośnych
-   3.5. Detekcja i ekstrakcja celów (algorytm CLEAN)
+2. Radar Pasywny
+   3.1. Sygnał Wi-Fi 802.11
+   3.2. Modulacja ODFM
+   3.3. Podstawy radaru pasywnego
+   3.4. Estymacja kanału
+   3.5. Filtracja ech stałych
+   3.6. Wyznaczanie mapy Range–Doppler
+   3.7. Detekcja i ekstrakcja celów
 
-4. Implementacja w programie
-   4.1. Środowisko symulacyjne MATLAB i toolboxy
-   4.2. Implementacja kanału
-   4.3. Implementacja odbiornika
-   4.4. Implementacja interpretera
+3. Implementacja radaru
+   3.1. Środowisko symulacyjne MATLAB i toolboxy
+   3.2. Implementacja kanału
+   3.3. Implementacja odbiornika
+   3.4. Implementacja interpretera
 
-5. Badania symulacyjne
-   5.1. Scenariusze testowe
-   5.2. Rozdzielczość odległościowa a szerokość pasma
-   5.3. Długość symbolu OFDM a prędkość jednoznaczna
-   5.4. Wpływ rzędu modulacji MCS i poziomu szumu na estymację ZF
-   5.5. Tłumienie stacjonarnego clutteru w kanale TGax Model-B/D
-   5.6. Skuteczność algorytmu Coherent CLEAN w scenariuszach o dużej dynamice mocy
+4. Badania symulacyjne
+   4.1. Scenariusze testowe
+   4.2. Rozdzielczość odległościowa a szerokość pasma
+   4.3. Długość symbolu OFDM a prędkość jednoznaczna
+   4.4. Wpływ rzędu modulacji MCS i poziomu szumu na estymację ZF
+   4.5. Tłumienie stacjonarnego clutteru
+   4.6. Skuteczność algorytmu Coherent CLEAN
 
-6. Wnioski
-   6.1. Podsumowanie uzyskanych wyników
-   6.2. Ograniczenia metody i kierunki rozwoju
+5. Wnioski
+   5.1. Podsumowanie uzyskanych wyników
+   5.2. Ograniczenia metody i kierunki rozwoju
 
 Literatura
 Spis rysunków
