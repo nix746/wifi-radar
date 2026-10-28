@@ -70,3 +70,5 @@ _minted-*/
 # Ignorowanie dużych plików i folderów roboczych
 references/
 results/
+
+!thesis/img/**/*.png

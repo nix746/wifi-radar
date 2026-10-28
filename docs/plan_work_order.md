@@ -9,7 +9,7 @@ Ten dokument mówi **w jakiej kolejności** robić zadania. *Co* ma powstać, je
 | **Tor 0** | Golden Master & refaktoryzacja potoku DSP do `lib/` | `[ZROBIONE]` |
 | **Tor A** | Infrastruktura pracy (Zotero, dane formalne AGH, szkielet 5 rozdziałów `.tex`) | `[ZROBIONE]` |
 | **Krok 1** | Adaptacyjny algorytm CLEAN (`lib/run_coherent_clean.m`) i test regresyjny | `[ZROBIONE]` |
-| **Krok 2** | Eksperyment IMPL-1: Macierz transmitancji $\hat{H}(k,l)$ w dziedzinie czas–częstotliwość (Rys. 3.1) | `[DO ZROBIENIA]` |
+| **Krok 2** | Eksperyment IMPL-1: Macierz transmitancji $\hat{H}(k,l)$ w dziedzinie czas–częstotliwość (Rys. 3.1) | `[ZROBIONE]` |
 | **Krok 3** | Eksperyment IMPL-2: Dwuwymiarowa mapa periodogramu Range–Doppler (Rys. 3.2) | `[DO ZROBIENIA]` |
 | **Krok 4** | Eksperyment SIM-1 (E1): Granica rozdzielczości odległościowej pasma (20, 40, 80, 160 MHz) (Rys. 4.1) | `[DO ZROBIENIA]` |
 | **Krok 5** | Eksperyment SIM-2 (E2): Granica prędkości jednoznacznej: 802.11a vs ax (aliasing Dopplera) (Rys. 4.2) | `[DO ZROBIENIA]` |
@@ -91,19 +91,19 @@ flowchart TD
 
 ---
 
-### Krok 2: Eksperyment IMPL-1 — Macierz transmitancji $\hat{H}(k,l)$ w dziedzinie czas–częstotliwość (Rys. 3.1)
-- [ ] 1. **Skrypt testowy**: `scripts/figures/ch3_impl/gen_fig_3_1_channel_matrix_h.m`.
+### Krok 2: Eksperyment IMPL-1 — Macierz transmitancji $\hat{H}(k,l)$ w dziedzinie czas–częstotliwość (Rys. 3.1) `[ZROBIONE]`
+- [x] 1. **Skrypt testowy**: `scripts/figures/ch3_impl/gen_fig_3_1_channel_matrix_h.m`.
   - Scenariusz: Ekstrakcja estymowanej transmitancji $\hat{H}(k,l) = Y(k,l) ./ X(k,l)$ w standardzie IEEE 802.11ax (CBW20, Model-C).
   - Wykres: Dwa panele (heatmaps 2D amplitudy w dB):
     - (a) Surowa macierz transmitancji przed MTI – widoczna dominująca składowa stała (przesłuch DPI) oraz wyciek luki DC wokół częstotliwości środkowej.
     - (b) Po filtracji MTI w czasie wolnym i liniowej interpolacji podnośnych DC – wycięcie składowej stałej, ciągłość widmowa i widoczna modulacja fazowa ruchomego celu.
-- [ ] 2. **Plik wynikowy**: `thesis/img/ch3_impl/rys_3_1_macierz_transmitancji_h.png`.
-- [ ] 3. **Weryfikacja poprawności**:
-  - Wycięcie przesłuchu bezpośredniego (DPI) o ponad 45 dB,
+- [x] 2. **Plik wynikowy**: `thesis/img/ch3_impl/rys_3_1_macierz_transmitancji_h.png`.
+- [x] 3. **Weryfikacja poprawności**:
+  - Wycięcie przesłuchu bezpośredniego (DPI) o ponad 45 dB (w pomiarze > 120 dB dla składowej stałej, spadek całkowitej mocy o 21,4 dB),
   - Ciągłość widmowa wzdłuż osi częstotliwości po zlikwidowaniu luki DC.
-- [ ] 4. **Weryfikacja czytelności i estetyki**:
-  - Osie: „Numer symbolu OFDM (czas wolny)”, „Częstotliwość / Numer podnośnej”, etykieta paska kolorów: „Moc transmitancji [dB]”, 100% język polski, profesjonalna mapa barw (`parula` / `viridis`).
-- [ ] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
+- [x] 4. **Weryfikacja czytelności i estetyki**:
+  - Osie: „Numer symbolu OFDM (czas wolny)”, „Indeks podnośnej k (częstotliwość)”, etykieta paska kolorów: „Moc transmitancji [dB]”, 100% język polski, profesjonalna mapa barw (`parula`), eksport w rozdzielczości 300 DPI (`exportgraphics`).
+- [x] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
 
 ---
 
