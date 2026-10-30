@@ -36,35 +36,12 @@ function gen_fig_3_1_channel_matrix_h()
     ];
     [rx_signal, fc] = step2_channel(waveform, fs, channel_model, cfg, targets, snr_dB);
 
-    % 4. Packet synchronization and OFDM demodulation
-    pktOffset = wlanPacketDetect(rx_signal, cbw);
-    if isempty(pktOffset)
-        pktOffset = 0;
-        fineOffset = 0;
-    else
-        fineOffset = wlanSymbolTimingEstimate(rx_signal(pktOffset+1:end), cbw);
-    end
-    sync_idx = pktOffset + fineOffset;
-    payload_start_rx = sync_idx + params.payload_start;
-    
-    y_cut = rx_signal(payload_start_rx : end);
-    x_cut = waveform(params.payload_start : end);
-    
-    Nfft = params.Nfft;
-    Ncp = params.Ncp;
-    [F_rx, n_rx] = demodulate(y_cut, Nfft, Ncp);
-    [F_tx, n_tx] = demodulate(x_cut, Nfft, Ncp);
-    n_symbols = min(n_rx, n_tx);
-    F_rx = F_rx(:, 1:n_symbols);
-    F_tx = F_tx(:, 1:n_symbols);
-    
-    % 5. Zero-Forcing channel estimation before and after MTI filtering
-    epsilon = 1e-9;
-    H_zf = (F_rx ./ (F_tx + epsilon)) .* ifftshift(params.active_mask);
-    H_raw = fftshift(H_zf, 1);
-    
-    % Slow-time MTI filtering and linear DC subcarrier interpolation
-    H_proc = estimate_channel_zf(F_rx, F_tx, params);
+    % 4. Run receiver pipeline (step3_receiver) directly
+    radar_data = step3_receiver(rx_signal, waveform, fs, fc, params, false);
+    H_raw = radar_data.H_raw;
+    H_proc = radar_data.H_shifted;
+    n_symbols = radar_data.n_symbols;
+    Nfft = radar_data.Nfft;
 
     % 6. Numerical validation of direct path (DPI) suppression
     static_component_raw = mean(H_raw, 2);
