@@ -123,6 +123,15 @@ Katalogi wyjściowe figur:
 - `thesis/img/ch3_impl/` (rysunki rozdziału 3),
 - `thesis/img/ch4_sim/` (rysunki rozdziału 4).
 
+#### Twarde zasady implementacji skryptów figur (wzorzec z commita `dd69b70`):
+1. **Zasada DRY — zakaz duplikacji kodu potoku radaru**:
+   - Skrypty w `scripts/figures/` **bezwzględnie nie mogą powielać ani reimplementować logiki bloków DSP** (np. synchronizacji, demodulacji OFDM, usuwania CP, estymacji Zero-Forcing, filtracji MTI, okienkowania, transformacji FFT/IFFT czy pętli CLEAN).
+   - Skrypt generatora **ma bezpośrednio uruchamiać autorski kod projektu**: fasady `step1_transmitter`, `step2_channel`, `step3_receiver`, `step4_interpreter` oraz wyspecjalizowane funkcje z `lib/`.
+   - **Ekstrakcja stanów pośrednich przez rozszerzenie struktur wyjściowych**: Jeżeli eksperyment wymaga dostępu do danych pośrednich (np. macierzy $\hat{H}$ przed i po MTI), rozszerza się sygnaturę/strukturę zwracaną przez odpowiedni moduł produkcyjny (np. dodanie pól `H_raw`, `H_shifted` do struktury `radar_data` w `step3_receiver.m` lub zwrócenie drugiego argumentu w `estimate_channel_zf.m`), zamiast przepisywać wnętrze funkcji w skrypcie rysunku.
+
+2. **Czystość kodu generatora**:
+   - Skrypt figury pełni wyłącznie rolę **zwięzłego sterownika testowo-wizualizacyjnego**: przygotowanie parametrów wejściowych $\to$ wywołanie modułów $\to$ pobranie danych wyjściowych ze struktur $\to$ czyste wykreślenie i eksport grafiki przez `exportgraphics(fig, out_file, 'Resolution', 300)`.
+
 **Katalog kluczowych rysunków do pracy**:
 
 | Nr w pracy | Plik graficzny | Skrypt testowy / generator | Eksperyment i zawartość merytoryczna |
@@ -171,12 +180,25 @@ Poniższe reguły są bezwzględnie wiążące podczas pisania i redagowania tek
 2. W pracy inżynierskiej niedopuszczalna jest obecność „wiszących” rysunków lub tabel, do których autor nie odnosi się w treści rozdziału.
 
 ### 5.3. Standardy czytelności wizualizacji (wykresy do druku)
-1. **Wykresy mają być bezwzględnie CZYTELNE**:
+1. **Wykresy mają być bezwzględnie CZYTELNE i eleganckie**:
    - Grube linie wykresów ($\ge 1.5\ \text{pt}$),
    - Wyraźne, duże czcionki podpisów osi i legend ($\ge 10\text{--}11\ \text{pt}$),
-   - Siatka pomocnicza (`grid on`),
+   - Siatka pomocnicza (`grid on`) z subtelnym kontrastem,
    - Brak nakładających się etykiet i napisów.
-2. **100% język polski**: Tytuły, podpisy osi wraz z jednostkami w nawiasach kwadratowych `[...]`, etykiety pasków barwnych (`colorbar`) i legendy muszą być całkowicie w języku polskim.
+2. **Obowiązkowy nadrzędny tytuł główny (`sgtitle` / `title`)**:
+   - Każdy wykres złożony z wielu podpaneli (`subplot`) **musi posiadać tytuł nadrzędny** wywołany za pomocą:  
+     `sgtitle('Główny tytuł wykresu', 'FontSize', 14, 'FontWeight', 'bold', 'Interpreter', 'none')`.
+   - Każdy wykres jednopanelowy musi posiadać zwięzły tytuł:  
+     `title('Tytuł wykresu', 'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none')`.
+   - Flaga `'Interpreter', 'none'` zapobiega niepożądanemu interpretowaniu znaków podkreślenia `_` jako indeksów dolnych.
+3. **Zasada minimalizmu i zakaz przeładowania tekstem na wykresie**:
+   - Wykresy w pracy dyplomowej są wizualizacją zjawisk fizycznych i wyników przetwarzania sygnałów, a nie miejscem na notatki.
+   - **Bezwzględny zakaz umieszczania na wykresach bloków tekstu**, ramek opisowych (`annotation('textbox')`) czy wielolinijkowych komentarzy.
+   - **Krótkie, techniczne tytuły podpaneli**: zwięzłe etykiety wariantów (np. `title('a) Przed MTI')`, `title('b) Po MTI')`, `title('a) Standard 802.11a')`, `title('b) Standard 802.11ax')`).
+   - Podpisy osi i etykiety paska kolorów: krótkie i precyzyjne z jednostką w nawiasie kwadratowym (np. `Numer symbolu OFDM (czas wolny)`, `Indeks podnośnej k (częstotliwość)`, `Moc transmitancji [dB]`, `Prędkość radialna [m/s]`, `Odległość bistatyczna [m]`).
+   - **Wszelkie objaśnienia, dyskusje, parametry scenariusza i interpretacje wyników należą do tekstu rozdziału w LaTeX oraz podpisu pod rysunkiem (`\caption{...}`)**, a nie do grafiki!
+4. **100% język polski**: Tytuły, podpisy osi wraz z jednostkami w nawiasach kwadratowych `[...]`, etykiety pasków barwnych (`colorbar`) i legendy muszą być całkowicie w języku polskim.
+5. **Eksport w wysokiej rozdzielczości**: Grafiki zapisywane wyłącznie funkcją `exportgraphics(fig, out_file, 'Resolution', 300)`.
 
 ### 5.4. Wytyczne uczelni dot. AI, stylometria i JSA
 1. **Dozwolona rola narzędzi AI**: Zgodnie z wytycznymi uczelni narzędzia AI/LLM mogą być używane wyłącznie jako wsparcie techniczno-odtwórcze (*chores*: asysta w składzie LaTeX-a, sprawdzanie interpunkcji, drobne skrypty pomocnicze). Narzędzia AI **nie mogą być źródłem koncepcji merytorycznej (*concept*), tez ani wniosków badawczych**.
