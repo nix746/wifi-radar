@@ -26,7 +26,7 @@ Ten dokument mówi **w jakiej kolejności** robić zadania. *Co* ma powstać, je
 
 ## Standard wykonania każdego kroku eksperymentalnego (Kroki 2–9)
 
-Aby zapewnić pełną kontrolę nad poprawnością badań i unikać błędów implementacyjnych oraz redakcyjnych, **każdy eksperyment bada konkretny blok lub granicę fizyczną radaru** według rygorystycznego standardu (zgodnego ze wzorcem commita `dd69b70`):
+Aby zapewnić pełną kontrolę nad poprawnością badań i unikać błędów implementacyjnych oraz redakcyjnych, **każdy eksperyment bada konkretny blok lub granicę fizyczną radaru** według rygorystycznego standardu:
 
 1. **Stworzenie/dopracowanie skryptu testowego** w `scripts/figures/ch3_impl/` lub `scripts/figures/ch4_sim/`:
    - **Zasada DRY — bezwzględny zakaz duplikacji kodu potoku radaru**:
