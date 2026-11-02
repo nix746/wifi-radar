@@ -17,8 +17,8 @@ function metrics = compute_pnfr(CPer, target_idx, guard)
 %   CPer       - Complex (or power) Range-Doppler periodogram [N_per x M_per]
 %   target_idx - Target positions [K x 2] as [range_idx, doppler_idx]
 %   guard      - (Optional) Half-size of the guard box [g_range, g_doppler]
-%                in bins (default: [16, 8], i.e. the Blackman-Harris main lobe
-%                with 4x range zero-padding and up to 2x Doppler zero-padding)
+%                in bins (default: [16, 16], i.e. the Blackman-Harris main lobe
+%                with 4x range and 4x Doppler zero-padding)
 %
 % Output (struct):
 %   metrics.pnfr_dB     - PNFR per target [K x 1]
@@ -28,7 +28,7 @@ function metrics = compute_pnfr(CPer, target_idx, guard)
 %   metrics.noise_mask  - Logical mask of bins used for the floor estimate
 
     if nargin < 3 || isempty(guard)
-        guard = [16, 8];
+        guard = [16, 16];
     end
 
     P = abs(CPer).^2;
