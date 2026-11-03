@@ -35,7 +35,7 @@ for k = 1:N
     rcs      = get_opt(tgt, 'rcs', default_rcs(tgt_type));
 
     % 2. Conversion to radar channel parameters
-    del_spl = round(range_m / sample_res);
+    del_spl = range_m / sample_res;
     dop_hz  = (2 * fc * vel_mps) / c0;
     gain    = get_opt(tgt, 'gain', b_ref * (d_ref / max(range_m, 1.0))^2 * sqrt(rcs / sigma_ref));
 

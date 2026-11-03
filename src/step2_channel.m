@@ -63,11 +63,11 @@ function [signal, fc] = step2_channel(waveform, fs, model, cfg, targets, snr_dB,
         range_m = delays(k) * sample_res;
         vel_ms = (dopplers(k) * c) / (2 * fc);
         if ~isempty(target_info) && isfield(target_info(k), 'type')
-            fprintf("    Target %d [%s, RCS=%.2f m^2]: Delay=%d spl (%.2f m), Doppler=%+.1f Hz (%+.2f m/s), Gain=%.4f\n", ...
-                k, upper(target_info(k).type), target_info(k).rcs, delays(k), range_m, dopplers(k), vel_ms, taps(k));
+            fprintf("    Target %d [%s, RCS=%.2f m^2]: Delay=%.1f spl (%.2f m), Doppler=%+.1f Hz (%+.2f m/s), Gain=%.4f\n", ...
+                k, upper(target_info(k).type), target_info(k).rcs, delays(k), range_m, dopplers(k), vel_ms, abs(taps(k)));
         else
-            fprintf("    Target %d: Delay=%d spl (%.2f m), Doppler=%+.1f Hz (%+.2f m/s), Gain=%.4f\n", ...
-                k, delays(k), range_m, dopplers(k), vel_ms, taps(k));
+            fprintf("    Target %d: Delay=%.1f spl (%.2f m), Doppler=%+.1f Hz (%+.2f m/s), Gain=%.4f\n", ...
+                k, delays(k), range_m, dopplers(k), vel_ms, abs(taps(k)));
         end
     end
 
@@ -94,9 +94,15 @@ function [signal, fc] = step2_channel(waveform, fs, model, cfg, targets, snr_dB,
     %% 3. Target Reflections
     target_signal = zeros(N, 1);
     for k = 1 : length(taps)
-        delay = delays(k) + intrinsic_delay;
-        if delay < N
-            delayed = [zeros(delay, 1); waveform(1 : N - delay)];
+        delay  = delays(k) + intrinsic_delay;
+        d_int  = floor(delay);
+        d_frac = delay - d_int;
+        if d_int < N
+            delayed = [zeros(d_int, 1); waveform(1 : N - d_int)];
+            if d_frac > 1e-6
+                k_freq = [0 : floor(N/2)-1, -ceil(N/2) : -1].';
+                delayed = ifft(fft(delayed) .* exp(-1j * 2 * pi * k_freq * d_frac / N));
+            end
             target_signal = target_signal + taps(k) * delayed .* exp(1j * 2 * pi * dopplers(k) * t);
         end
     end
