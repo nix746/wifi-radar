@@ -12,7 +12,7 @@ Ten dokument mówi **w jakiej kolejności** robić zadania. *Co* ma powstać, je
 | **Krok 2** | Eksperyment IMPL-1: Macierz transmitancji $\hat{H}(k,l)$ w dziedzinie czas–częstotliwość (Rys. 3.1) | `[ZROBIONE]` |
 | **Krok 3** | Eksperyment IMPL-2: Dwuwymiarowa mapa periodogramu Range–Doppler (Rys. 3.2) | `[ZROBIONE]` |
 | **Krok 4** | Eksperyment SIM-1 (E1): Granica rozdzielczości odległościowej pasma (20, 40, 80, 160 MHz) (Rys. 4.1) | `[ZROBIONE]` |
-| **Krok 5** | Eksperyment SIM-2 (E2): Granica prędkości jednoznacznej: 802.11a vs ax (aliasing Dopplera) (Rys. 4.2) | `[DO ZROBIENIA]` |
+| **Krok 5** | Eksperyment SIM-2 (E2): Granica prędkości jednoznacznej: 802.11a vs ax (aliasing Dopplera) (Rys. 4.2) | `[ZROBIONE]` |
 | **Krok 6** | Eksperyment SIM-3 (E3): Granica modulacji MCS i wzmocnienie szumu ZF (Rys. 4.3) | `[DO ZROBIENIA]` |
 | **Krok 7** | Eksperyment SIM-4 (E4): Wpływ otoczenia wielodrogowego TGax (A, C, E) i filtr MTI (Rys. 4.4) | `[DO ZROBIENIA]` |
 | **Krok 8** | Eksperyment SIM-5 (E5): Granica dynamiki mocy i Coherent CLEAN z progiem MAD (Rys. 4.5) | `[DO ZROBIENIA]` |
@@ -156,25 +156,25 @@ flowchart TD
   - **Tytuł główny**: `title('Wpływ szerokości pasma na rozdzielczość odległościową', 'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none')`,
   - **Minimalizm tekstu**: Brak rozwlekłych komentarzy i ramek tekstowych na wykresie. Zwięzła legenda: pasmo, $\Delta R$ i $\text{SNR}_{\text{in}}$.
   - Oś X: „Odległość bistatyczna [m]”, oś Y: „Moc znormalizowana [dB]”, zróżnicowane kolory i style linii, 100% język polski, `exportgraphics` 300 DPI.
-- [ ] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
+- [x] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
 
 ---
 
-### Krok 5: Eksperyment SIM-2 (E2) — Granica prędkości jednoznacznej: 802.11a vs ax (Rys. 4.2)
-- [ ] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_2_doppler_aliasing.m`.
-  - Architektura (DRY): Uruchomienie potoku kolejno dla `WIFI_STANDARD = '802.11a'` oraz `'802.11ax'` za pomocą `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` bez powielania kodu DSP.
-  - Scenariusz: Szybki obiekt $v = +20{,}0\ \text{m/s}$ ($72\ \text{km/h}$, typowy pojazd).
+### Krok 5: Eksperyment SIM-2 (E2) — Granica prędkości jednoznacznej: 802.11a vs ax (Rys. 4.2) `[ZROBIONE]`
+- [x] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_2_doppler_aliasing.m`.
+  - Architektura (DRY): Uruchomienie potoku kolejno dla `WIFI_STANDARD = '802.11a'` oraz `'802.11ax'` za pomocą `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` $\to$ `step4_interpreter` bez powielania kodu DSP.
+  - Scenariusz: Szybki obiekt $v = +20{,}0\ \text{m/s}$ ($72\ \text{km/h}$, typowy pojazd na $R = 30{,}0\ \text{m}$ w kanale Model-A).
   - Porównanie: 802.11a ($T_{\text{sym}} = 4{,}0\ \mu\text{s}$, $v_{\text{unamb}} = \pm 56{,}8\ \text{m/s}$) vs 802.11ax ($T_{\text{sym}} = 13{,}6\ \mu\text{s}$, $v_{\text{unamb}} = \pm 16{,}7\ \text{m/s}$).
   - Wykres: Dwa podpanele (`subplot(1, 2, 1)` i `subplot(1, 2, 2)`) przedstawiające przekrój profilu prędkości Dopplera dla obu standardów.
-- [ ] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_2_aliasing_dopplera.png`.
-- [ ] 3. **Weryfikacja poprawności**:
-  - W 802.11a: poprawny pik przy $+20{,}0\ \text{m/s}$,
-  - W 802.11ax: zawinięcie widma (aliasing) do pozornej prędkości $20{,}0 - 2 \cdot 16{,}7 = -13{,}4\ \text{m/s}$,
-  - Udowodnienie kompromisu: większa odporność na wielodrogowość w ax kosztem 4-krotnie węższego zakresu prędkości jednoznacznej.
-- [ ] 4. **Weryfikacja czytelności i estetyki (wzorzec z commita `dd69b70`)**:
+- [x] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_2_aliasing_dopplera.png`.
+- [x] 3. **Weryfikacja poprawności**:
+  - W 802.11a: poprawny pik przy $+20{,}0\ \text{m/s}$ (zmierzony pik: $+20{,}02\ \text{m/s}$ dla $R = 30{,}12\ \text{m}$, $\text{PNFR} = 53{,}1\ \text{dB}$),
+  - W 802.11ax: zawinięcie widma (aliasing) do pozornej prędkości $20{,}0 - 2 \cdot 16{,}71 = -13{,}42\ \text{m/s}$ (zmierzony pik: $-13{,}41\ \text{m/s}$ dla $R = 30{,}03\ \text{m}$, $\text{PNFR} = 39{,}1\ \text{dB}$),
+  - Udowodnienie kompromisu: większa odporność na wielodrogowość w ax kosztem 3,4-krotnie węższego zakresu prędkości jednoznacznej ($\pm 16{,}71\ \text{m/s}$ względem $\pm 56{,}82\ \text{m/s}$).
+- [x] 4. **Weryfikacja czytelności i estetyki (wzorzec z commita `dd69b70`)**:
   - **Tytuł główny**: `sgtitle('Porównanie jednoznaczności prędkości: IEEE 802.11a vs 802.11ax', 'FontSize', 14, 'FontWeight', 'bold', 'Interpreter', 'none')`,
   - **Krótkie tytuły podpaneli**: `title('a) IEEE 802.11a (T_sym = 4,0 µs)', 'FontSize', 11, 'FontWeight', 'bold', 'Interpreter', 'none')` oraz `title('b) IEEE 802.11ax (T_sym = 13,6 µs)', 'FontSize', 11, 'FontWeight', 'bold', 'Interpreter', 'none')`,
-  - **Minimalizm tekstu**: Brak rozwlekłych opisów na wykresie. Czyste pionowe linie przerywane wskazujące prędkość rzeczywistą oraz granice $\pm v_{\text{unamb}}$, prosta legenda, 100% język polski, `exportgraphics` 300 DPI.
+  - **Minimalizm tekstu**: Brak rozwlekłych opisów na wykresie. Czyste pionowe linie przerywane wskazujące prędkość rzeczywistą oraz granice $\pm v_{\text{unamb}}$, prosta legenda pod osiami (`southoutside`), 100% język polski, `exportgraphics` 300 DPI.
 - [ ] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
 
 ---
