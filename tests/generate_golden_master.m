@@ -23,8 +23,8 @@ save(fullfile(sim_tests_dir, 'golden_signal.mat'), 'signal', 'fc');
 fprintf('Running step3_receiver...\n');
 radar_data = step3_receiver(signal, waveform, fs, fc, '802.11ax', false, 'CBW20');
 CPer_base = radar_data.CPer_base;
-W_2D_unshifted = radar_data.W_2D_unshifted;
-save(fullfile(sim_tests_dir, 'golden_radar_data.mat'), 'radar_data', 'CPer_base', 'W_2D_unshifted');
+W_2D = radar_data.W_2D;
+save(fullfile(sim_tests_dir, 'golden_radar_data.mat'), 'radar_data', 'CPer_base', 'W_2D');
 
 fprintf('Running step4_interpreter (legacy mode, num_targets=2)...\n');
 [targets_found, CPer_clean, threshold] = step4_interpreter(radar_data, fs, fc, '802.11ax', false, 2);

@@ -43,13 +43,13 @@ if err_sig > tol
 end
 
 % Check radar_data
-load(fullfile(sim_tests_dir, 'golden_radar_data.mat'), 'CPer_base', 'W_2D_unshifted');
+load(fullfile(sim_tests_dir, 'golden_radar_data.mat'), 'CPer_base', 'W_2D');
 golden_CPer_base = CPer_base;
-golden_W_2D = W_2D_unshifted;
+golden_W_2D = W_2D;
 err_cper = max(abs(radar_data.CPer_base(:) - golden_CPer_base(:)));
-err_w2d = max(abs(radar_data.W_2D_unshifted(:) - golden_W_2D(:)));
+err_w2d = max(abs(radar_data.W_2D(:) - golden_W_2D(:)));
 fprintf('CPer_base max diff: %g\n', err_cper);
-fprintf('W_2D_unshifted max diff: %g\n', err_w2d);
+fprintf('W_2D max diff: %g\n', err_w2d);
 if err_cper > tol || err_w2d > tol
     warning('Radar data regression failed!');
     has_error = true;

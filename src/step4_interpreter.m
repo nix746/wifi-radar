@@ -29,18 +29,18 @@ function [targets_found, CPer_clean, threshold, pnfr] = step4_interpreter(radar_
     fprintf('>> Running CLEAN Target Interpreter...\n');
 
     %% 1. Unpack Radar Data
-    CPer_base      = radar_data.CPer_base;
-    W_2D_unshifted = radar_data.W_2D_unshifted;
-    N_per          = radar_data.N_per;
-    M_per          = radar_data.M_per;
-    Nfft           = radar_data.Nfft;
-    n_symbols      = radar_data.n_symbols;
-    Ncp            = radar_data.Ncp;
+    CPer_base = radar_data.CPer_base;
+    W_2D      = radar_data.W_2D;
+    N_per     = radar_data.N_per;
+    M_per     = radar_data.M_per;
+    Nfft      = radar_data.Nfft;
+    n_symbols = radar_data.n_symbols;
+    Ncp       = radar_data.Ncp;
 
     %% 2. Iterative Coherent Target Cancellation (Coherent CLEAN)
     fprintf('  Executing CLEAN algorithm (max targets: %d)...\n', num_targets);
     [CPer_clean, targets_found, threshold] = run_coherent_clean( ...
-        CPer_base, W_2D_unshifted, N_per, M_per, Nfft, n_symbols, num_targets, margin_dB);
+        CPer_base, W_2D, N_per, M_per, Nfft, n_symbols, num_targets, margin_dB);
 
     %% 3. Calibrated Physical Axes and PNFR Metric
     if isfield(radar_data, 'axis_range') && isfield(radar_data, 'axis_velocity')

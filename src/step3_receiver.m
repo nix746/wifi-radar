@@ -68,25 +68,25 @@ function radar_data = step3_receiver(signal, waveform, fs, fc, WIFI_STANDARD, EN
     [H_shifted, H_raw] = estimate_channel_zf(F_rx, F_tx, params);
 
     %% 5. 2D Blackman-Harris Windowing and Complex Periodogram Generation
-    [CPer_base, W_2D_unshifted, N_per, M_per] = compute_range_doppler_map( ...
+    [CPer_base, W_2D, N_per, M_per] = compute_range_doppler_map( ...
         H_shifted, Nfft, n_symbols, params.active_mask);
 
     %% 6. Physical Axes and Output Packaging
     [axis_range, axis_velocity] = calculate_physical_axes(fs, fc, Nfft, Ncp, N_per, M_per);
 
     radar_data = struct();
-    radar_data.CPer_base      = CPer_base;
-    radar_data.W_2D_unshifted = W_2D_unshifted;
-    radar_data.N_per          = N_per;
-    radar_data.M_per          = M_per;
-    radar_data.Nfft           = Nfft;
-    radar_data.n_symbols      = n_symbols;
-    radar_data.Ncp            = Ncp;
-    radar_data.H_raw          = H_raw;
-    radar_data.H_shifted      = H_shifted;
-    radar_data.axis_range     = axis_range;
-    radar_data.axis_velocity  = axis_velocity;
-    radar_data.params         = params;
+    radar_data.CPer_base     = CPer_base;
+    radar_data.W_2D          = W_2D;
+    radar_data.N_per         = N_per;
+    radar_data.M_per         = M_per;
+    radar_data.Nfft          = Nfft;
+    radar_data.n_symbols     = n_symbols;
+    radar_data.Ncp           = Ncp;
+    radar_data.H_raw         = H_raw;
+    radar_data.H_shifted     = H_shifted;
+    radar_data.axis_range    = axis_range;
+    radar_data.axis_velocity = axis_velocity;
+    radar_data.params        = params;
 
     fprintf('  Pipeline complete. Radar map matrix: %d (Range bins) x %d (Doppler bins).\n', N_per, M_per);
 

@@ -26,13 +26,10 @@ function gen_fig_3_1_channel_matrix_h()
     % 2. Generate transmitted baseband waveform (IEEE 802.11ax HE-SU)
     [waveform, fs, params, cfg] = step1_transmitter(wifi_standard, false, cbw, 0);
     
-    % 3. Simulate multipath TGax channel with moving targets
-    % Physical scenario:
-    %   - Target 1: Vehicle (R = 15.0 m, v = +8.0 m/s, RCS = 15.0 m^2)
-    %   - Target 2: Pedestrian (R = 8.0 m, v = +2.0 m/s, RCS = 2.0 m^2)
+    % 3. Simulate multipath TGax channel with two moving targets
     targets = [ ...
-        struct('range_m', 15.0, 'velocity_mps', 8.0, 'type', 'car', 'rcs', 15.0), ...
-        struct('range_m', 8.0,  'velocity_mps', 2.0, 'type', 'human', 'rcs', 2.0) ...
+        struct('range_m', 15.0, 'velocity_mps', 8.0, 'type', 'car'), ...
+        struct('range_m', 8.0,  'velocity_mps', 2.0, 'type', 'human') ...
     ];
     [rx_signal, fc] = step2_channel(waveform, fs, channel_model, cfg, targets, snr_dB);
 

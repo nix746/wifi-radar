@@ -1,8 +1,25 @@
-function [CPer_base, W_2D_unshifted, N_per, M_per] = compute_range_doppler_map(H_shifted, Nfft, n_symbols, active_mask)
+function [CPer_base, W_2D, N_per, M_per] = compute_range_doppler_map(H_shifted, Nfft, n_symbols, active_mask, pad_factor)
 % COMPUTE_RANGE_DOPPLER_MAP Generates 2D Range-Doppler periodogram.
 %
 % Applies 2D Blackman-Harris windowing (across active subcarriers and OFDM symbols)
-% and computes the Range-Doppler map via IFFT (Range) and FFT (Doppler).
+% and computes the Range-Doppler map via zero-padded IFFT (Range) and FFT (Doppler).
+%
+% Inputs:
+%   H_shifted   - Centered channel transfer matrix [Nfft x n_symbols]
+%   Nfft        - Baseband FFT size (number of subcarriers)
+%   n_symbols   - Number of OFDM symbols in frame
+%   active_mask - (Optional) Logical/binary mask of active subcarriers
+%   pad_factor  - (Optional) Universal zero-padding factor (default: 4)
+%
+% Outputs:
+%   CPer_base   - Complex 2D Range-Doppler periodogram [N_per x M_per]
+%   W_2D        - 2D Blackman-Harris window matrix [Nfft x n_symbols]
+%   N_per       - Range IFFT length (after zero-padding)
+%   M_per       - Doppler FFT length (after zero-padding)
+
+    if nargin < 5 || isempty(pad_factor)
+        pad_factor = 4;
+    end
 
     % 1. Determine active subcarrier span in frequency domain
     if nargin < 4 || isempty(active_mask)
@@ -18,13 +35,12 @@ function [CPer_base, W_2D_unshifted, N_per, M_per] = compute_range_doppler_map(H
     win_f(idx(1):idx(end)) = blackmanharris(L_active);
     win_t = blackmanharris(n_symbols)';
 
-    W_2D_shifted = win_f .* win_t;
-    W_2D_unshifted = ifftshift(W_2D_shifted, 1);
+    W_2D = win_f .* win_t;
 
-    % 3. Range-Doppler periodogram (Range IFFT, Doppler FFT)
-    N_per = max(256, 2^nextpow2(Nfft));
-    M_per = 2^nextpow2(n_symbols);
+    % 3. Range-Doppler periodogram (Range IFFT, Doppler FFT with universal zero-padding)
+    N_per = pad_factor * 2^nextpow2(Nfft);
+    M_per = pad_factor * 2^nextpow2(n_symbols);
 
-    H_ready = ifftshift(H_shifted .* W_2D_shifted, 1);
-    CPer_base = fftshift(fft(ifft(H_ready, N_per, 1), M_per, 2), 2);
+    H_windowed = H_shifted .* W_2D;
+    CPer_base  = fftshift(fft(ifft(H_windowed, N_per, 1), M_per, 2), 2);
 end
