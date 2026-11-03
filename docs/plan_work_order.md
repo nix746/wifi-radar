@@ -10,7 +10,7 @@ Ten dokument mówi **w jakiej kolejności** robić zadania. *Co* ma powstać, je
 | **Tor A** | Infrastruktura pracy (Zotero, dane formalne AGH, szkielet 5 rozdziałów `.tex`) | `[ZROBIONE]` |
 | **Krok 1** | Adaptacyjny algorytm CLEAN (`lib/run_coherent_clean.m`) i test regresyjny | `[ZROBIONE]` |
 | **Krok 2** | Eksperyment IMPL-1: Macierz transmitancji $\hat{H}(k,l)$ w dziedzinie czas–częstotliwość (Rys. 3.1) | `[ZROBIONE]` |
-| **Krok 3** | Eksperyment IMPL-2: Dwuwymiarowa mapa periodogramu Range–Doppler (Rys. 3.2) | `[DO ZROBIENIA]` |
+| **Krok 3** | Eksperyment IMPL-2: Dwuwymiarowa mapa periodogramu Range–Doppler (Rys. 3.2) | `[ZROBIONE]` |
 | **Krok 4** | Eksperyment SIM-1 (E1): Granica rozdzielczości odległościowej pasma (20, 40, 80, 160 MHz) (Rys. 4.1) | `[DO ZROBIENIA]` |
 | **Krok 5** | Eksperyment SIM-2 (E2): Granica prędkości jednoznacznej: 802.11a vs ax (aliasing Dopplera) (Rys. 4.2) | `[DO ZROBIENIA]` |
 | **Krok 6** | Eksperyment SIM-3 (E3): Granica modulacji MCS i wzmocnienie szumu ZF (Rys. 4.3) | `[DO ZROBIENIA]` |
@@ -122,16 +122,16 @@ flowchart TD
 
 ---
 
-### Krok 3: Eksperyment IMPL-2 — Dwuwymiarowa mapa periodogramu Range–Doppler (Rys. 3.2)
-- [ ] 1. **Skrypt testowy**: `scripts/figures/ch3_impl/gen_fig_3_2_range_doppler.m`.
+### Krok 3: Eksperyment IMPL-2 — Dwuwymiarowa mapa periodogramu Range–Doppler (Rys. 3.2) `[ZROBIONE]`
+- [x] 1. **Skrypt testowy**: `scripts/figures/ch3_impl/gen_fig_3_2_range_doppler.m`.
   - Architektura (DRY): Bezpośrednie uruchomienie potoku `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` $\to$ `step4_interpreter` (lub `compute_range_doppler_map` i `calculate_physical_axes`) bez duplikacji kodu okienkowania i FFT.
   - Scenariusz: Przekształcenie przefiltrowanej macierzy $\hat{H}$ oknem 2D Blackmana–Harrisa (-92 dB) i dwuwymiarową transformacją IFFT/FFT w mapę Range–Doppler dla standardu IEEE 802.11ax (CBW20, Model-C, 2 cele ruchome: pojazd i pieszy).
   - Wykres: Płaska mapa 2D Range–Doppler (rzut z góry / heatmapa) z wyskalowanymi osiami fizycznymi (odległość bistatyczna w metrach, prędkość radialna w m/s) oraz oznaczonymi pozycjami celów.
-- [ ] 2. **Plik wynikowy**: `thesis/img/ch3_impl/rys_3_2_mapa_range_doppler.png`.
-- [ ] 3. **Weryfikacja poprawności**:
-  - Wyciszenie listków bocznych do poziomu poniżej $-80\text{--}-90\ \text{dB}$,
-  - Wyraźne wyodrębnienie wzniesień odpowiadających celom na fizycznych osiach odległości i prędkości, brak anomalii prędkości ($|v| \le 100\ \text{km/h}$).
-- [ ] 4. **Weryfikacja czytelności i estetyki (wzorzec z commita `dd69b70`)**:
+- [x] 2. **Plik wynikowy**: `thesis/img/ch3_impl/rys_3_2_mapa_range_doppler.png`.
+- [x] 3. **Weryfikacja poprawności**:
+  - Wyciszenie listków bocznych do poziomu poniżej $-80\text{--}-90\ \text{dB}$ (w oknie Blackmana–Harrisa; w kanale wielodrogowym Model-C z szumem 45 dB mediana tła na poziomie $-41{,}5\ \text{dB}$, PNFR celów $39{,}9\ \text{dB}$ oraz $38{,}3\ \text{dB}$),
+  - Wyraźne wyodrębnienie wzniesień odpowiadających celom na fizycznych osiach odległości i prędkości ($R_1 = 22{,}52\ \text{m}, v_1 = -6{,}37\ \text{m/s}$; $R_2 = 67{,}57\ \text{m}, v_2 = +19{,}10\ \text{m/s}$), brak anomalii prędkości ($|v| \le 100\ \text{km/h}$).
+- [x] 4. **Weryfikacja czytelności i estetyki (wzorzec z commita `dd69b70`)**:
   - **Tytuł główny**: `title('Dwuwymiarowa mapa periodogramu Range-Doppler', 'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none')`,
   - **Minimalizm tekstu**: Brak rozwlekłych bloków tekstowych na wykresie.
   - Osie: „Prędkość radialna [m/s]”, „Odległość bistatyczna [m]”, pasek kolorów: „Moc znormalizowana [dB]”, zwięzłe znaczniki celów, 100% język polski, `exportgraphics` 300 DPI.
