@@ -65,7 +65,7 @@ function radar_data = step3_receiver(signal, waveform, fs, fc, WIFI_STANDARD, EN
     fprintf('  Demodulated %d OFDM symbols (%d subcarriers each, %s).\n', n_symbols, Nfft, cbw);
 
     %% 4. Channel Estimation, MTI Filtering, and DC Subcarrier Interpolation
-    [H_shifted, H_raw] = estimate_channel_zf(F_rx, F_tx, params);
+    [H_shifted, H_raw, zeta_zf_dB] = estimate_channel_zf(F_rx, F_tx, params);
 
     %% 5. 2D Blackman-Harris Windowing and Complex Periodogram Generation
     [CPer_base, W_2D, N_per, M_per] = compute_range_doppler_map( ...
@@ -84,6 +84,7 @@ function radar_data = step3_receiver(signal, waveform, fs, fc, WIFI_STANDARD, EN
     radar_data.Ncp           = Ncp;
     radar_data.H_raw         = H_raw;
     radar_data.H_shifted     = H_shifted;
+    radar_data.zeta_zf_dB    = zeta_zf_dB;
     radar_data.axis_range    = axis_range;
     radar_data.axis_velocity = axis_velocity;
     radar_data.params        = params;

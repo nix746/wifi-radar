@@ -13,7 +13,7 @@ Ten dokument mówi **w jakiej kolejności** robić zadania. *Co* ma powstać, je
 | **Krok 3** | Eksperyment IMPL-2: Dwuwymiarowa mapa periodogramu Range–Doppler (Rys. 3.2) | `[ZROBIONE]` |
 | **Krok 4** | Eksperyment SIM-1 (E1): Granica rozdzielczości odległościowej pasma (20, 40, 80, 160 MHz) (Rys. 4.1) | `[ZROBIONE]` |
 | **Krok 5** | Eksperyment SIM-2 (E2): Granica prędkości jednoznacznej: 802.11a vs ax (aliasing Dopplera) (Rys. 4.2) | `[ZROBIONE]` |
-| **Krok 6** | Eksperyment SIM-3 (E3): Granica modulacji MCS i wzmocnienie szumu ZF (Rys. 4.3) | `[DO ZROBIENIA]` |
+| **Krok 6** | Eksperyment SIM-3 (E3): Granica modulacji MCS i wzmocnienie szumu ZF (Rys. 4.3) | `[ZROBIONE]` |
 | **Krok 7** | Eksperyment SIM-4 (E4): Wpływ otoczenia wielodrogowego TGax (A, C, E) i filtr MTI (Rys. 4.4) | `[DO ZROBIENIA]` |
 | **Krok 8** | Eksperyment SIM-5 (E5): Granica dynamiki mocy i Coherent CLEAN z progiem MAD (Rys. 4.5) | `[DO ZROBIENIA]` |
 | **Krok 9** | Eksperyment SIM-6 (MC): Granica czułości SNR – analiza statystyczna Monte Carlo $P_D(\text{SNR})$ (Rys. 4.6) | `[DO ZROBIENIA]` |
@@ -175,23 +175,23 @@ flowchart TD
   - **Tytuł główny**: `sgtitle('Porównanie jednoznaczności prędkości: IEEE 802.11a vs 802.11ax', 'FontSize', 14, 'FontWeight', 'bold', 'Interpreter', 'none')`,
   - **Krótkie tytuły podpaneli**: `title('a) IEEE 802.11a (T_sym = 4,0 µs)', 'FontSize', 11, 'FontWeight', 'bold', 'Interpreter', 'none')` oraz `title('b) IEEE 802.11ax (T_sym = 13,6 µs)', 'FontSize', 11, 'FontWeight', 'bold', 'Interpreter', 'none')`,
   - **Minimalizm tekstu**: Brak rozwlekłych opisów na wykresie. Czyste pionowe linie przerywane wskazujące prędkość rzeczywistą oraz granice $\pm v_{\text{unamb}}$, prosta legenda pod osiami (`southoutside`), 100% język polski, `exportgraphics` 300 DPI.
-- [ ] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
+- [x] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
 
 ---
 
-### Krok 6: Eksperyment SIM-3 (E3) — Granica modulacji MCS i wzmocnienie szumu ZF (Rys. 4.3)
-- [ ] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_3_noise_enhancement.m`.
-  - Architektura (DRY): Pętla po indeksach MCS wywołująca `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` $\to$ `step4_interpreter`. Wykorzystanie zwracanych parametrów bez pisania własnego demodulatora.
-  - Scenariusz: IEEE 802.11ax, CBW40, Model-C. Zestawienie MCS: MCS 0 (BPSK), MCS 3 (16-QAM), MCS 7 (64-QAM), MCS 11 (1024-QAM) przy losowym ładunku danych 4095 B.
-  - Wykres: Wykres z dwiema zsynchronizowanymi osiami Y (`yyaxis`) — współczynnik wzmocnienia szumu $\zeta_{\text{ZF}} = \mathbb{E}[1/|X|^2]$ [dB] oraz zmierzony kontrast celu PNFR [dB].
-- [ ] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_3_wzmocnienie_szumu_mcs.png`.
-- [ ] 3. **Weryfikacja poprawności**:
-  - $\zeta_{\text{ZF}} = 0\ \text{dB}$ dla stałoamplitudowej modulacji BPSK,
-  - Monotoniczny wzrost $\zeta_{\text{ZF}}$ do $>4{,}2\ \text{dB}$ dla 1024-QAM (zjawisko dzielenia przez symbole bliskie zera w ZF),
-  - Zgodny ze spadkiem kontrastu spadek PNFR celu.
-- [ ] 4. **Weryfikacja czytelności i estetyki (wzorzec z commita `dd69b70`)**:
+### Krok 6: Eksperyment SIM-3 (E3) — Granica modulacji MCS i wzmocnienie szumu ZF (Rys. 4.3) `[ZROBIONE]`
+- [x] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_3_noise_enhancement.m`.
+  - Architektura (DRY): Pętla po indeksach MCS wywołująca `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` $\to$ `step4_interpreter`. Wykorzystanie zwracanych parametrów (`radar_data.zeta_zf_dB`, `pnfr.pnfr_dB`) bez pisania własnego demodulatora.
+  - Scenariusz: IEEE 802.11ax, CBW40, Model-C. Zestawienie MCS: MCS 0 (BPSK), MCS 3 (16-QAM), MCS 7 (64-QAM), MCS 11 (1024-QAM) przy dynamicznie skalowanym ładunku danych (stały czas trwania ramki $3871{,}2\ \mu\text{s}$, $M = 280$ symboli OFDM).
+  - Wykres: Wykres z dwiema zsynchronizowanymi osiami Y (`yyaxis`, skala 1:1 dB) — współczynnik wzmocnienia szumu $\zeta_{\text{ZF}} = \mathbb{E}[|X|^2]\mathbb{E}[1/|X|^2]$ [dB] oraz zmierzony kontrast celu PNFR [dB].
+- [x] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_3_wzmocnienie_szumu_mcs.png`.
+- [x] 3. **Weryfikacja poprawności**:
+  - $\zeta_{\text{ZF}} = 0{,}00\ \text{dB}$ dla stałoamplitudowej modulacji BPSK (MCS 0),
+  - Monotoniczny wzrost $\zeta_{\text{ZF}}$: $2{,}69\ \text{dB}$ (MCS 3, 16-QAM) $\to 4{,}22\ \text{dB}$ (MCS 7, 64-QAM) $\to 6{,}15\ \text{dB}$ (MCS 11, 1024-QAM) wskutek dzielenia przez symbole o małej amplitudzie w estymatorze ZF,
+  - Lustrzany, proporcjonalny spadek kontrastu celu PNFR przy stałym czasie ramki ($M = 280$): $47{,}89\ \text{dB}$ (MCS 0) $\to 45{,}15\ \text{dB}$ (MCS 3) $\to 43{,}80\ \text{dB}$ (MCS 7) $\to 42{,}24\ \text{dB}$ (MCS 11), tj. spadek o $5{,}65\ \text{dB}$.
+- [x] 4. **Weryfikacja czytelności i estetyki (wzorzec z commita `dd69b70`)**:
   - **Tytuł główny**: `title('Wpływ rzędu modulacji MCS na wzmocnienie szumu i kontrast celu', 'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none')`,
-  - **Minimalizm tekstu**: Brak rozwlekłych komentarzy wewnątrz wykresu. Czyste osie Y (`yyaxis left`: „Współczynnik wzmocnienia szumu \zeta_{ZF} [dB]”, `yyaxis right`: „Kontrast celu PNFR [dB]”), oś X: „Rząd modulacji (indeks MCS)”, 100% język polski, `exportgraphics` 300 DPI.
+  - **Minimalizm tekstu**: Brak rozwlekłych komentarzy wewnątrz wykresu. Czyste zsynchronizowane osie Y (`yyaxis left`: „Współczynnik wzmocnienia szumu ζ_ZF [dB]”, `yyaxis right`: „Kontrast celu PNFR [dB]”), oś X: „Rząd modulacji (indeks MCS)”, legenda pod wykresem (`southoutside`), 100% język polski, `exportgraphics` 300 DPI.
 - [ ] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
 
 ---

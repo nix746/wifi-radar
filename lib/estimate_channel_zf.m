@@ -1,4 +1,4 @@
-function [H_shifted, H_raw_shifted] = estimate_channel_zf(F_rx, F_tx, params)
+function [H_shifted, H_raw_shifted, zeta_zf_dB] = estimate_channel_zf(F_rx, F_tx, params)
 % ESTIMATE_CHANNEL_ZF Zero-Forcing channel estimation, MTI filtering, and DC gap repair.
 %
 % Inputs:
@@ -9,11 +9,18 @@ function [H_shifted, H_raw_shifted] = estimate_channel_zf(F_rx, F_tx, params)
 % Outputs:
 %   H_shifted     - Centered channel matrix after MTI filtering and DC interpolation
 %   H_raw_shifted - Centered raw channel matrix before MTI filtering
+%   zeta_zf_dB    - Zero-Forcing noise enhancement factor E[|X|^2]*E[1/|X|^2] [dB]
 
     % 1. Zero-Forcing (ZF) channel estimation in unshifted FFT domain
     epsilon = 1e-9;
+    act_mask_unshifted = ifftshift(params.active_mask);
     H = F_rx ./ (F_tx + epsilon);
-    H = H .* ifftshift(params.active_mask);
+    H = H .* act_mask_unshifted;
+
+    % Compute scale-invariant ZF noise enhancement factor on active subcarriers
+    X_act = F_tx(logical(act_mask_unshifted), :);
+    pwr_x = abs(X_act(:)).^2;
+    zeta_zf_dB = 10 * log10(mean(pwr_x) * mean(1 ./ (pwr_x + epsilon^2)));
 
     % 2. Shift zero frequency (DC) to the center of the spectrum
     H_raw_shifted = fftshift(H, 1);
