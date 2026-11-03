@@ -11,7 +11,7 @@ Ten dokument mówi **w jakiej kolejności** robić zadania. *Co* ma powstać, je
 | **Krok 1** | Adaptacyjny algorytm CLEAN (`lib/run_coherent_clean.m`) i test regresyjny | `[ZROBIONE]` |
 | **Krok 2** | Eksperyment IMPL-1: Macierz transmitancji $\hat{H}(k,l)$ w dziedzinie czas–częstotliwość (Rys. 3.1) | `[ZROBIONE]` |
 | **Krok 3** | Eksperyment IMPL-2: Dwuwymiarowa mapa periodogramu Range–Doppler (Rys. 3.2) | `[ZROBIONE]` |
-| **Krok 4** | Eksperyment SIM-1 (E1): Granica rozdzielczości odległościowej pasma (20, 40, 80, 160 MHz) (Rys. 4.1) | `[DO ZROBIENIA]` |
+| **Krok 4** | Eksperyment SIM-1 (E1): Granica rozdzielczości odległościowej pasma (20, 40, 80, 160 MHz) (Rys. 4.1) | `[ZROBIONE]` |
 | **Krok 5** | Eksperyment SIM-2 (E2): Granica prędkości jednoznacznej: 802.11a vs ax (aliasing Dopplera) (Rys. 4.2) | `[DO ZROBIENIA]` |
 | **Krok 6** | Eksperyment SIM-3 (E3): Granica modulacji MCS i wzmocnienie szumu ZF (Rys. 4.3) | `[DO ZROBIENIA]` |
 | **Krok 7** | Eksperyment SIM-4 (E4): Wpływ otoczenia wielodrogowego TGax (A, C, E) i filtr MTI (Rys. 4.4) | `[DO ZROBIENIA]` |
@@ -135,24 +135,24 @@ flowchart TD
   - **Tytuł główny**: `title('Dwuwymiarowa mapa periodogramu Range-Doppler', 'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none')`,
   - **Minimalizm tekstu**: Brak rozwlekłych bloków tekstowych na wykresie.
   - Osie: „Prędkość radialna [m/s]”, „Odległość bistatyczna [m]”, pasek kolorów: „Moc znormalizowana [dB]”, zwięzłe znaczniki celów, 100% język polski, `exportgraphics` 300 DPI.
-- [ ] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
+- [x] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
 
 ---
 
-### Krok 4: Eksperyment SIM-1 (E1) — Granica rozdzielczości odległościowej pasma (Rys. 4.1)
-- [ ] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_1_bandwidth_cut.m`.
+### Krok 4: Eksperyment SIM-1 (E1) — Granica rozdzielczości odległościowej pasma (Rys. 4.1) `[ZROBIONE]`
+- [x] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_1_bandwidth_cut.m`.
   - Architektura (DRY): Pętla po pasmach wywołująca istniejący potok (`step1_transmitter`, `step2_channel`, `step3_receiver`, `step4_interpreter`) bez kopiowania logiki odbiornika.
   - Scenariusz: Dwa bliskie cele o separacji $\Delta R = 3{,}75\ \text{m}$ ($R_1 = 15{,}0\ \text{m}$, $R_2 = 18{,}75\ \text{m}$) w kanale Model-C.
   - Test pasm: 20 MHz, 40 MHz, 80 MHz, 160 MHz.
   - **Fizyka zjawiska**: Stała moc nadajnika AP ($100\ \text{mW}$ EIRP); moc szumu $P_N = k_B T B F$ rośnie o $+3\ \text{dB}$ na każde podwojenie pasma (+9.03 dB dla 160 MHz wzgl. 20 MHz).
   - Wykres: Zestawienie 4 przekrojów odległościowych (1D range cuts) na jednym wykresie.
-- [ ] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_1_przekroj_odleglosci_pasma.png`.
-- [ ] 3. **Weryfikacja poprawności**:
-  - W 20 MHz ($\Delta R_{\text{teor}} = 7{,}5\ \text{m}$): obiekty zlane w jeden szeroki pik,
-  - W 40 MHz ($\Delta R_{\text{teor}} = 3{,}75\ \text{m}$): widoczne kryterium Rayleigha (styk pików),
-  - W 80 i 160 MHz: pełna separacja dwóch odrębnych pików,
-  - Wyraźnie widoczne podwyższenie dna szumowego o 9 dB dla 160 MHz odzwierciedlające fizykę stałej mocy AP.
-- [ ] 4. **Weryfikacja czytelności i estetyki (wzorzec z commita `dd69b70`)**:
+- [x] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_1_przekroj_odleglosci_pasma.png`.
+- [x] 3. **Weryfikacja poprawności**:
+  - W 20 MHz ($\Delta R_{\text{teor}} = 7{,}5\ \text{m}$): obiekty zlane w jeden szeroki pik ($R = 16{,}89\ \text{m}$),
+  - W 40 MHz ($\Delta R_{\text{teor}} = 3{,}75\ \text{m}$): widoczne kryterium Rayleigha (styk pików z siodłem $-1{,}10\ \text{dB}$),
+  - W 80 i 160 MHz: pełna separacja dwóch odrębnych pików (wcięcie odpowiednio $-6{,}48\ \text{dB}$ oraz $-19{,}10\ \text{dB}$ dla $R_1 = 15{,}00\ \text{m}$ i $R_2 = 18{,}75\ \text{m}$),
+  - Wyraźnie widoczne podwyższenie dna szumowego o 9 dB dla 160 MHz odzwierciedlające fizykę stałej mocy AP (wzrost mediany tła na przekroju z $-42{,}1\ \text{dB}$ dla 20 MHz do $-33{,}1\ \text{dB}$ dla 160 MHz, tj. $+9{,}03\ \text{dB}$).
+- [x] 4. **Weryfikacja czytelności i estetyki (wzorzec z commita `dd69b70`)**:
   - **Tytuł główny**: `title('Wpływ szerokości pasma na rozdzielczość odległościową', 'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none')`,
   - **Minimalizm tekstu**: Brak rozwlekłych komentarzy i ramek tekstowych na wykresie. Zwięzła legenda: pasmo, $\Delta R$ i $\text{SNR}_{\text{in}}$.
   - Oś X: „Odległość bistatyczna [m]”, oś Y: „Moc znormalizowana [dB]”, zróżnicowane kolory i style linii, 100% język polski, `exportgraphics` 300 DPI.
