@@ -19,4 +19,5 @@ function [project_root, src_dir, lib_dir, scripts_dir] = init_paths()
     addpath(lib_dir);
     addpath(vis_dir);
     addpath(scripts_dir);
+    addpath(genpath(scripts_dir));
 end

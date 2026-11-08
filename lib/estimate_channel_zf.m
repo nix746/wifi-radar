@@ -1,4 +1,4 @@
-function [H_shifted, H_raw_shifted, zeta_zf_dB] = estimate_channel_zf(F_rx, F_tx, params)
+function [H_shifted, H_raw_shifted, zeta_zf_dB, H_mti_shifted] = estimate_channel_zf(F_rx, F_tx, params)
 % ESTIMATE_CHANNEL_ZF Zero-Forcing channel estimation, MTI filtering, and DC gap repair.
 %
 % Inputs:
@@ -10,38 +10,40 @@ function [H_shifted, H_raw_shifted, zeta_zf_dB] = estimate_channel_zf(F_rx, F_tx
 %   H_shifted     - Centered channel matrix after MTI filtering and DC interpolation
 %   H_raw_shifted - Centered raw channel matrix before MTI filtering
 %   zeta_zf_dB    - Zero-Forcing noise enhancement factor E[|X|^2]*E[1/|X|^2] [dB]
+%   H_mti_shifted - Centered channel matrix after MTI filtering (before DC interpolation)
 
-    % 1. Zero-Forcing (ZF) channel estimation in unshifted FFT domain
-    epsilon = 1e-9;
-    act_mask_unshifted = ifftshift(params.active_mask);
-    H = F_rx ./ (F_tx + epsilon);
-    H = H .* act_mask_unshifted;
+% 1. Zero-Forcing (ZF) channel estimation in unshifted FFT domain
+epsilon = 1e-9;
+act_mask_unshifted = ifftshift(params.active_mask);
+H = F_rx ./ (F_tx + epsilon);
+H = H .* act_mask_unshifted;
 
-    % Compute scale-invariant ZF noise enhancement factor on active subcarriers
-    X_act = F_tx(logical(act_mask_unshifted), :);
-    pwr_x = abs(X_act(:)).^2;
-    zeta_zf_dB = 10 * log10(mean(pwr_x) * mean(1 ./ (pwr_x + epsilon^2)));
+% Compute scale-invariant ZF noise enhancement factor on active subcarriers
+X_act = F_tx(logical(act_mask_unshifted), :);
+pwr_x = abs(X_act(:)).^2;
+zeta_zf_dB = 10 * log10(mean(pwr_x) * mean(1 ./ (pwr_x + epsilon^2)));
 
-    % 2. Shift zero frequency (DC) to the center of the spectrum
-    H_raw_shifted = fftshift(H, 1);
+% 2. Shift zero frequency (DC) to the center of the spectrum
+H_raw_shifted = fftshift(H, 1);
 
-    % 3. Slow-time MTI filter: subtract temporal mean to remove static clutter (0 Hz)
-    H_shifted = H_raw_shifted - mean(H_raw_shifted, 2);
+% 3. Slow-time MTI filter: subtract temporal mean to remove static clutter (0 Hz)
+H_mti_shifted = H_raw_shifted - mean(H_raw_shifted, 2);
+H_shifted     = H_mti_shifted;
 
-    % 4. DC null repair: linearly interpolate each contiguous gap of internal nulls
-    dc = params.dc_indices(:).';
-    if ~isempty(dc)
-        gap_starts = [dc(1), dc(find(diff(dc) > 1) + 1)];
-        gap_ends   = [dc(diff(dc) > 1), dc(end)];
+% 4. DC null repair: linearly interpolate each contiguous gap of internal nulls
+dc = params.dc_indices(:).';
+if ~isempty(dc)
+    gap_starts = [dc(1), dc(find(diff(dc) > 1) + 1)];
+    gap_ends   = [dc(diff(dc) > 1), dc(end)];
 
-        for g = 1:numel(gap_starts)
-            idx_gap   = gap_starts(g) : gap_ends(g);
-            idx_left  = idx_gap(1) - 1;
-            idx_right = idx_gap(end) + 1;
+    for g = 1:numel(gap_starts)
+        idx_gap   = gap_starts(g) : gap_ends(g);
+        idx_left  = idx_gap(1) - 1;
+        idx_right = idx_gap(end) + 1;
 
-            weights = (1:numel(idx_gap)).' / (numel(idx_gap) + 1);
-            H_shifted(idx_gap, :) = H_shifted(idx_left, :) + ...
-                weights .* (H_shifted(idx_right, :) - H_shifted(idx_left, :));
-        end
+        weights = (1:numel(idx_gap)).' / (numel(idx_gap) + 1);
+        H_shifted(idx_gap, :) = H_shifted(idx_left, :) + ...
+            weights .* (H_shifted(idx_right, :) - H_shifted(idx_left, :));
     end
+end
 end
