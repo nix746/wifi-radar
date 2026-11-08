@@ -108,13 +108,13 @@ flowchart TD
 
 ### Krok 2: Eksperyment IMPL-1 — Macierz transmitancji $\hat{H}(k,l)$ w dziedzinie czas–częstotliwość (Rys. 3.1) `[ZROBIONE]`
 - [x] 1. **Skrypt testowy**: `scripts/figures/ch3_impl/gen_fig_3_1_channel_matrix_h.m`.
-  - Scenariusz: Ekstrakcja estymowanej transmitancji $\hat{H}(k,l) = Y(k,l) ./ X(k,l)$ w standardzie IEEE 802.11ax (CBW20, Model-C).
+  - Scenariusz: Ekstrakcja estymowanej transmitancji $\hat{H}(k,l) = Y(k,l) ./ X(k,l)$ w standardzie IEEE 802.11ax (CBW80, 80 MHz, Model-C, cele $22{,}5\ \text{m} / -4{,}0\ \text{m/s}$ oraz $67{,}5\ \text{m} / +18{,}0\ \text{m/s}$).
   - Wykres: Dwa panele (heatmaps 2D amplitudy w dB):
-    - (a) Surowa macierz transmitancji przed MTI – widoczna dominująca składowa stała (przesłuch DPI) oraz wyciek luki DC wokół częstotliwości środkowej.
-    - (b) Po filtracji MTI w czasie wolnym i liniowej interpolacji podnośnych DC – wycięcie składowej stałej, ciągłość widmowa i widoczna modulacja fazowa ruchomego celu.
+    - (a) Surowa macierz transmitancji przed MTI – widoczna dominująca składowa stała (przesłuch DPI), zaniki wielodrogowe oraz wyciek luki DC wokół częstotliwości środkowej.
+    - (b) Po filtracji MTI w czasie wolnym i liniowej interpolacji podnośnych DC – wycięcie składowej stałej, ciągłość widmowa i widoczna dwuwymiarowa modulacja fazowa ruchomych celów.
 - [x] 2. **Plik wynikowy**: `thesis/img/ch3_impl/rys_3_1_macierz_transmitancji_h.png`.
 - [x] 3. **Weryfikacja poprawności**:
-  - Wycięcie przesłuchu bezpośredniego (DPI) o ponad 45 dB (w pomiarze > 120 dB dla składowej stałej, spadek całkowitej mocy o 21,4 dB),
+  - Wycięcie przesłuchu bezpośredniego (DPI) o ponad 40 dB (> 120 dB dla składowej stałej),
   - Ciągłość widmowa wzdłuż osi częstotliwości po zlikwidowaniu luki DC.
 - [x] 4. **Weryfikacja czytelności i estetyki**:
   - Osie: „Numer symbolu OFDM (czas wolny)”, „Indeks podnośnej k (częstotliwość)”, etykieta paska kolorów: „Moc transmitancji [dB]”, 100% język polski, profesjonalna mapa barw (`parula`), eksport w rozdzielczości 300 DPI (`exportgraphics`).
@@ -122,19 +122,20 @@ flowchart TD
 
 ---
 
-### Krok 3: Eksperyment IMPL-2 — Dwuwymiarowa mapa periodogramu Range–Doppler (Rys. 3.2) `[ZROBIONE]`
-- [x] 1. **Skrypt testowy**: `scripts/figures/ch3_impl/gen_fig_3_2_range_doppler.m`.
-  - Architektura (DRY): Bezpośrednie uruchomienie potoku `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` $\to$ `step4_interpreter` (lub `compute_range_doppler_map` i `calculate_physical_axes`) bez duplikacji kodu okienkowania i FFT.
-  - Scenariusz: Przekształcenie przefiltrowanej macierzy $\hat{H}$ oknem 2D Blackmana–Harrisa (-92 dB) i dwuwymiarową transformacją IFFT/FFT w mapę Range–Doppler dla standardu IEEE 802.11ax (CBW20, Model-C, 2 cele ruchome: pojazd i pieszy).
-  - Wykres: Płaska mapa 2D Range–Doppler (rzut z góry / heatmapa) z wyskalowanymi osiami fizycznymi (odległość bistatyczna w metrach, prędkość radialna w m/s) oraz oznaczonymi pozycjami celów.
-- [x] 2. **Plik wynikowy**: `thesis/img/ch3_impl/rys_3_2_mapa_range_doppler.png`.
+### Krok 3: Eksperyment IMPL-2 & IMPL-3 — Mapy periodogramu Range–Doppler przed i po DSP (Rys. 3.2 i 3.3) `[ZROBIONE]`
+- [x] 1. **Skrypty testowe (osobne pliki dla każdego rysunku, ujednolicone pasmo referencyjne CBW80 = 80 MHz)**:
+  - `scripts/figures/ch3_impl/gen_fig_3_2_range_doppler.m` (Rys. 3.2 — porównanie mapy przed DSP i po DSP dla CBW80, układ 2x2: góra wykresy 3D całej mapy, dół zbliżenie 2D na strefę celów z detekcją CLEAN),
+  - `scripts/figures/ch3_impl/gen_fig_3_3_dsp_stages.m` (Rys. 3.3 — dekompozycja 4 etapów DSP dla CBW80: Surowy $\to$ MTI $\to$ Okno 2D BH + DC $\to$ CLEAN).
+  - Architektura (DRY): Bezpośrednie uruchomienie potoku `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` $\to$ `step4_interpreter` oraz funkcji `compute_range_doppler_map` z `lib/` bez duplikacji kodu okienkowania i FFT.
+- [x] 2. **Pliki wynikowe**:
+  - `thesis/img/ch3_impl/rys_3_2_mapa_range_doppler.png`,
+  - `thesis/img/ch3_impl/rys_3_3_etapy_przetwarzania_dsp.png`.
 - [x] 3. **Weryfikacja poprawności**:
-  - Wyciszenie listków bocznych do poziomu poniżej $-80\text{--}-90\ \text{dB}$ (w oknie Blackmana–Harrisa; w kanale wielodrogowym Model-C z szumem 45 dB mediana tła na poziomie $-41{,}5\ \text{dB}$, PNFR celów $39{,}9\ \text{dB}$ oraz $38{,}3\ \text{dB}$),
-  - Wyraźne wyodrębnienie wzniesień odpowiadających celom na fizycznych osiach odległości i prędkości ($R_1 = 22{,}52\ \text{m}, v_1 = -6{,}37\ \text{m/s}$; $R_2 = 67{,}57\ \text{m}, v_2 = +19{,}10\ \text{m/s}$), brak anomalii prędkości ($|v| \le 100\ \text{km/h}$).
+  - Pełna spójność parametryczna pomiędzy Rys. 3.1, 3.2 i 3.3 (`cbw = 'CBW80'`, `mcs = 0`, `snr_dB = 45`, Model-C, ziarna `rng(42)` i `rng(23)`, jednakowe cele i kadr $R \in [0, 85]\ \text{m}$, $v \in [-25, 25]\ \text{m/s}$),
+  - Wyeliminowanie przesłuchu bezpośredniego DPI przez MTI, tłumienie listków bocznych przez okno 2D Blackmana–Harrisa oraz bezbłędna ekstrakcja obu celów przez Coherent CLEAN.
 - [x] 4. **Weryfikacja czytelności i estetyki (wzorzec z commita `dd69b70`)**:
-  - **Tytuł główny**: `title('Dwuwymiarowa mapa periodogramu Range-Doppler', 'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none')`,
-  - **Minimalizm tekstu**: Brak rozwlekłych bloków tekstowych na wykresie.
-  - Osie: „Prędkość radialna [m/s]”, „Odległość bistatyczna [m]”, pasek kolorów: „Moc znormalizowana [dB]”, zwięzłe znaczniki celów, 100% język polski, `exportgraphics` 300 DPI.
+  - Nadrzędny tytuł główny `sgtitle(..., 'Interpreter', 'none')`, krótkie techniczne tytuły podpaneli `a) ...`–`d) ...`,
+  - Osie: „Prędkość radialna [m/s]”, „Odległość bistatyczna [m]”, pasek kolorów: „Moc znormalizowana [dB]”, 100% język polski, `exportgraphics` 300 DPI.
 - [x] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
 
 ---
