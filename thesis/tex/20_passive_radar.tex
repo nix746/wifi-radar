@@ -6,7 +6,7 @@
 % Rozdział 2: Podstawy teoretyczne radaru pasywnego i sygnału Wi-Fi
 % 2.1 Sygnał Wi-Fi 802.11 (ewolucja standardów, formaty ramek Non-HT i HE-SU)
 % 2.2 Modulacja OFDM (podnośne, prefiks cykliczny CP, parametry symbolu)
-% 2.3 Podstawy radaru pasywnego (geometria bistatyczna, bilans mocy, DPI, clutter)
+% 2.3 Podstawy radaru OFDM (geometria pomiarowa, konfiguracja współlokowana, DPI, parametry siatki)
 % 2.4 Estymacja kanału (paradygmat CIR a funkcja CAF, estymator Zero-Forcing)
 % 2.5 Filtracja ech stałych (filtr MTI w czasie wolnym, kompensacja luki DC)
 % 2.6 Wyznaczanie mapy Range–Doppler (okno 2D Blackmana--Harrisa, IFFT/FFT)
@@ -69,10 +69,47 @@ Alokacja podnośnych przenosi się bezpośrednio na właściwości wyznaczanej m
     \item Czterokrotnie mniejszy odstęp podnośnych w~802.11ax wydłuża czas trwania symbolu z~4,0 do 13,6~$\mu$s. Zwiększa to zasięg jednoznaczny, lecz proporcjonalnie obniża maksymalną jednoznaczną prędkość radaru (podrozdział~\ref{subsec:pbr_fundamentals}).
 \end{itemize}
 
-\subsection{Modulacja OFDM}
+\subsection{Model matematyczny sygnału OFDM}
 \label{subsec:ofdm_modulation}
 
-\subsection{Podstawy radaru pasywnego}
+W~modulacji OFDM strumień danych dzieli się na wiele równoległych podstrumieni i~wysyła jednocześnie na gęsto rozmieszczonych podnośnych \cite{braun2014}. Aby sąsiednie podnośne nie zakłócały się nawzajem, ich odstęp częstotliwościowy musi być odwrotnością czasu trwania części użytecznej symbolu: $\Delta f = 1/T_u$. Ponieważ każdy symbol w~czasie użytecznym jest ograniczony oknem prostokątnym o~długości $T_u$, widmo pojedynczej podnośnej o~częstotliwości środkowej $k\Delta f$ ma kształt przesuniętej funkcji interpolującej $\mathrm{sinc}((f - k\Delta f)T_u)$. Miejsca zerowe tej funkcji przypadają w~odstępach będących wielokrotnościami $1/T_u = \Delta f$, a~więc dokładnie na częstotliwościach środkowych wszystkich pozostałych podnośnych \cite{sorbianWykorzystanieSieciWifi2025}. W~rezultacie podnośne pozostają wzajemnie ortogonalne i~nie wnoszą do siebie zakłóceń (ang. \textit{Inter-Carrier Interference}, ICI).
+
+W~nadajniku bity danych są odwzorowywane na zespolone symbole konstelacji $X[k,l]$. Tworzą one dwuwymiarową siatkę, w~której indeks $k$ oznacza numer podnośnej (częstotliwość), natomiast $l \in \{0, 1, \dots, M-1\}$ określa numer kolejnego symbolu OFDM wzdłuż osi czasu wolnego, przy czym $M$ to całkowita liczba symboli w~przetwarzanej ramce (pakiecie). Choć cyfrowe przetwarzanie sygnałów w~radarze operuje na próbkach dyskretnych, propagacja fal radiowych w~otoczeniu zachodzi w~czasie ciągłym. Zjawiska radiolokacyjne -- opóźnienie echa $\tau = 2R/c$ oraz rotacja fazy wywołana prędkością celu $e^{j 2\pi f_D t}$ -- oddziałują na fizyczną falę elektromagnetyczną w~przestrzeni. Z~tego względu opis matematyczny rozpoczyna się od modelu w~czasie ciągłym. Zespoloną obwiednię pojedynczego, $l$-tego symbolu OFDM w~paśmie podstawowym opisuje zależność \cite[rozdz.~3.1]{braun2014}:
+\begin{equation}
+    s_l(t) = \frac{1}{\sqrt{N_{\mathrm{FFT}}}} \sum_{k \in \mathcal{K}_{\mathrm{act}}} X[k,l]\, e^{j 2\pi k \Delta f (t - T_{\mathrm{CP}})}, \quad t \in [0, T_{\mathrm{sym}}],
+    \label{eq:ofdm_continuous}
+\end{equation}
+gdzie:
+\begin{itemize}
+    \item $s_l(t)$ to zespolony sygnał pasma podstawowego $l$-tego symbolu,
+    \item $\mathcal{K}_{\mathrm{act}}$ oznacza zbiór indeksów podnośnych aktywnych (przenoszących dane i~piloty, zgodnie z~tabelą~\ref{tab:wifi_params}),
+    \item $X[k,l]$ to zespolony symbol konstelacji modulujący $k$-tą podnośną w~$l$-tym symbolu,
+    \item $e^{j 2\pi k \Delta f (t - T_{\mathrm{CP}})}$ to zespolona harmoniczna o~częstotliwości $k\Delta f$; przesunięcie o~czas trwania prefiksu $T_{\mathrm{CP}}$ sprawia, że faza fali wynosi zero na początku części użytecznej ($t = T_{\mathrm{CP}}$), natomiast w~przedziale $t \in [0, T_{\mathrm{CP}}]$ funkcja ta okresowo kopiuje końcowy fragment symbolu, tworząc prefiks cykliczny,
+    \item $1/\sqrt{N_{\mathrm{FFT}}}$ stanowi współczynnik normalizujący energię sygnału,
+    \item $t \in [0, T_{\mathrm{sym}}]$ określa czas trwania pełnego symbolu wraz z~prefiksem cyklicznym ($T_{\mathrm{sym}} = T_u + T_{\mathrm{CP}}$).
+\end{itemize}
+
+W~odbiorniku cyfrowym oraz w~kodzie symulatora sygnał jest przetwarzany w~postaci próbek pobieranych z~częstotliwością $f_s = N_{\mathrm{FFT}}\Delta f = 1/T_s$. Podstawiając chwile próbkowania części użytecznej $t - T_{\mathrm{CP}} = n T_s = n / (N_{\mathrm{FFT}}\Delta f)$ do równania~\eqref{eq:ofdm_continuous}, czynnik harmoniczny upraszcza się do $e^{j 2\pi k n / N_{\mathrm{FFT}}}$. W~konsekwencji próbki części użytecznej symbolu generuje się bezpośrednio za pomocą $N_{\mathrm{FFT}}$-punktowej odwrotnej dyskretnej transformaty Fouriera (IFFT):
+\begin{equation}
+    s[n, l] = \frac{1}{\sqrt{N_{\mathrm{FFT}}}} \sum_{k=0}^{N_{\mathrm{FFT}}-1} X[k,l]\, e^{j \frac{2\pi k n}{N_{\mathrm{FFT}}}}, \quad n \in \{0, 1, \dots, N_{\mathrm{FFT}}-1\}.
+    \label{eq:ofdm_discrete_ifft}
+\end{equation}
+Dla podnośnych nieaktywnych (pasm ochronnych oraz zerowych prążków DC, $k \notin \mathcal{K}_{\mathrm{act}}$) przyjmuje się $X[k,l] = 0$.
+
+Przed wysłaniem symbolu w~kanał radiowy na jego początek dołącza się prefiks cykliczny (ang. \textit{Cyclic Prefix}, CP). Jest to powtórzenie końcowych $N_{\mathrm{CP}}$ próbek części użytecznej obliczonej ze wzoru~\eqref{eq:ofdm_discrete_ifft}. Całkowity czas trwania symbolu wynosi wówczas:
+\begin{equation}
+    T_{\mathrm{sym}} = T_u + T_{\mathrm{CP}} = \frac{N_{\mathrm{FFT}} + N_{\mathrm{CP}}}{f_s}.
+    \label{eq:ofdm_symbol_duration}
+\end{equation}
+W~radarze pasywnym prefiks cykliczny zapewnia dwie fundamentalne korzyści \cite{braun2014}:
+\begin{enumerate}
+    \item \textbf{Ochrona przed interferencją międzysymbolową (ISI):} dopóki maksymalne opóźnienie echa w~kanale spełnia warunek $\tau_{\max} \le T_{\mathrm{CP}}$, wszystkie opóźnione repliki z~poprzedniego symbolu wygasają wewnątrz bufora $T_{\mathrm{CP}}$. Dla typowego czasu $T_{\mathrm{CP}} = 0{,}8~\mu$s odpowiada to maksymalnej różnicy dróg propagacji $\Delta R_{\mathrm{CP}} = c T_{\mathrm{CP}} / 2 \approx 120$~m, co z~dużym zapasem pokrywa zasięg wewnątrzbudynkowy \cite{storrer2021}.
+    \item \textbf{Przekształcenie splotu liniowego w~kołowy:} dzięki okresowemu powtórzeniu próbek oddziaływanie wielodrogowego kanału radiowego na część użyteczną symbolu przyjmuje postać splotu kołowego (zamiast liniowego). W~odbiorniku wystarczy więc odrzucić próbki prefiksu i~wykonać dyskretną transformatę FFT (moduł demodulacji \texttt{demodulate.m}, rozdział~\ref{sec:radar_implementation}). W~dziedzinie częstotliwości splot kołowy przechodzi w~zwykłe mnożenie punkt po punkcie, co sprowadza wpływ kanału na każdej podnośnej do wymnożenia przez transmitancję $H[k,l]$ \cite[rozdz.~3.2]{braun2014}.
+\end{enumerate}
+
+W~przetwarzaniu radarowym istotną rolę odgrywają również właściwości symboli $X[k,l]$. Sekwencje treningowe preambuły oraz podnośne pilotowe stosują modulację BPSK, w~której każdy punkt ma stałą, jednostkową amplitudę ($|X[k,l]| = 1$). W~polu danych rodzaj modulacji wynika natomiast z~zastosowanego schematu MCS \cite{1999,2021}. Modulacje najniższego rzędu (BPSK, QPSK) zachowują stałą energię symboli ($|X[k,l]|^2 = 1$). Z~kolei modulacje wyższych rzędów (16-QAM, 64-QAM, a~w~802.11ax do 1024-QAM) cechują się nierównomiernym rozkładem energii w~konstelacji. Wewnętrzne punkty takich konstelacji mają energię wielokrotnie niższą od energii średniej ($|X[k,l]|^2 \ll 1$) \cite{wypich2026}. Gdy odbiornik radarowy dokonuje estymacji kanału metodą dzielenia (Zero-Forcing), dzielenie przez tak małe wartości prowadzi do silnego wzmocnienia szumu tła. W~opracowanym symulatorze generację symboli OFDM realizuje moduł nadajnika (\texttt{step1\_transmitter.m}), a~mechanizm wzmocnienia szumu przeanalizowano teoretycznie w~podrozdziale~\ref{subsec:channel_estimation} oraz zweryfikowano badaniami w~podrozdziale~\ref{subsec:sim_mcs_noise_enhancement}.
+
+\subsection{Geometria pomiarowa i parametry radaru OFDM}
 \label{subsec:pbr_fundamentals}
 
 \subsection{Estymacja kanału}

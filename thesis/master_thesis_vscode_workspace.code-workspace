@@ -138,6 +138,7 @@
 			}
 		],
 		"latex-workshop.view.pdf.viewer": "browser",
+		"latex-workshop.formatting.latex": "latexindent",
 		"latex-workshop.latex.autoClean.run": "onFailed",
 		"ltex.configurationTarget": {
 			"addToDictionary": "workspaceFolder"

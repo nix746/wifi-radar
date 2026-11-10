@@ -203,7 +203,7 @@ Poniższe reguły są bezwzględnie wiążące podczas pisania i redagowania tek
 
 ### 5.4. Wytyczne uczelni dot. AI, stylometria i JSA
 1. **Dozwolona rola narzędzi AI**: Zgodnie z wytycznymi uczelni narzędzia AI/LLM mogą być używane wyłącznie jako wsparcie techniczno-odtwórcze (*chores*: asysta w składzie LaTeX-a, sprawdzanie interpunkcji, drobne skrypty pomocnicze). Narzędzia AI **nie mogą być źródłem koncepcji merytorycznej (*concept*), tez ani wniosków badawczych**.
-2. **Świadomość stylometrii i JSA**: Jednolity System Antyplagiatowy (JSA) analizuje jednorodność stylu tekstu. Nie wolno wklejać surowego tekstu generowanego przez LLM; tekst pracy musi być zredagowany spójnym, jednolitym, autorskim językiem inżynierskim.
+2. **Świadomość stylometrii i JSA**: Jednolity System Antyplagiatowy (JSA) analizuje jednorodność stylu tekstu. Tekst pracy musi być zredagowany spójnym, jednolitym, autorskim językiem inżynierskim. Zdania powinny być zwięzłe i przyczynowo skutkowe, czyli powiązane ze sobą.
 
 ### 5.5. Opracowanie statystyczne w części badawczej
 1. W Rozdziale 4 wyniki nie mogą ograniczać się do pojedynczych przypadków deterministycznych.
