@@ -99,6 +99,13 @@ patch([-65, -v_unamb(1), -v_unamb(1), -65], [-60, -60, 5, 5], [0.92, 0.92, 0.92]
 patch([v_unamb(1), 65, 65, v_unamb(1)], [-60, -60, 5, 5], [0.92, 0.92, 0.92], ...
     'EdgeColor', 'none', 'FaceAlpha', 0.7, 'HandleVisibility', 'off');
 
+% Plot periodic spectrum replicas outside [-v_unamb, +v_unamb]
+T_v1 = 2 * v_unamb(1);
+for k_rep = [-1, 1]
+    plot(axes_v{1} + k_rep * T_v1, cuts_dB{1}, '-', ...
+        'Color', [color_a, 0.45], 'LineWidth', 1.4, 'HandleVisibility', 'off');
+end
+
 plot(axes_v{1}, cuts_dB{1}, '-', 'Color', color_a, 'LineWidth', 1.9, ...
     'DisplayName', 'Profil Dopplera 802.11a');
 xline(-v_unamb(1), '--', 'Color', color_bound, 'LineWidth', 1.4, ...
@@ -131,6 +138,13 @@ patch([-65, -v_unamb(2), -v_unamb(2), -65], [-60, -60, 5, 5], [0.92, 0.92, 0.92]
     'EdgeColor', 'none', 'FaceAlpha', 0.7, 'DisplayName', 'Obszar niejednoznaczności');
 patch([v_unamb(2), 65, 65, v_unamb(2)], [-60, -60, 5, 5], [0.92, 0.92, 0.92], ...
     'EdgeColor', 'none', 'FaceAlpha', 0.7, 'HandleVisibility', 'off');
+
+% Plot periodic spectrum replicas outside [-v_unamb, +v_unamb]
+T_v2 = 2 * v_unamb(2);
+for k_rep = [-2, -1, 1, 2]
+    plot(axes_v{2} + k_rep * T_v2, cuts_dB{2}, '-', ...
+        'Color', [color_ax, 0.45], 'LineWidth', 1.4, 'HandleVisibility', 'off');
+end
 
 plot(axes_v{2}, cuts_dB{2}, '-', 'Color', color_ax, 'LineWidth', 1.9, ...
     'DisplayName', 'Profil Dopplera 802.11ax');
