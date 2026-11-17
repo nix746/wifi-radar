@@ -2,11 +2,13 @@ function gen_fig_4_2_doppler_aliasing()
 % GEN_FIG_4_2_DOPPLER_ALIASING
 % Experiment SIM-2 (E2): Unambiguous velocity limit comparison (802.11a vs 802.11ax).
 % Figure 4.2 for Chapter 4 of the thesis:
-%   1D Doppler velocity profile cuts for a fast moving vehicle target
+%   Integrated 1D Doppler velocity profile cut on a single plot for a fast moving vehicle target
 %   (v = +20.0 m/s = 72 km/h, R = 30.0 m) in a flat-fading channel (Model-A),
 %   comparing IEEE 802.11a (T_sym = 4.0 us, v_unamb = +/-56.8 m/s) against
-%   IEEE 802.11ax (T_sym = 13.6 us, v_unamb = +/-16.7 m/s), where spectrum
-%   wrapping (Doppler aliasing) folds the echo to v_alias = -13.4 m/s.
+%   IEEE 802.11ax (T_sym = 13.6 us, v_unamb = +/-16.7 m/s) across the 802.11a
+%   unambiguous Doppler window (+/-56.8 m/s). Shows Doppler aliasing in 802.11ax
+%   folding the echo to v_alias = -13.4 m/s in its fundamental interval, while
+%   both standards exhibit a peak at the true velocity (+20.0 m/s).
 %
 % Output file: thesis/img/ch4_sim/rys_4_2_aliasing_dopplera.png
 
@@ -59,15 +61,14 @@ for i = 1:numel(standards)
     r_idx   = targets_found(1, 1);
     v_idx   = targets_found(1, 2);
     P_slice = abs(radar_data.CPer_base(r_idx, :)).^2;
-    max_val = max(P_slice);
 
-    cuts_dB{i}   = 10 * log10(P_slice / max_val + 1e-12);
+    cuts_dB{i}   = 10 * log10(P_slice + 1e-12);
     axes_v{i}    = radar_data.axis_velocity;
     v_unamb(i)   = abs(axes_v{i}(end));
     v_det(i)     = axes_v{i}(v_idx);
     r_det(i)     = radar_data.axis_range(r_idx);
     pnfr_dB(i)   = pnfr.pnfr_dB(1);
-    nf_cut_dB(i) = 10 * log10(median(P_slice) / max_val);
+    nf_cut_dB(i) = 10 * log10(median(P_slice) + 1e-12);
 
     fprintf('  [%s] T_sym = %.1f us | v_unamb = +/-%.2f m/s | Detected: R = %.2f m, v = %+.2f m/s | NF_cut = %.1f dB, PNFR = %.1f dB\n', ...
         std_name, (params.Nfft + params.Ncp) / fs * 1e6, v_unamb(i), ...
@@ -78,96 +79,70 @@ v_alias_th = v_true_ms - 2 * v_unamb(2);
 fprintf('  Theoretical aliased velocity in 802.11ax: %.2f - 2 * %.2f = %.2f m/s (measured: %.2f m/s)\n', ...
     v_true_ms, v_unamb(2), v_alias_th, v_det(2));
 
-% 3. Plot 1D Doppler cuts comparison (two side-by-side panels)
-fig = figure('Name', 'Figure 4.2 - Doppler Velocity Aliasing (802.11a vs 802.11ax)', ...
-    'Color', 'white', 'Position', [100, 100, 1200, 580], 'Visible', 'off');
+% 3. Plot 1D Doppler cuts comparison on a single integrated figure
+v_lim_a = v_unamb(1); % Limiting x-axis strictly to 802.11a unambiguous range (+/-56.82 m/s)
 
-sgtitle('Porównanie jednoznaczności prędkości: IEEE 802.11a vs 802.11ax', ...
-    'FontSize', 14, 'FontWeight', 'bold', 'Interpreter', 'none');
-
-color_a     = [0.0000, 0.4470, 0.7410]; % Blue
-color_ax    = [0.8500, 0.3250, 0.0980]; % Orange-Red
-color_true  = [0.1330, 0.5450, 0.1330]; % Forest Green
-color_bound = [0.2500, 0.2500, 0.2500]; % Dark Gray
-
-% --- Panel (a): IEEE 802.11a ---
-subplot(1, 2, 1);
-hold on;
-% Shade ambiguous region outside [-v_unamb, +v_unamb]
-patch([-65, -v_unamb(1), -v_unamb(1), -65], [-60, -60, 5, 5], [0.92, 0.92, 0.92], ...
-    'EdgeColor', 'none', 'FaceAlpha', 0.7, 'DisplayName', 'Obszar niejednoznaczności');
-patch([v_unamb(1), 65, 65, v_unamb(1)], [-60, -60, 5, 5], [0.92, 0.92, 0.92], ...
-    'EdgeColor', 'none', 'FaceAlpha', 0.7, 'HandleVisibility', 'off');
-
-% Plot periodic spectrum replicas outside [-v_unamb, +v_unamb]
-T_v1 = 2 * v_unamb(1);
-for k_rep = [-1, 1]
-    plot(axes_v{1} + k_rep * T_v1, cuts_dB{1}, '-', ...
-        'Color', [color_a, 0.45], 'LineWidth', 1.4, 'HandleVisibility', 'off');
-end
-
-plot(axes_v{1}, cuts_dB{1}, '-', 'Color', color_a, 'LineWidth', 1.9, ...
-    'DisplayName', 'Profil Dopplera 802.11a');
-xline(-v_unamb(1), '--', 'Color', color_bound, 'LineWidth', 1.4, ...
-    'DisplayName', 'Granica ±v_unamb (±56,8 m/s)');
-xline(+v_unamb(1), '--', 'Color', color_bound, 'LineWidth', 1.4, ...
-    'HandleVisibility', 'off');
-xline(v_true_ms, ':', 'Color', color_true, 'LineWidth', 1.8, ...
-    'DisplayName', 'Prędkość rzeczywista (+20,0 m/s)');
-plot(v_det(1), 0, 'o', 'Color', color_a, 'MarkerFaceColor', color_a, ...
-    'MarkerSize', 7, 'DisplayName', sprintf('Wykryty pik (+%s m/s)', strrep(sprintf('%.1f', v_det(1)), '.', ',')));
-hold off;
-
-xlim([-65, 65]);
-ylim([-55, 4]);
-title('a) IEEE 802.11a (T_sym = 4,0 µs)', ...
-    'FontSize', 11, 'FontWeight', 'bold', 'Interpreter', 'none');
-xlabel('Prędkość radialna [m/s]', 'FontSize', 11, 'Interpreter', 'none');
-ylabel('Moc znormalizowana [dB]', 'FontSize', 11, 'Interpreter', 'none');
-leg1 = legend('Location', 'southoutside', 'NumColumns', 2, 'FontSize', 9.0, 'Interpreter', 'none');
-leg1.Box = 'on';
-set(gca, 'FontSize', 10.5, 'LineWidth', 1.0, 'Layer', 'top');
-grid on;
-set(gca, 'GridAlpha', 0.25);
-
-% --- Panel (b): IEEE 802.11ax ---
-subplot(1, 2, 2);
-hold on;
-% Shade ambiguous region outside [-v_unamb, +v_unamb]
-patch([-65, -v_unamb(2), -v_unamb(2), -65], [-60, -60, 5, 5], [0.92, 0.92, 0.92], ...
-    'EdgeColor', 'none', 'FaceAlpha', 0.7, 'DisplayName', 'Obszar niejednoznaczności');
-patch([v_unamb(2), 65, 65, v_unamb(2)], [-60, -60, 5, 5], [0.92, 0.92, 0.92], ...
-    'EdgeColor', 'none', 'FaceAlpha', 0.7, 'HandleVisibility', 'off');
-
-% Plot periodic spectrum replicas outside [-v_unamb, +v_unamb]
+% Generate periodic extension of 802.11ax across [-v_lim_a, +v_lim_a]
 T_v2 = 2 * v_unamb(2);
-for k_rep = [-2, -1, 1, 2]
-    plot(axes_v{2} + k_rep * T_v2, cuts_dB{2}, '-', ...
-        'Color', [color_ax, 0.45], 'LineWidth', 1.4, 'HandleVisibility', 'off');
+v_ax_full = [];
+cut_ax_full = [];
+for k_rep = -2:2
+    v_ax_full   = [v_ax_full, axes_v{2} + k_rep * T_v2];
+    cut_ax_full = [cut_ax_full, cuts_dB{2}];
 end
+[v_ax_sorted, sort_idx] = sort(v_ax_full);
+cut_ax_sorted = cut_ax_full(sort_idx);
+mask_ax = (v_ax_sorted >= -v_lim_a) & (v_ax_sorted <= v_lim_a);
+v_ax_plot = v_ax_sorted(mask_ax);
+cut_ax_plot = cut_ax_sorted(mask_ax);
 
-plot(axes_v{2}, cuts_dB{2}, '-', 'Color', color_ax, 'LineWidth', 1.9, ...
-    'DisplayName', 'Profil Dopplera 802.11ax');
-xline(-v_unamb(2), '--', 'Color', color_bound, 'LineWidth', 1.4, ...
-    'DisplayName', 'Granica ±v_unamb (±16,7 m/s)');
-xline(+v_unamb(2), '--', 'Color', color_bound, 'LineWidth', 1.4, ...
-    'HandleVisibility', 'off');
-xline(v_true_ms, ':', 'Color', color_true, 'LineWidth', 1.8, ...
-    'DisplayName', 'Prędkość rzeczywista (+20,0 m/s)');
-plot(v_det(2), 0, 'o', 'Color', color_ax, 'MarkerFaceColor', color_ax, ...
-    'MarkerSize', 7, 'DisplayName', sprintf('Pik po aliasingu (%s m/s)', strrep(sprintf('%.1f', v_det(2)), '.', ',')));
+fig = figure('Name', 'Figure 4.2 - Doppler Velocity Aliasing (802.11a vs 802.11ax)', ...
+    'Color', 'white', 'Position', [100, 100, 920, 500], 'Visible', 'off');
+hold on;
+
+color_a     = [0.0000, 0.4470, 0.7410]; % Blue (802.11a)
+color_ax    = [0.8500, 0.3250, 0.0980]; % Orange-Red (802.11ax)
+color_true  = [0.1330, 0.5450, 0.1330]; % Forest Green (True velocity)
+color_bound = [0.4500, 0.4500, 0.4500]; % Gray (Bounds)
+
+% 1. Vertical reference lines
+xline(-v_unamb(2), '-.', 'Color', color_bound, 'LineWidth', 1.2, 'HandleVisibility', 'off');
+h_bound = xline(+v_unamb(2), '-.', 'Color', color_bound, 'LineWidth', 1.2, ...
+    'DisplayName', sprintf('Granice jednoznaczności 802.11ax (±%s m/s)', strrep(sprintf('%.1f', v_unamb(2)), '.', ',')));
+
+h_true = xline(v_true_ms, ':', 'Color', color_true, 'LineWidth', 1.5, ...
+    'DisplayName', sprintf('Prędkość rzeczywista celu (+%s m/s)', strrep(sprintf('%.1f', v_true_ms), '.', ',')));
+
+% 2. Blue curve (IEEE 802.11a) plotted first
+p_a = plot(axes_v{1}, cuts_dB{1}, '-', 'Color', color_a, 'LineWidth', 1.3, ...
+    'DisplayName', 'IEEE 802.11a (T_sym = 4,0 µs)');
+
+% 3. Orange curve (IEEE 802.11ax) plotted second (on top of blue)
+p_ax = plot(v_ax_plot, cut_ax_plot, '-', 'Color', color_ax, 'LineWidth', 1.3, ...
+    'DisplayName', 'IEEE 802.11ax (T_sym = 13,6 µs)');
+
 hold off;
 
-xlim([-65, 65]);
-ylim([-55, 4]);
-title('b) IEEE 802.11ax (T_sym = 13,6 µs)', ...
-    'FontSize', 11, 'FontWeight', 'bold', 'Interpreter', 'none');
+xlim([-v_lim_a, v_lim_a]);
+ylim([-60, 14]);
+
+v_lim_str = strrep(sprintf('%.1f', v_lim_a), '.', ',');
+title(sprintf('Profile Dopplera w przedziale jednoznaczności IEEE 802.11a (±%s m/s)', v_lim_str), ...
+    'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none');
 xlabel('Prędkość radialna [m/s]', 'FontSize', 11, 'Interpreter', 'none');
-ylabel('Moc znormalizowana [dB]', 'FontSize', 11, 'Interpreter', 'none');
-leg2 = legend('Location', 'southoutside', 'NumColumns', 2, 'FontSize', 9.0, 'Interpreter', 'none');
-leg2.Box = 'on';
-set(gca, 'FontSize', 10.5, 'LineWidth', 1.0, 'Layer', 'top');
-grid on;
+ylabel('Moc profilu Dopplera [dB]', 'FontSize', 11, 'Interpreter', 'none');
+
+% Streamlined legend: 802.11ax first, 802.11a second, True velocity, Boundaries
+leg = legend([p_ax, p_a, h_true, h_bound], ...
+    {'IEEE 802.11ax (T_sym = 13,6 µs)', ...
+     'IEEE 802.11a (T_sym = 4,0 µs)', ...
+     sprintf('Prędkość rzeczywista celu (+%s m/s)', strrep(sprintf('%.1f', v_true_ms), '.', ',')), ...
+     sprintf('Granice jednoznaczności 802.11ax (±%s m/s)', strrep(sprintf('%.1f', v_unamb(2)), '.', ','))}, ...
+    'Location', 'southoutside', 'NumColumns', 2, 'FontSize', 9.5, 'Interpreter', 'none');
+leg.Box = 'on';
+
+set(gca, 'FontSize', 10.5, 'LineWidth', 1.0, 'Box', 'on');
+grid on; box on;
 set(gca, 'GridAlpha', 0.25);
 
 % 4. Export figure in 300 DPI
