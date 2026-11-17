@@ -96,8 +96,8 @@ function plot_allocation(data, pilots, dc, guard, x_lim)
     yticks([0, 1]);
     xlabel('Indeks podnośnej k', 'FontSize', 11, 'Interpreter', 'none');
     ylabel('Moduł |X(k)| [-]', 'FontSize', 11, 'Interpreter', 'none');
-    set(gca, 'FontSize', 10, 'LineWidth', 1.0);
-    grid on;
+    set(gca, 'FontSize', 10, 'LineWidth', 1.0, 'Box', 'on');
+    grid on; box on;
     set(gca, 'GridAlpha', 0.2);
 end
 

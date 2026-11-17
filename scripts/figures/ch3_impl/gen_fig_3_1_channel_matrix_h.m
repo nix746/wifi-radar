@@ -96,8 +96,8 @@ function gen_fig_3_1_channel_matrix_h()
     title('a) Przed MTI', 'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none');
     xlabel('Numer symbolu OFDM (czas wolny)', 'FontSize', 11, 'Interpreter', 'none');
     ylabel('Indeks podnośnej k (częstotliwość)', 'FontSize', 11, 'Interpreter', 'none');
-    set(gca, 'FontSize', 10, 'LineWidth', 1.0);
-    grid on;
+    set(gca, 'FontSize', 10, 'LineWidth', 1.0, 'Box', 'on');
+    grid on; box on;
     set(gca, 'GridColor', [1 1 1], 'GridAlpha', 0.25);
 
     % Panel (b): Transfer matrix after MTI filtering and DC interpolation
@@ -114,8 +114,8 @@ function gen_fig_3_1_channel_matrix_h()
     title('b) Po MTI i interpolacji DC', 'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none');
     xlabel('Numer symbolu OFDM (czas wolny)', 'FontSize', 11, 'Interpreter', 'none');
     ylabel('Indeks podnośnej k (częstotliwość)', 'FontSize', 11, 'Interpreter', 'none');
-    set(gca, 'FontSize', 10, 'LineWidth', 1.0);
-    grid on;
+    set(gca, 'FontSize', 10, 'LineWidth', 1.0, 'Box', 'on');
+    grid on; box on;
     set(gca, 'GridColor', [1 1 1], 'GridAlpha', 0.25);
 
     % Overall figure title

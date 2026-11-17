@@ -153,8 +153,8 @@ function gen_fig_3_2_range_doppler()
         'FontSize', 11.5, 'FontWeight', 'bold', 'Interpreter', 'none');
     xlabel('Prędkość radialna [m/s]', 'FontSize', 10.5, 'Interpreter', 'none');
     ylabel('Odległość bistatyczna [m]', 'FontSize', 10.5, 'Interpreter', 'none');
-    set(gca, 'FontSize', 10, 'LineWidth', 1.0);
-    grid on; set(gca, 'GridColor', [1 1 1], 'GridAlpha', 0.25);
+    set(gca, 'FontSize', 10, 'LineWidth', 1.0, 'Box', 'on');
+    grid on; box on; set(gca, 'GridColor', [1 1 1], 'GridAlpha', 0.25);
 
     % --- Panel (d): Po DSP - Zbliżenie 2D na strefę celów z detekcją CLEAN ---
     subplot(2, 2, 4);
@@ -185,8 +185,8 @@ function gen_fig_3_2_range_doppler()
         'FontSize', 11.5, 'FontWeight', 'bold', 'Interpreter', 'none');
     xlabel('Prędkość radialna [m/s]', 'FontSize', 10.5, 'Interpreter', 'none');
     ylabel('Odległość bistatyczna [m]', 'FontSize', 10.5, 'Interpreter', 'none');
-    set(gca, 'FontSize', 10, 'LineWidth', 1.0);
-    grid on; set(gca, 'GridColor', [1 1 1], 'GridAlpha', 0.25);
+    set(gca, 'FontSize', 10, 'LineWidth', 1.0, 'Box', 'on');
+    grid on; box on; set(gca, 'GridColor', [1 1 1], 'GridAlpha', 0.25);
 
     sgtitle(sprintf('Mapa periodogramu Range-Doppler przed i po filtracji DSP (802.11ax, %s, %d MHz)', cbw, bw_mhz), ...
         'FontSize', 14, 'FontWeight', 'bold', 'Interpreter', 'none');

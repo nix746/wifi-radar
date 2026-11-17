@@ -132,8 +132,8 @@ function gen_fig_3_3_dsp_stages()
         title(panel_titles{p}, 'FontSize', 11.5, 'FontWeight', 'bold', 'Interpreter', 'none');
         xlabel('Prędkość radialna [m/s]', 'FontSize', 10.5, 'Interpreter', 'none');
         ylabel('Odległość bistatyczna [m]', 'FontSize', 10.5, 'Interpreter', 'none');
-        set(gca, 'FontSize', 10, 'LineWidth', 1.0);
-        grid on;
+        set(gca, 'FontSize', 10, 'LineWidth', 1.0, 'Box', 'on');
+        grid on; box on;
         set(gca, 'GridColor', [1 1 1], 'GridAlpha', 0.25);
     end
 
