@@ -4,9 +4,9 @@ function gen_fig_4_3_noise_enhancement()
 % Figure 4.3 for Chapter 4 of the thesis:
 %   Dual Y-axis comparison of the Zero-Forcing noise enhancement factor
 %   zeta_ZF = E[|X|^2]*E[1/|X|^2] [dB] and target detection contrast PNFR [dB]
-%   across MCS 0 (BPSK), MCS 3 (16-QAM), MCS 7 (64-QAM), and MCS 11 (1024-QAM)
-%   for IEEE 802.11ax (CBW40, TGax Model-C) with dynamic payload scaling
-%   maintaining a constant frame duration (~3.87 ms, M = 280 OFDM symbols).
+%   across all available MCS 0-11 (BPSK to 1024-QAM) for IEEE 802.11ax
+%   (CBW40, TGax Model-C) with dynamic payload scaling maintaining a constant
+%   frame duration (~3.87 ms, M = 280 OFDM symbols).
 %
 % Output file: thesis/img/ch4_sim/rys_4_3_wzmocnienie_szumu_mcs.png
 
@@ -29,8 +29,7 @@ snr_dB        = 25.0;
 % Moving target scenario in indoor multipath channel (R = 22.5 m, v = +18.0 m/s)
 targets = struct('type', 'car', 'range_m', 22.5, 'velocity_mps', 18.0, 'gain', 0.05);
 
-mcs_list   = [0, 3, 7, 11];
-mcs_labels = {'MCS 0 (BPSK)', 'MCS 3 (16-QAM)', 'MCS 7 (64-QAM)', 'MCS 11 (1024-QAM)'};
+mcs_list   = 0:11;
 
 n_mcs      = numel(mcs_list);
 zeta_zf_dB = zeros(1, n_mcs);
@@ -57,8 +56,8 @@ for i = 1:n_mcs
     r_det = radar_data.axis_range(targets_found(1, 1));
     v_det = radar_data.axis_velocity(targets_found(1, 2));
 
-    fprintf('  [%s] PSDU = %6d B (M = %d) | zeta_ZF = %.2f dB | PNFR = %.2f dB | Det: R = %.2f m, v = %+.2f m/s\n', ...
-        mcs_labels{i}, psdu_vec(i), n_sym_vec(i), zeta_zf_dB(i), pnfr_dB(i), r_det, v_det);
+    fprintf('  [MCS %2d] PSDU = %6d B (M = %d) | zeta_ZF = %.2f dB | PNFR = %.2f dB | Det: R = %.2f m, v = %+.2f m/s\n', ...
+        mcs, psdu_vec(i), n_sym_vec(i), zeta_zf_dB(i), pnfr_dB(i), r_det, v_det);
 end
 
 fprintf('  ZF noise enhancement rise (MCS 0 -> MCS 11): %+.2f dB\n', zeta_zf_dB(end) - zeta_zf_dB(1));
@@ -96,19 +95,42 @@ yticks(41:1:48);
 ax.YColor = color_right;
 
 % X-axis formatting and title
-xlim([-0.8, 11.8]);
+xlim([-0.6, 11.6]);
 xticks(mcs_list);
-xticklabels(mcs_labels);
-xlabel('Rząd modulacji (indeks MCS)', 'FontSize', 11, 'Interpreter', 'none');
-title('Wpływ rzędu modulacji MCS na wzmocnienie szumu i kontrast celu', ...
+xticklabels(string(mcs_list));
+xtickangle(0);
+xlabel('Indeks schematu modulacji i kodowania (MCS)', 'FontSize', 11, 'Interpreter', 'none');
+title('Wpływ indeksu MCS na wzmocnienie szumu ZF i kontrast celu PNFR (IEEE 802.11ax)', ...
     'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none');
+
+% Text annotations indicating modulation groups above the curves
+y_ann = 6.9; % in left axis coordinates
+mod_groups = { ...
+    [0, 0],   'BPSK'; ...
+    [1, 2],   'QPSK'; ...
+    [3, 4],   '16-QAM'; ...
+    [5, 7],   '64-QAM'; ...
+    [8, 9],   '256-QAM'; ...
+    [10, 11], '1024-QAM' ...
+    };
+for g = 1:size(mod_groups, 1)
+    span = mod_groups{g, 1};
+    lbl  = mod_groups{g, 2};
+    x_pos = mean(span);
+    text(x_pos, y_ann, lbl, 'HorizontalAlignment', 'center', ...
+        'FontSize', 8.5, 'FontWeight', 'bold', 'Color', [0.2 0.2 0.2]);
+    if span(1) ~= span(2)
+        line([span(1)-0.35, span(2)+0.35], [y_ann-0.3, y_ann-0.3], ...
+            'Color', [0.4 0.4 0.4], 'LineWidth', 0.8);
+    end
+end
 
 leg = legend([p1, p2], 'Location', 'southoutside', 'NumColumns', 2, ...
     'FontSize', 10, 'Interpreter', 'none');
 leg.Box = 'on';
 
-set(gca, 'FontSize', 10.5, 'LineWidth', 1.0);
-grid on;
+set(gca, 'FontSize', 10.5, 'LineWidth', 1.0, 'Box', 'on');
+grid on; box on;
 set(gca, 'GridAlpha', 0.25);
 
 % 4. Export figure in 300 DPI
