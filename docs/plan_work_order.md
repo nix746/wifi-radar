@@ -14,8 +14,8 @@ Ten dokument mówi **w jakiej kolejności** robić zadania. *Co* ma powstać, je
 | **Krok 4** | Eksperyment SIM-1 (E1): Granica rozdzielczości odległościowej pasma (20, 40, 80, 160 MHz) (Rys. 4.1) | `[ZROBIONE]` |
 | **Krok 5** | Eksperyment SIM-2 (E2): Granica prędkości jednoznacznej: 802.11a vs ax (aliasing Dopplera) (Rys. 4.2) | `[ZROBIONE]` |
 | **Krok 6** | Eksperyment SIM-3 (E3): Granica modulacji MCS i wzmocnienie szumu ZF (Rys. 4.3) | `[ZROBIONE]` |
-| **Krok 7** | Eksperyment SIM-4 (E4): Wpływ otoczenia wielodrogowego TGax (A, C, E) i filtr MTI (Rys. 4.4) | `[DO ZROBIENIA]` |
-| **Krok 8** | Eksperyment SIM-5 (E5): Granica dynamiki mocy i Coherent CLEAN z progiem MAD (Rys. 4.5) | `[DO ZROBIENIA]` |
+| **Krok 7** | Eksperyment SIM-4 (E4): Wpływ otoczenia wielodrogowego TGax (A, C, E) i filtr MTI (Rys. 4.4) | `[ZROBIONE]` |
+| **Krok 8** | Eksperyment SIM-5 (E5): Granica dynamiki mocy i Coherent CLEAN z progiem MAD (Rys. 4.5) | `[ZROBIONE]` |
 | **Krok 9** | Eksperyment SIM-6 (MC): Granica czułości SNR – analiza statystyczna Monte Carlo $P_D(\text{SNR})$ (Rys. 4.6) | `[DO ZROBIENIA]` |
 | **Krok 10** | Redakcja Rozdziału 3 w LaTeX (`30_radar_implementation.tex`) sekcja po sekcji | `[DO ZROBIENIA]` |
 | **Krok 11** | Redakcja Rozdziału 4 w LaTeX (`40_simulation_results.tex`) sekcja po sekcji | `[DO ZROBIENIA]` |
@@ -56,6 +56,7 @@ Aby zapewnić pełną kontrolę nad poprawnością badań i unikać błędów im
      - **Wszelkie wnioski, dyskusje, parametry scenariusza i interpretacje należą do tekstu pracy w LaTeX oraz podpisu pod rysunkiem (`\caption{...}`)**, a nie do grafiki!
    - **100% język polski**: tytuły, etykiety osi, etykiety `colorbar`, legendy całkowicie w języku polskim.
    - Dobór parametrów graficznych do druku w pracy: grube linie ($\ge 1.5\ \text{pt}$), czytelne czcionki ($\ge 10\text{--}11\ \text{pt}$), siatka `grid on`, brak nakładania się napisów.
+   - **Zamknięta pełna ramka wykresów 2D (`box on`)**: każdy wykres 2D (liniowy, stem, mapa 2D, przekrój) **musi mieć włączoną pełną ramkę osi (`box on;` / `set(gca, 'Box', 'on')`)**, dorysowującą krawędź górną („sufit”) oraz krawędź prawą („prawą ścianę”). Niedopuszczalne są wykresy z otwartą przestrzenią bez górnej i prawej krawędzi.
 
 5. **Zatwierdzenie przez Użytkownika** przed rozpoczęciem kolejnego eksperymentu.
 
@@ -193,47 +194,50 @@ flowchart TD
 - [x] 4. **Weryfikacja czytelności i estetyki (wzorzec z commita `dd69b70`)**:
   - **Tytuł główny**: `title('Wpływ rzędu modulacji MCS na wzmocnienie szumu i kontrast celu', 'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none')`,
   - **Minimalizm tekstu**: Brak rozwlekłych komentarzy wewnątrz wykresu. Czyste zsynchronizowane osie Y (`yyaxis left`: „Współczynnik wzmocnienia szumu ζ_ZF [dB]”, `yyaxis right`: „Kontrast celu PNFR [dB]”), oś X: „Rząd modulacji (indeks MCS)”, legenda pod wykresem (`southoutside`), 100% język polski, `exportgraphics` 300 DPI.
-- [ ] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
+- [x] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
 
 ---
 
 ### Krok 7: Eksperyment SIM-4 (E4) — Wpływ otoczenia wielodrogowego TGax (A, C, E) i filtr MTI (Rys. 4.4)
-- [ ] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_4_tgax_mti_cut.m`.
-  - Architektura (DRY): Uruchomienie potoku `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` dla modeli TGax A, C, E. Wykorzystanie pól `radar_data.H_raw` oraz `radar_data.H_shifted` bez powielania kodu MTI.
-  - Scenariusz: Zastosowanie reprezentatywnej triady modeli TGax:
-    - Model-A ($\tau_{\text{rms}} = 0\ \text{ns}$, komora bezechowa),
-    - Model-C ($\tau_{\text{rms}} = 30\ \text{ns}$, typowe biuro/mieszkanie),
-    - Model-E ($\tau_{\text{rms}} = 100\ \text{ns}$, duża hala/magazyn).
-  - Wykres: Dwa panele (`subplot(1, 2, 1)` i `subplot(1, 2, 2)`) przedstawiające przekrój profilu prędkości Dopplera przed i po filtracji MTI dla wszystkich trzech modeli.
-- [ ] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_4_tlumienie_clutteru_mti.png`.
-- [ ] 3. **Weryfikacja poprawności**:
-  - Skuteczne wycięcie składowej stałej przesłuchu bezpośredniego i odbić stacjonarnych ($f_D = 0$) o $\ge 45\text{--}50\ \text{dB}$,
-  - Brak tłumienia piku celu ruchomego ($f_D \neq 0$),
-  - Wykazanie, że dla Modelu-E rozmycie energii clutteru jest najszersze, lecz MTI w pełni przywraca detekcję.
-- [ ] 4. **Weryfikacja czytelności i estetyki (wzorzec z commita `dd69b70`)**:
-  - **Tytuł główny**: `sgtitle('Tłumienie clutteru wielodrogowego TGax przez filtr MTI', 'FontSize', 14, 'FontWeight', 'bold', 'Interpreter', 'none')`,
-  - **Krótkie tytuły podpaneli**: `title('a) Przed MTI', 'FontSize', 11, 'FontWeight', 'bold', 'Interpreter', 'none')` oraz `title('b) Po MTI', 'FontSize', 11, 'FontWeight', 'bold', 'Interpreter', 'none')`,
-  - **Minimalizm tekstu**: Brak dodatkowych ramek z tekstem na wykresie. Czyste profile linii dla modeli A, C, E, zwięzła legenda, oś X: „Prędkość radialna [m/s]”, oś Y: „Moc [dB]”, 100% język polski, `exportgraphics` 300 DPI.
-- [ ] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
+- [x] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_4_tgax_mti_cut.m`.
+  - Architektura (DRY): Uruchomienie potoku `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` dla modeli TGax:
+    - Model-A ($\tau_{\text{rms}} = 0\ \text{ns}$, brak wielodrogi / komora bezechowa),
+    - Model-C ($\tau_{\text{rms}} = 30\ \text{ns}$, środowisko biurowe),
+    - Model-E ($\tau_{\text{rms}} = 100\ \text{ns}$, duża hala przemysłowa).
+  - Scenariusz: IEEE 802.11ax, CBW80, MCS 0, $\text{SNR} = 30\ \text{dB}$, cel: $R = 10{,}0\ \text{m}$, $v = +8{,}0\ \text{m/s}$ (obiekt w strefie aktywnej wielodrogi modeli C i E).
+  - Izolacja zmiennej: Obliczenie periodogramu 2D przed i po MTI przy zachowaniu tego samego okna 2D Blackmana–Harrisa i interpolacji DC za pomocą `compute_range_doppler_map` z `lib/`.
+  - Wykres: Sześciopanelowe zestawienie map 2D Range–Doppler (siatka $3 \times 2$):
+    - Kolumna lewa: mapy przed MTI ukazujące rozprzestrzenianie się stacjonarnego echa wielodrogowego wzdłuż $v = 0\ \text{m/s}$ w przestrzeni $R \times v$ dla modeli A, C i E,
+    - Kolumna prawa: mapy po MTI ukazujące wycięcie składowej stałej o $\ge 38\text{--}46\ \text{dB}$ (rowek filtracyjny) i odsłonięcie celu ($v = +8{,}0\ \text{m/s}$) w pełnym zakresie jednoznaczności prędkości ($\pm 16{,}7\ \text{m/s}$).
+- [x] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_4_tlumienie_clutteru_mti.png`.
+- [x] 3. **Weryfikacja poprawności**:
+  - Skuteczne stłumienie składowej stacjonarnej ($v = 0\ \text{m/s}$) w Modelu-E o $46{,}3\ \text{dB}$ oraz w Modelu-C o $38{,}8\ \text{dB}$,
+  - Nienaruszona amplituda piku ruchomego celu ($v = +8{,}0\ \text{m/s}$),
+  - Pełne odsłonięcie celu zamaskowanego przed MTI pod tłem clutteru ($\text{SCR} = -3{,}9\ \text{dB} \to +4{,}1\ \text{dB}$ w Modelu-C oraz $+2{,}7\ \text{dB}$ w Modelu-E).
+- [x] 4. **Weryfikacja czytelności i estetyki**:
+  - **Tytuł główny**: `sgtitle('Wpływ wielodrogowości TGax i filtracji MTI na dwuwymiarowe mapy Range–Doppler', 'FontSize', 13.5, 'FontWeight', 'bold', 'Interpreter', 'none')`,
+  - **Siatka 3x2**: Wiersz 1: Model-A (a, d), Wiersz 2: Model-C (b, e), Wiersz 3: Model-E (c, f).
+  - Oś X: „Prędkość radialna [m/s]” (pełny zakres $\pm 16{,}7\ \text{m/s}$), Oś Y: „Odległość [m]” ($0\text{--}32\ \text{m}$), paleta barwna `turbo`, wspólny colorbar dB po prawej stronie, białe znaczniki celu z podpisem, `exportgraphics` 300 DPI.
+- [x] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
 
 ---
 
-### Krok 8: Eksperyment SIM-5 (E5) — Granica dynamiki mocy i Coherent CLEAN (Rys. 4.5)
-- [ ] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_5_clean_cut.m`.
-  - Architektura (DRY): Uruchomienie `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` $\to$ `step4_interpreter` (lub bezpośrednio `lib/run_coherent_clean.m`). Skrypt pobiera wyniki kolejnych iteracji CLEAN z biblioteki projektu bez powielania pętli dekonwolucji.
-  - Scenariusz: Duża asymetria mocy celów w kanale Model-C:
-    - Cel silny: $0\ \text{dB}$ (np. metalowy pojazd, duży RCS),
-    - Cel słaby: $-30\ \text{dB}$ (np. pieszy o małym RCS) zamaskowany w listkach bocznych celu silnego.
-  - Wykres: Trzy krzywe przekroju odległościowego na jednym rysunku (sygnał surowy, po 1. iteracji CLEAN, po 2. iteracji CLEAN) wraz z poziomą linią progu adaptacyjnego MAD ($T_{\text{stop}}$).
-- [ ] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_5_clean_prog_adaptacyjny.png`.
-- [ ] 3. **Weryfikacja poprawności**:
-  - Skuteczna eliminacja listków bocznych funkcji PSF celu silnego,
-  - Ujawnienie ukrytego celu słabego z poprawną pozycją odległościową,
-  - Samoczynne zatrzymanie algorytmu na progu MAD bez „czyszczenia” szumu tła (brak zjawiska *over-cleaning*).
-- [ ] 4. **Weryfikacja czytelności i estetyki (wzorzec z commita `dd69b70`)**:
+### Krok 8: Eksperyment SIM-5 (E5) — Granica dynamiki mocy i Coherent CLEAN (Rys. 4.5) `[ZROBIONE]`
+- [x] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_5_clean_cut.m`.
+  - Architektura (DRY): Uruchomienie standardowego potoku `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` $\to$ `run_coherent_clean`. Skrypt pobiera historię okresogramów `CPer_history` bezpośrednio z rozszerzonej sygnatury `lib/run_coherent_clean.m`.
+  - Scenariusz: Asymetria mocy 30 dB w kanale Model-C ($\text{SNR} = 38\ \text{dB}$):
+    - Cel 1 (silny pojazd, $0\ \text{dB}$): $R_1 = 15{,}0\ \text{m}$, $v_1 = 8{,}0\ \text{m/s}$, $\text{gain} = 0{,}0500$,
+    - Cel 2 (słaby pieszy, $-30\ \text{dB}$): $R_2 = 30{,}0\ \text{m}$, $v_2 = 8{,}0\ \text{m/s}$, $\text{gain} = 0{,}00158$, zamaskowany początkowo w listkach bocznych pojazdu.
+  - Wykres: Trzy krzywe przekroju odległościowego na jednym rysunku (sygnał surowy, po 1. iteracji CLEAN, po 2. iteracji CLEAN) wraz z poziomą linią adaptacyjnego progu MAD ($T_{\text{stop}} = -34{,}8\ \text{dB}$).
+- [x] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_5_clean_prog_adaptacyjny.png`.
+- [x] 3. **Weryfikacja poprawności**:
+  - Skuteczna eliminacja listków bocznych funkcji PSF celu silnego pojazdu,
+  - Ujawnienie słabego celu pieszego przy $R = 30{,}01\ \text{m}$ (moc $-30{,}19\ \text{dB}$),
+  - Samoczynne, bezbłędne zakończenie dekonwolucji po dokładnie 2 iteracjach dzięki adaptacyjnemu progowi MAD (szum resztkowy $-57{,}56\ \text{dB} < T_{\text{stop}} = -34{,}83\ \text{dB}$, brak *over-cleaning*).
+- [x] 4. **Weryfikacja czytelności i estetyki (wzorzec z commita `dd69b70`)**:
   - **Tytuł główny**: `title('Odkrywanie słabego celu przez dekonwolucję Coherent CLEAN', 'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none')`,
-  - **Minimalizm tekstu**: Brak rozwlekłych bloków tekstowych na wykresie. Zwięzła legenda (Sygnał surowy, Po iteracji 1, Po iteracji 2, Próg adaptacyjny MAD), oś X: „Odległość bistatyczna [m]”, oś Y: „Moc [dB]”, 100% język polski, `exportgraphics` 300 DPI.
-- [ ] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
+  - **Minimalizm tekstu**: Brak bloków tekstowych wewnątrz osi, zwięzła legenda pod wykresem (`southoutside`), zamknięta ramka (`box on`), siatka (`grid on`), grube linie ($\ge 1{,}5\ \text{pt}$), 100% język polski, `exportgraphics` 300 DPI.
+- [x] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
 
 ---
 
