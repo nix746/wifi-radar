@@ -185,6 +185,7 @@ Poniższe reguły są bezwzględnie wiążące podczas pisania i redagowania tek
    - Grube linie wykresów ($\ge 1.5\ \text{pt}$),
    - Wyraźne, duże czcionki podpisów osi i legend ($\ge 10\text{--}11\ \text{pt}$),
    - Siatka pomocnicza (`grid on`) z subtelnym kontrastem,
+   - **Zamknięta pełna ramka osi dla wykresów 2D (`box on`)**: każdy wykres dwuwymiarowy (liniowy, stem, mapa 2D, przekrój) **musi mieć włączoną pełną ramkę osi (`box on;` / `set(gca, 'Box', 'on')`)**, dorysowującą krawędź górną („sufit”) oraz krawędź prawą („prawą ścianę”). Zapobiega to wrażeniu niedokończonych, otwartych wykresów,
    - Brak nakładających się etykiet i napisów.
 2. **Obowiązkowy nadrzędny tytuł główny (`sgtitle` / `title`)**:
    - Każdy wykres złożony z wielu podpaneli (`subplot`) **musi posiadać tytuł nadrzędny** wywołany za pomocą:  
