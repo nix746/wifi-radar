@@ -64,10 +64,10 @@ for i = 1:numel(cbw_list)
     [rx_signal, fc] = step2_channel(waveform, fs, channel_model, cfg, targets, snr_in_dB(i));
 
     radar_data = step3_receiver(rx_signal, waveform, fs, fc, params, false);
-    [~, ~, ~, pnfr] = step4_interpreter(radar_data, fs, fc, wifi_standard, false, 2);
+    [~, ~, ~, ~, pnfr] = step4_interpreter(radar_data, fs, fc, wifi_standard, false);
 
     % Extract 1D range cut at the target Doppler velocity bin
-    P_map = abs(radar_data.CPer_base).^2;
+    P_map = radar_data.Per_F;
     [~, max_idx] = max(P_map(:));
     [~, dop_col] = ind2sub(size(P_map), max_idx);
 

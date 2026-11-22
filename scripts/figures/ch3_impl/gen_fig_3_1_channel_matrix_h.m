@@ -19,9 +19,8 @@ function gen_fig_3_1_channel_matrix_h()
     cbw           = 'CBW80';
     channel_model = 'Model-C';
 
-    % High SNR regime (45 dB) to clearly expose the physical wave structure
-    % and target phase modulation fringes before 2D integration
-    snr_dB = 45;
+    % Realistic Wi-Fi SNR (25 dB, matching Figs. 3.2 & 3.3)
+    snr_dB = 25;
 
     % 2. Generate transmitted baseband waveform (IEEE 802.11ax HE-SU, CBW80)
     [waveform, fs, params, cfg] = step1_transmitter(wifi_standard, false, cbw, 0);
@@ -105,7 +104,7 @@ function gen_fig_3_1_channel_matrix_h()
     imagesc(sym_axis, k_range, H_proc_dB);
     axis xy;
     colormap(gca, 'parula');
-    clim([-52, -28]); % Color limits exposing 2D target interference wave fringes
+    clim([-40, -16]); % Color limits matched to post-MTI amplitude distribution at 25 dB SNR
     c2 = colorbar;
     c2.Label.String = 'Moc transmitancji [dB]';
     c2.Label.FontSize = 10.5;

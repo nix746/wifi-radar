@@ -46,15 +46,15 @@ for i = 1:n_mcs
     rng(42);
     [rx_signal, fc]             = step2_channel(waveform, fs, channel_model, cfg, targets, snr_dB);
     radar_data                  = step3_receiver(rx_signal, waveform, fs, fc, params, false);
-    [targets_found, ~, ~, pnfr] = step4_interpreter(radar_data, fs, fc, wifi_standard, false, 1);
+    [targets_det, ~, ~, ~, pnfr] = step4_interpreter(radar_data, fs, fc, wifi_standard, false);
 
     zeta_zf_dB(i) = radar_data.zeta_zf_dB;
     pnfr_dB(i)    = pnfr.pnfr_dB(1);
     n_sym_vec(i)  = radar_data.n_symbols;
     psdu_vec(i)   = params.psdu_length;
 
-    r_det = radar_data.axis_range(targets_found(1, 1));
-    v_det = radar_data.axis_velocity(targets_found(1, 2));
+    r_det = targets_det(1).d_hat;
+    v_det = targets_det(1).v_hat;
 
     fprintf('  [MCS %2d] PSDU = %6d B (M = %d) | zeta_ZF = %.2f dB | PNFR = %.2f dB | Det: R = %.2f m, v = %+.2f m/s\n', ...
         mcs, psdu_vec(i), n_sym_vec(i), zeta_zf_dB(i), pnfr_dB(i), r_det, v_det);

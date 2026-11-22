@@ -68,20 +68,26 @@ fprintf('  Demodulated %d OFDM symbols (%d subcarriers each, %s).\n', n_symbols,
 [H_shifted, H_raw, zeta_zf_dB, H_mti] = estimate_channel_zf(F_rx, F_tx, params);
 
 %% 5. 2D Blackman-Harris Windowing and Complex Periodogram Generation
-[CPer_base, W_2D, N_per, M_per] = compute_range_doppler_map( ...
+[CPer_F, W, N_per, M_per, Per_F, N_act] = compute_range_doppler_map( ...
     H_shifted, Nfft, n_symbols, params.active_mask);
 
 %% 6. Physical Axes and Output Packaging
 [axis_range, axis_velocity] = calculate_physical_axes(fs, fc, Nfft, Ncp, N_per, M_per);
 
 radar_data = struct();
-radar_data.CPer_base     = CPer_base;
-radar_data.W_2D          = W_2D;
+radar_data.CPer_F        = CPer_F;
+radar_data.Per_F         = Per_F;
+radar_data.W             = W;
+radar_data.N_act         = N_act;
+radar_data.CPer_base     = CPer_F;
+radar_data.W_2D          = W;
 radar_data.N_per         = N_per;
 radar_data.M_per         = M_per;
 radar_data.Nfft          = Nfft;
 radar_data.n_symbols     = n_symbols;
 radar_data.Ncp           = Ncp;
+radar_data.fs            = fs;
+radar_data.fc            = fc;
 radar_data.H_raw         = H_raw;
 radar_data.H_mti         = H_mti;
 radar_data.H_shifted     = H_shifted;
@@ -97,6 +103,6 @@ if ENABLE_VISUALIZATIONS
     constellation_diagram(F_rx(:), sprintf('Receiver - Demodulated Constellation (RX) (%s, %s)', WIFI_STANDARD, cbw));
     radar_heatmap(fftshift(F_rx, 1), sprintf('Demodulated Symbols (%s, %s)', WIFI_STANDARD, cbw), 'Symbol Index (Time)', 'Subcarrier Index (Frequency)');
     radar_heatmap(H_raw, sprintf('Channel Response (H Matrix) (%s, %s)', WIFI_STANDARD, cbw), 'Symbol Index (Time)', 'Subcarrier Index (Freq)');
-    range_doppler_3d(CPer_base, axis_velocity, axis_range, sprintf('Receiver - 3D Range-Doppler Map (%s, %s)', WIFI_STANDARD, cbw));
+    range_doppler_3d(CPer_F, axis_velocity, axis_range, sprintf('Receiver - 3D Range-Doppler Map (%s, %s)', WIFI_STANDARD, cbw));
 end
 end

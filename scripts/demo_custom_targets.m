@@ -27,9 +27,11 @@ MANUAL_CBW        = 'CBW20';  % 'CBW20', 'CBW40', 'CBW80', 'CBW160'
 MANUAL_MCS        = 0;        % 0 - 11 for 802.11ax, 0 - 7 for 802.11a
 
 ENABLE_VISUALIZATIONS = true;
+DETECTION_METHOD      = '';   % '' = default (lib/get_detection_algorithm.m), or explicit method ID
 
-% Resolve Bandwidth and MCS
+% Resolve Bandwidth, MCS, and Detection Algorithm
 [fc_hz, band_str] = get_carrier_frequency(CARRIER_BAND);
+det_alg           = get_detection_algorithm(DETECTION_METHOD);
 
 if ENABLE_AUTO_ADAPT
     [cbw, mcs, adapt_summary] = adaptive_wifi_params(SNR_DB, WIFI_STANDARD, band_str);
@@ -59,6 +61,7 @@ fprintf("Scenario Configuration:\n");
 fprintf("  Carrier Band:     %s (fc = %.3f GHz)\n", band_str, fc_hz / 1e9);
 fprintf("  Propagation:      %s | SNR = %.1f dB\n", CHANNEL_MODEL, SNR_DB);
 fprintf("  Waveform Profile: %s | %s | MCS %d\n", WIFI_STANDARD, cbw, mcs);
+fprintf("  Detection Alg.:   %s\n", det_alg.name);
 fprintf("  Targets Defined:\n");
 for i = 1 : length(targets)
     fprintf("    Target %d: %s | Range = %.1f m | Velocity = %+.2f m/s\n", ...
@@ -79,8 +82,8 @@ fprintf("[Step 3/4] Processing Range-Doppler Periodogram...\n");
 radar_data = step3_receiver(rx_signal, waveform, fs, fc, WIFI_STANDARD, ENABLE_VISUALIZATIONS, cbw);
 fprintf("\n");
 
-fprintf("[Step 4/4] Detecting Targets and Running CLEAN Algorithm...\n");
-targets_found = step4_interpreter(radar_data, fs, fc, WIFI_STANDARD, ENABLE_VISUALIZATIONS, length(targets));
+fprintf("[Step 4/4] Detecting Targets and Running %s Algorithm...\n", det_alg.name);
+targets_found = step4_interpreter(radar_data, fs, fc, WIFI_STANDARD, ENABLE_VISUALIZATIONS, [], det_alg);
 fprintf("\n");
 
 fprintf("====================================================\n");

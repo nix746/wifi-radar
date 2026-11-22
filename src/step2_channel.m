@@ -15,7 +15,7 @@ function [signal, fc] = step2_channel(waveform, fs, model, cfg, targets, snr_dB,
 %                * velocity_mps / doppler_hz: Motion parameter
 %                * rcs: (Optional) RCS in m^2
 %                * gain: (Optional) Manual echo amplitude override
-%   snr_dB   - (Optional) Additive White Gaussian Noise SNR in dB (default: 25)
+%   snr_dB   - (Optional) AWGN SNR in dB referenced to direct path & clutter power (default: 25)
 %   fc_input - (Optional) Carrier frequency in Hz or band string ('2.4GHz', '5GHz', '6GHz', default: 5.5e9)
 % Output:
 %   signal   - Received baseband signal containing direct path, clutter, and target reflections
@@ -110,6 +110,8 @@ function [signal, fc] = step2_channel(waveform, fs, model, cfg, targets, snr_dB,
     signal = clutter_signal + target_signal;
 
     %% 4. Additive White Gaussian Noise (AWGN)
-    signal = awgn(signal, snr_dB, 'measured');
+    % Anchor noise power to direct path + clutter so target presence/RCS does not alter noise floor
+    ref_power_dBW = 10 * log10(max(mean(abs(clutter_signal).^2), eps));
+    signal = awgn(signal, snr_dB, ref_power_dBW);
     fprintf("  Channel simulation complete (SNR = %.1f dB).\n", snr_dB);
 end

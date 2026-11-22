@@ -3,7 +3,7 @@
 %   1. Signal Generation (Transmitter)
 %   2. Multipath & Doppler Channel Simulation (Channel)
 %   3. Range-Doppler Processing (Receiver Pipeline)
-%   4. Target Detection & Cancellation (CLEAN Interpreter)
+%   4. Target Detection & Cancellation (configured in lib/get_detection_algorithm.m)
 
 clc;
 clear variables;
@@ -18,6 +18,7 @@ ENABLE_VISUALIZATIONS = true;
 [current_script_dir, ~, ~] = fileparts(mfilename('fullpath'));
 addpath(fullfile(current_script_dir, '..'));
 init_paths();
+det_alg = get_detection_algorithm();
 
 % Initialize unique timestamped directory for this run
 timestamp_str = char(datetime('now', 'Format', 'yyyy-MM-dd_HH-mm-ss'));
@@ -67,8 +68,8 @@ for ch_idx = 1:length(channel_models_to_test)
         radar_data = step3_receiver(rx_signal, waveform, fs, fc, WIFI_STANDARD, ENABLE_VISUALIZATIONS);
         fprintf("\n");
 
-        fprintf("[Step 4/4] Detecting Targets and Running CLEAN Algorithm...\n");
-        targets_found = step4_interpreter(radar_data, fs, fc, WIFI_STANDARD, ENABLE_VISUALIZATIONS);
+        fprintf("[Step 4/4] Detecting Targets and Running %s Algorithm...\n", det_alg.name);
+        targets = step4_interpreter(radar_data, fs, fc, WIFI_STANDARD, ENABLE_VISUALIZATIONS, [], det_alg);
         fprintf("\n");
 
         drawnow;

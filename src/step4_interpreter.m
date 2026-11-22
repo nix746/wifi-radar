@@ -1,46 +1,53 @@
-function [targets_found, CPer_clean, threshold, pnfr] = step4_interpreter(radar_data, fs, fc, WIFI_STANDARD, ENABLE_VISUALIZATIONS, num_targets, margin_dB)
-% STEP4_INTERPRETER Coherent CLEAN target extraction, physical axes, and PNFR evaluation.
+function [targets, CPer_F, Per_F, eta, pnfr, diag_info] = step4_interpreter( ...
+    radar_data, fs, fc, WIFI_STANDARD, ENABLE_VISUALIZATIONS, p_FA, stc_method)
+% STEP4_INTERPRETER Target detection via Successive Target Cancellation (Braun 2014) and PNFR evaluation.
+% Algorithm selection, naming, and dispatch are centralized in get_detection_algorithm.
 %
 % Inputs:
 %   radar_data            - Struct returned by step3_receiver
 %   fs                    - Sampling frequency [Hz]
 %   fc                    - Carrier frequency [Hz]
 %   WIFI_STANDARD         - Standard name ('802.11a', '802.11ax')
-%   ENABLE_VISUALIZATIONS - Logical flag to enable diagnostic plots
-%   num_targets           - (Optional) Maximum number of moving targets to extract (default: 2)
-%   margin_dB             - (Optional) Adaptive stopping margin above MAD noise floor [dB]
+%   ENABLE_VISUALIZATIONS - Logical flag to enable diagnostic plots (default: false)
+%   p_FA                  - (Optional) CFAR false-alarm probability per frame (default: 1e-3)
+%   stc_method            - (Optional) Detection algorithm ID or config struct
+%                           from get_detection_algorithm (default: registry default)
 %
 % Outputs:
-%   targets_found         - [K x 2] Matrix of detected grid indices [range_idx, doppler_idx]
-%   CPer_clean            - Residual complex periodogram after target cancellation
-%   threshold             - Adaptive stopping threshold value applied (linear amplitude)
+%   targets               - Struct array of detected targets (d_hat, v_hat, sigma_RCS_hat, etc.)
+%   CPer_F                - Residual/masked complex periodogram after cancellation
+%   Per_F                 - Residual/masked real-valued periodogram after cancellation
+%   eta                   - CFAR detection threshold (linear power, Braun eq. 3.95)
 %   pnfr                  - Struct with Peak-to-Noise Floor Ratio metrics (from compute_pnfr)
+%   diag_info             - (Optional) Diagnostic struct from the selected detection algorithm
 
     if nargin < 5 || isempty(ENABLE_VISUALIZATIONS)
         ENABLE_VISUALIZATIONS = false;
     end
-    if nargin < 6 || isempty(num_targets)
-        num_targets = 2;
+    if nargin < 6 || isempty(p_FA)
+        p_FA = 1e-3;
     end
     if nargin < 7
-        margin_dB = [];
+        stc_method = [];
     end
 
-    fprintf('>> Running CLEAN Target Interpreter...\n');
+    alg = get_detection_algorithm(stc_method);
+    fprintf('>> Running Target Detection Interpreter: %s (%s)...\n', alg.full_name, alg.id);
 
     %% 1. Unpack Radar Data
-    CPer_base = radar_data.CPer_base;
-    W_2D      = radar_data.W_2D;
+    CPer_F_in = radar_data.CPer_F;
+    Per_F_in  = radar_data.Per_F;
+    Nfft      = radar_data.Nfft;
+    Ncp       = radar_data.Ncp;
     N_per     = radar_data.N_per;
     M_per     = radar_data.M_per;
-    Nfft      = radar_data.Nfft;
-    n_symbols = radar_data.n_symbols;
-    Ncp       = radar_data.Ncp;
 
-    %% 2. Iterative Coherent Target Cancellation (Coherent CLEAN)
-    fprintf('  Executing CLEAN algorithm (max targets: %d)...\n', num_targets);
-    [CPer_clean, targets_found, threshold] = run_coherent_clean( ...
-        CPer_base, W_2D, N_per, M_per, Nfft, n_symbols, num_targets, margin_dB);
+    %% 2. Target Detection & Cancellation (Braun 2014, Sec. 3.3.7)
+    fprintf('  Executing %s (CFAR p_FA = %.1e)...\n', alg.name, p_FA);
+    [targets, CPer_F, Per_F, eta, diag_info] = alg.run(radar_data, fs, fc, p_FA);
+    diag_info.method         = alg.id;
+    diag_info.algorithm_name = alg.name;
+    diag_info.algorithm      = alg;
 
     %% 3. Calibrated Physical Axes and PNFR Metric
     if isfield(radar_data, 'axis_range') && isfield(radar_data, 'axis_velocity')
@@ -50,21 +57,29 @@ function [targets_found, CPer_clean, threshold, pnfr] = step4_interpreter(radar_
         [axis_range, axis_velocity] = calculate_physical_axes(fs, fc, Nfft, Ncp, N_per, M_per);
     end
 
-    pnfr = compute_pnfr(CPer_base, targets_found);
-
-    fprintf('  Detected Targets (Physical Coordinates):\n');
-    for i = 1:size(targets_found, 1)
-        r_m  = axis_range(targets_found(i, 1));
-        v_ms = axis_velocity(targets_found(i, 2));
-        fprintf('    Target %d: Range = %.2f m, Velocity = %+.2f m/s, PNFR = %.1f dB\n', ...
-            i, r_m, v_ms, pnfr.pnfr_dB(i));
+    if ~isempty(targets)
+        target_idx = [[targets.r_idx].', [targets.d_idx].'];
+        pnfr = compute_pnfr(CPer_F_in, target_idx);
+    else
+        pnfr = struct( ...
+            'pnfr_dB', zeros(0, 1), ...
+            'peak_dB', zeros(0, 1), ...
+            'floor_dB', 10 * log10(mean(abs(CPer_F_in(:)).^2)), ...
+            'peak_idx', zeros(0, 2), ...
+            'noise_mask', true(size(CPer_F_in)));
     end
 
-    %% 4. Diagnostic Visualization (Before vs After CLEAN)
+    fprintf('  CFAR threshold eta = %.3e (noise sigma^2_hat = %.3e) | Iterations: %d (residuals rejected: %d)\n', ...
+        eta, diag_info.sigma2_hat, diag_info.num_iterations, diag_info.num_residuals);
+    fprintf('  Detected Targets (%d):\n', numel(targets));
+    for k = 1 : numel(targets)
+        fprintf('    Target %d: Range = %.2f m, Velocity = %+.2f m/s, RCS = %.2f m^2, PNFR = %.1f dB\n', ...
+            k, targets(k).d_hat, targets(k).v_hat, targets(k).sigma_RCS_hat, pnfr.pnfr_dB(k));
+    end
+
+    %% 4. Diagnostic Visualization (Before vs After Cancellation)
     if ENABLE_VISUALIZATIONS
-        Per_dB_base  = 10 * log10((1 / (Nfft * n_symbols)) * abs(CPer_base).^2  + 1e-9);
-        Per_dB_clean = 10 * log10((1 / (Nfft * n_symbols)) * abs(CPer_clean).^2 + 1e-9);
-        fig_title    = sprintf('Wi-Fi Radar - Target Detection & CLEAN Cancellation (%s)', WIFI_STANDARD);
-        clean_results(Per_dB_base, Per_dB_clean, axis_velocity, axis_range, targets_found, fig_title);
+        fig_title = sprintf('Wi-Fi Radar - Target Detection & %s (%s)', alg.name, WIFI_STANDARD);
+        alg.plot(Per_F_in, Per_F, diag_info, axis_velocity, axis_range, targets, fig_title, alg);
     end
 end

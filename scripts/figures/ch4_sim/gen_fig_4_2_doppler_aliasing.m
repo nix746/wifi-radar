@@ -55,16 +55,16 @@ for i = 1:numel(standards)
     [waveform, fs, params, cfg] = step1_transmitter(std_name, false, cbw, mcs);
     [rx_signal, ~]              = step2_channel(waveform, fs, channel_model, cfg, targets, snr_dB, fc_base);
     radar_data                  = step3_receiver(rx_signal, waveform, fs, fc_eff, params, false);
-    [targets_found, ~, ~, pnfr] = step4_interpreter(radar_data, fs, fc_eff, std_name, false, 1);
+    [targets_det, ~, ~, ~, pnfr] = step4_interpreter(radar_data, fs, fc_eff, std_name, false);
 
     % Extract 1D Doppler velocity profile at the detected target range bin
-    r_idx   = targets_found(1, 1);
-    v_idx   = targets_found(1, 2);
-    P_slice = abs(radar_data.CPer_base(r_idx, :)).^2;
+    r_idx   = targets_det(1).r_idx;
+    v_idx   = targets_det(1).d_idx;
+    P_slice = radar_data.Per_F(r_idx, :);
 
     cuts_dB{i}   = 10 * log10(P_slice + 1e-12);
     axes_v{i}    = radar_data.axis_velocity;
-    v_unamb(i)   = abs(axes_v{i}(end));
+    v_unamb(i)   = abs(axes_v{i}(1));
     v_det(i)     = axes_v{i}(v_idx);
     r_det(i)     = radar_data.axis_range(r_idx);
     pnfr_dB(i)   = pnfr.pnfr_dB(1);
@@ -124,7 +124,7 @@ p_ax = plot(v_ax_plot, cut_ax_plot, '-', 'Color', color_ax, 'LineWidth', 1.3, ..
 hold off;
 
 xlim([-v_lim_a, v_lim_a]);
-ylim([-60, 14]);
+ylim([-62, 26]);
 
 v_lim_str = strrep(sprintf('%.1f', v_lim_a), '.', ',');
 title(sprintf('Profile Dopplera w przedziale jednoznaczności IEEE 802.11a (±%s m/s)', v_lim_str), ...
