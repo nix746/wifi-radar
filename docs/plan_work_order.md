@@ -8,14 +8,14 @@ Ten dokument mówi **w jakiej kolejności** robić zadania. *Co* ma powstać, je
 | :---: | :--- | :---: |
 | **Tor 0** | Golden Master & refaktoryzacja potoku DSP do `lib/` | `[ZROBIONE]` |
 | **Tor A** | Infrastruktura pracy (Zotero, dane formalne AGH, szkielet 5 rozdziałów `.tex`) | `[ZROBIONE]` |
-| **Krok 1** | Adaptacyjny algorytm CLEAN (`lib/run_coherent_clean.m`) i test regresyjny | `[ZROBIONE]` |
+| **Krok 1** | Algorytmy **Binary STC** i **Coherent STC** z progiem CFAR $\eta$ (`lib/binary_successive_target_cancellation.m`, `lib/coherent_successive_target_cancellation.m`, `lib/get_detection_algorithm.m`) i testy regresyjne | `[ZROBIONE]` |
 | **Krok 2** | Eksperyment IMPL-1: Macierz transmitancji $\hat{H}(k,l)$ w dziedzinie czas–częstotliwość (Rys. 3.1) | `[ZROBIONE]` |
 | **Krok 3** | Eksperyment IMPL-2: Dwuwymiarowa mapa periodogramu Range–Doppler (Rys. 3.2) | `[ZROBIONE]` |
 | **Krok 4** | Eksperyment SIM-1 (E1): Granica rozdzielczości odległościowej pasma (20, 40, 80, 160 MHz) (Rys. 4.1) | `[ZROBIONE]` |
 | **Krok 5** | Eksperyment SIM-2 (E2): Granica prędkości jednoznacznej: 802.11a vs ax (aliasing Dopplera) (Rys. 4.2) | `[ZROBIONE]` |
 | **Krok 6** | Eksperyment SIM-3 (E3): Granica modulacji MCS i wzmocnienie szumu ZF (Rys. 4.3) | `[ZROBIONE]` |
 | **Krok 7** | Eksperyment SIM-4 (E4): Wpływ otoczenia wielodrogowego TGax (A, C, E) i filtr MTI (Rys. 4.4) | `[ZROBIONE]` |
-| **Krok 8** | Eksperyment SIM-5 (E5): Granica dynamiki mocy i Coherent CLEAN z progiem MAD (Rys. 4.5) | `[ZROBIONE]` |
+| **Krok 8** | Eksperyment SIM-5 (E5): Granica dynamiki mocy — **Binary STC vs Coherent STC** z progiem CFAR $\eta$ (Rys. 4.5) | `[ZROBIONE]` |
 | **Krok 9** | Eksperyment SIM-6 (MC): Granica czułości SNR – analiza statystyczna Monte Carlo $P_D(\text{SNR})$ (Rys. 4.6) | `[DO ZROBIENIA]` |
 | **Krok 10** | Redakcja Rozdziału 3 w LaTeX (`30_radar_implementation.tex`) sekcja po sekcji | `[DO ZROBIENIA]` |
 | **Krok 11** | Redakcja Rozdziału 4 w LaTeX (`40_simulation_results.tex`) sekcja po sekcji | `[DO ZROBIENIA]` |
@@ -30,7 +30,7 @@ Aby zapewnić pełną kontrolę nad poprawnością badań i unikać błędów im
 
 1. **Stworzenie/dopracowanie skryptu testowego** w `scripts/figures/ch3_impl/` lub `scripts/figures/ch4_sim/`:
    - **Zasada DRY — bezwzględny zakaz duplikacji kodu potoku radaru**:
-     - Skrypty testowe i generatory wykresów **nie mogą reimplementować ani powielać logiki algorytmów** (takich jak demodulacja OFDM, usuwanie CP, estymacja kanału Zero-Forcing, filtr MTI, interpolacja DC, okienkowanie czy dekonwolucja CLEAN).
+     - Skrypty testowe i generatory wykresów **nie mogą reimplementować ani powielać logiki algorytmów** (takich jak demodulacja OFDM, usuwanie CP, estymacja kanału Zero-Forcing, filtr MTI, interpolacja DC, okienkowanie czy sekwencyjna ekstrakcja Binary/Coherent STC).
      - Skrypt **musi bezpośrednio uruchamiać autorski kod projektu** (`step1_transmitter`, `step2_channel`, `step3_receiver`, `step4_interpreter` oraz moduły w `lib/`), demonstrując jego rzeczywiste działanie.
      - **Udostępnianie stanów pośrednich**: Jeżeli wykres wymaga danych pośrednich (np. macierzy $\hat{H}$ przed i po MTI, profilu przed i po filtracji), **rozszerza się strukturę wyjściową właściwego modułu produkcyjnego** (np. dodanie pól `H_raw`, `H_shifted` do `radar_data` w `step3_receiver.m`), zamiast kopiować wewnętrzne obliczenia do skryptu generatora.
    - Precyzyjnie sparametryzowany scenariusz fizyczny (odległości celów, prędkości, SNR, model TGax, standard Wi-Fi).
@@ -42,7 +42,7 @@ Aby zapewnić pełną kontrolę nad poprawnością badań i unikać błędów im
    - Zgodność współrzędnych i wartości z teorią radarową i równaniem radiolokacji,
    - Ograniczenia środowiskowe: brak anomalii prędkości ($|v| \le 100\ \text{km/h}$ we wnętrzach),
    - Fizyka AP: stała moc $P_{\text{tx}}$, szum termiczny $P_N$ rosnący o $9\ \text{dB}$ przy 160 MHz wzgl. 20 MHz,
-   - Prawidłowe działanie filtracji MTI, dekonwolucji CLEAN i progu MAD.
+   - Prawidłowe działanie filtracji MTI, algorytmów Binary STC / Coherent STC i progu CFAR $\eta$.
 
 4. **Weryfikacja czytelności i estetyki wykresu (zasada minimalizmu)**:
    - **Obowiązkowy nadrzędny tytuł główny (`sgtitle` / `title`)**:
@@ -63,7 +63,7 @@ Aby zapewnić pełną kontrolę nad poprawnością badań i unikać błędów im
 ```mermaid
 flowchart TD
     D["Źródło prawdy (plan_deliverables.md wg milestone_1.md)"]
-    K1["Krok 1: Adaptacyjny CLEAN w lib/ [ZROBIONE]"]
+    K1["Krok 1: Binary/Coherent STC + CFAR w lib/ [ZROBIONE]"]
     
     subgraph EXP_IMPL["Ilustracje implementacji (Rozdział 3)"]
         K2["Krok 2: Eksperyment IMPL-1 (Rys. 3.1 Macierz H: MTI i DC)"]
@@ -75,7 +75,7 @@ flowchart TD
         K5["Krok 5: E2 (Rys. 4.2 Granica prędkości: aliasing 802.11a vs ax)"]
         K6["Krok 6: E3 (Rys. 4.3 Granica modulacji: wzmocnienie szumu ZF dla MCS)"]
         K7["Krok 7: E4 (Rys. 4.4 Wpływ otoczenia: wielodrogowość TGax i filtr MTI)"]
-        K8["Krok 8: E5 (Rys. 4.5 Granica dynamiki: Coherent CLEAN i próg MAD)"]
+        K8["Krok 8: E5 (Rys. 4.5 Granica dynamiki: Binary vs Coherent STC i CFAR)"]
         K9["Krok 9: E6/MC (Rys. 4.6 Granica czułości: Monte Carlo PD vs SNR)"]
     end
 
@@ -100,22 +100,22 @@ flowchart TD
 
 ## Szczegółowy plan kolejnych kroków
 
-### Krok 1: Wdrożenie i zatwierdzenie adaptacyjnego CLEAN `[ZROBIONE]`
-- [x] 1. Dodanie parametru `margin_dB` do `lib/run_coherent_clean.m` (próg MAD $\sigma = \text{median}(|C_{\text{Per}}|)/0.6745$, $T_{\text{stop}} = \sigma \cdot 10^{\text{margin\_dB}/20}$).
-- [x] 2. Aktualizacja sygnatury w `src/step4_interpreter.m` z zachowaniem 100% kompatybilności wstecznej.
-- [x] 3. Uruchomienie `tests/verify_regression.m`: błąd Golden Master = 0, pomyślne zatrzymanie adaptacyjne.
+### Krok 1: Wdrożenie algorytmów Binary STC i Coherent STC (Braun 2014) `[ZROBIONE]`
+- [x] 1. Wdrożenie kanonicznych algorytmów Brauna (`lib/binary_successive_target_cancellation.m`, `lib/coherent_successive_target_cancellation.m`) z estymacją szumu ML poza $N_{\max}$, progiem CFAR $\eta = -\hat{\sigma}^2 \ln\left(1 - (1 - p_{\mathrm{FA}})^{1/(NM)}\right)$, 2D interpolacją paraboliczną i estymacją RCS oraz centralnego rejestru `lib/get_detection_algorithm.m`.
+- [x] 2. Aktualizacja fasady `src/step4_interpreter.m` (domyślnie `'binary'`, obsługa `'coherent'`, parametr `p_FA = 1e-3`, symetryczne wycentrowanie osi prędkości w `lib/calculate_physical_axes.m`).
+- [x] 3. Uruchomienie `tests/verify_regression.m`: zgodność Golden Master (`< 1e-12`), testy jednostkowe AWGN/off-grid/symetrii, testy potoku E2E (IMPL23 i E5 30 dB) oraz testy rejestru `get_detection_algorithm`.
 
 ---
 
 ### Krok 2: Eksperyment IMPL-1 — Macierz transmitancji $\hat{H}(k,l)$ w dziedzinie czas–częstotliwość (Rys. 3.1) `[ZROBIONE]`
 - [x] 1. **Skrypt testowy**: `scripts/figures/ch3_impl/gen_fig_3_1_channel_matrix_h.m`.
-  - Scenariusz: Ekstrakcja estymowanej transmitancji $\hat{H}(k,l) = Y(k,l) ./ X(k,l)$ w standardzie IEEE 802.11ax (CBW80, 80 MHz, Model-C, cele $22{,}5\ \text{m} / -4{,}0\ \text{m/s}$ oraz $67{,}5\ \text{m} / +18{,}0\ \text{m/s}$).
+  - Scenariusz: Ekstrakcja estymowanej transmitancji $\hat{H}(k,l) = Y(k,l) ./ X(k,l)$ w standardzie IEEE 802.11ax (CBW80, 80 MHz, MCS 0, $\text{SNR} = 25\ \text{dB}$, Model-C, ziarna `rng(42)`/`rng(23)`, cele: pieszy $22{,}5\ \text{m} / -4{,}0\ \text{m/s}$ oraz samochód $67{,}5\ \text{m} / +18{,}0\ \text{m/s}$).
   - Wykres: Dwa panele (heatmaps 2D amplitudy w dB):
     - (a) Surowa macierz transmitancji przed MTI – widoczna dominująca składowa stała (przesłuch DPI), zaniki wielodrogowe oraz wyciek luki DC wokół częstotliwości środkowej.
-    - (b) Po filtracji MTI w czasie wolnym i liniowej interpolacji podnośnych DC – wycięcie składowej stałej, ciągłość widmowa i widoczna dwuwymiarowa modulacja fazowa ruchomych celów.
+    - (b) Po filtracji MTI w czasie wolnym i liniowej interpolacji podnośnych DC – wycięcie składowej stałej, ciągłość widmowa i odsłonięcie zmodulowanych fazowo składowych ruchomych.
 - [x] 2. **Plik wynikowy**: `thesis/img/ch3_impl/rys_3_1_macierz_transmitancji_h.png`.
 - [x] 3. **Weryfikacja poprawności**:
-  - Wycięcie przesłuchu bezpośredniego (DPI) o ponad 40 dB (> 120 dB dla składowej stałej),
+  - Wycięcie składowej stałej DPI o $> 120\ \text{dB}$ (numerycznie $150{,}2\ \text{dB}$; spadek mocy całkowitej macierzy o $24{,}89\ \text{dB}$),
   - Ciągłość widmowa wzdłuż osi częstotliwości po zlikwidowaniu luki DC.
 - [x] 4. **Weryfikacja czytelności i estetyki**:
   - Osie: „Numer symbolu OFDM (czas wolny)”, „Indeks podnośnej k (częstotliwość)”, etykieta paska kolorów: „Moc transmitancji [dB]”, 100% język polski, profesjonalna mapa barw (`parula`), eksport w rozdzielczości 300 DPI (`exportgraphics`).
@@ -125,15 +125,15 @@ flowchart TD
 
 ### Krok 3: Eksperyment IMPL-2 & IMPL-3 — Mapy periodogramu Range–Doppler przed i po DSP (Rys. 3.2 i 3.3) `[ZROBIONE]`
 - [x] 1. **Skrypty testowe (osobne pliki dla każdego rysunku, ujednolicone pasmo referencyjne CBW80 = 80 MHz)**:
-  - `scripts/figures/ch3_impl/gen_fig_3_2_range_doppler.m` (Rys. 3.2 — porównanie mapy przed DSP i po DSP dla CBW80, układ 2x2: góra wykresy 3D całej mapy, dół zbliżenie 2D na strefę celów z detekcją CLEAN),
-  - `scripts/figures/ch3_impl/gen_fig_3_3_dsp_stages.m` (Rys. 3.3 — dekompozycja 4 etapów DSP dla CBW80: Surowy $\to$ MTI $\to$ Okno 2D BH + DC $\to$ CLEAN).
+  - `scripts/figures/ch3_impl/gen_fig_3_2_range_doppler.m` (Rys. 3.2 — porównanie mapy przed DSP i po DSP dla CBW80, układ 2x2: góra wykresy 3D całej mapy, dół zbliżenie 2D na strefę celów z detekcją Coherent STC przy CFAR $p_{\text{FA}} = 10^{-3}$),
+  - `scripts/figures/ch3_impl/gen_fig_3_3_dsp_stages.m` (Rys. 3.3 — dekompozycja 4 etapów DSP dla CBW80: Surowy $\to$ MTI $\to$ Okno 2D BH + DC $\to$ Ekstrakcja Coherent STC).
   - Architektura (DRY): Bezpośrednie uruchomienie potoku `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` $\to$ `step4_interpreter` oraz funkcji `compute_range_doppler_map` z `lib/` bez duplikacji kodu okienkowania i FFT.
 - [x] 2. **Pliki wynikowe**:
   - `thesis/img/ch3_impl/rys_3_2_mapa_range_doppler.png`,
   - `thesis/img/ch3_impl/rys_3_3_etapy_przetwarzania_dsp.png`.
 - [x] 3. **Weryfikacja poprawności**:
-  - Pełna spójność parametryczna pomiędzy Rys. 3.1, 3.2 i 3.3 (`cbw = 'CBW80'`, `mcs = 0`, `snr_dB = 45`, Model-C, ziarna `rng(42)` i `rng(23)`, jednakowe cele i kadr $R \in [0, 85]\ \text{m}$, $v \in [-25, 25]\ \text{m/s}$),
-  - Wyeliminowanie przesłuchu bezpośredniego DPI przez MTI, tłumienie listków bocznych przez okno 2D Blackmana–Harrisa oraz bezbłędna ekstrakcja obu celów przez Coherent CLEAN.
+  - Pełna spójność parametryczna pomiędzy Rys. 3.1, 3.2 i 3.3 (`cbw = 'CBW80'`, `mcs = 0`, `snr_dB = 25`, Model-C, ziarna `rng(42)` i `rng(23)`, jednakowe cele $22{,}5\ \text{m} / -4{,}0\ \text{m/s}$ oraz $67{,}5\ \text{m} / +18{,}0\ \text{m/s}$ i kadr $R \in [0, 85]\ \text{m}$, $v \in [-25, 25]\ \text{m/s}$),
+  - Wyeliminowanie przesłuchu bezpośredniego DPI przez MTI, tłumienie listków bocznych przez okno 2D Blackmana–Harrisa oraz bezbłędna ekstrakcja obu celów przez Coherent STC ($p_{\text{FA}} = 10^{-3}$, 2 iteracje, 0 rezyduów).
 - [x] 4. **Weryfikacja czytelności i estetyki (wzorzec z commita `dd69b70`)**:
   - Nadrzędny tytuł główny `sgtitle(..., 'Interpreter', 'none')`, krótkie techniczne tytuły podpaneli `a) ...`–`d) ...`,
   - Osie: „Prędkość radialna [m/s]”, „Odległość bistatyczna [m]”, pasek kolorów: „Moc znormalizowana [dB]”, 100% język polski, `exportgraphics` 300 DPI.
@@ -165,35 +165,34 @@ flowchart TD
 ### Krok 5: Eksperyment SIM-2 (E2) — Granica prędkości jednoznacznej: 802.11a vs ax (Rys. 4.2) `[ZROBIONE]`
 - [x] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_2_doppler_aliasing.m`.
   - Architektura (DRY): Uruchomienie potoku kolejno dla `WIFI_STANDARD = '802.11a'` oraz `'802.11ax'` za pomocą `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` $\to$ `step4_interpreter` bez powielania kodu DSP.
-  - Scenariusz: Szybki obiekt $v = +20{,}0\ \text{m/s}$ ($72\ \text{km/h}$, typowy pojazd na $R = 30{,}0\ \text{m}$ w kanale Model-A).
-  - Porównanie: 802.11a ($T_{\text{sym}} = 4{,}0\ \mu\text{s}$, $v_{\text{unamb}} = \pm 56{,}8\ \text{m/s}$) vs 802.11ax ($T_{\text{sym}} = 13{,}6\ \mu\text{s}$, $v_{\text{unamb}} = \pm 16{,}7\ \text{m/s}$).
-  - Wykres: Dwa podpanele (`subplot(1, 2, 1)` i `subplot(1, 2, 2)`) przedstawiające przekrój profilu prędkości Dopplera dla obu standardów.
+  - Scenariusz: Szybki obiekt $v = +20{,}0\ \text{m/s}$ ($72\ \text{km/h}$, typowy pojazd na $R = 30{,}0\ \text{m}$ w kanale Model-A, $\text{SNR} = 40\ \text{dB}$, krok próbkowania czasu wolnego $k_{\text{PRI}} = 60$).
+  - Porównanie: 802.11a ($T_{\text{sym}} = 4{,}0\ \mu\text{s}$, $v_{\max} = \pm 56{,}82\ \text{m/s}$) vs 802.11ax ($T_{\text{sym}} = 13{,}6\ \mu\text{s}$, $v_{\max} = \pm 16{,}71\ \text{m/s}$).
+  - Wykres: Jeden zintegrowany wykres przekroju profilu Dopplera w oknie jednoznaczności 802.11a ($\pm 56{,}8\ \text{m/s}$) z okresowym rozwinięciem widma 802.11ax i zaznaczonymi granicami $\pm 16{,}7\ \text{m/s}$.
 - [x] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_2_aliasing_dopplera.png`.
 - [x] 3. **Weryfikacja poprawności**:
-  - W 802.11a: poprawny pik przy $+20{,}0\ \text{m/s}$ (zmierzony pik: $+20{,}02\ \text{m/s}$ dla $R = 30{,}12\ \text{m}$, $\text{PNFR} = 53{,}1\ \text{dB}$),
-  - W 802.11ax: zawinięcie widma (aliasing) do pozornej prędkości $20{,}0 - 2 \cdot 16{,}71 = -13{,}42\ \text{m/s}$ (zmierzony pik: $-13{,}41\ \text{m/s}$ dla $R = 30{,}03\ \text{m}$, $\text{PNFR} = 39{,}1\ \text{dB}$),
+  - W 802.11a: poprawny, jednoznaczny pik przy $+20{,}00\ \text{m/s}$ ($R = 30{,}00\ \text{m}$, $\text{PNFR} = 53{,}1\ \text{dB}$),
+  - W 802.11ax: zawinięcie widma (aliasing) wewnątrz przedziału podstawowego do pozornej prędkości $20{,}0 - 2 \cdot 16{,}71 = -13{,}42\ \text{m/s}$ (zmierzony pik na siatce: $-13{,}41\ \text{m/s}$, po interpolacji $-13{,}42\ \text{m/s}$, $R = 30{,}00\ \text{m}$, $\text{PNFR} = 39{,}1\ \text{dB}$) oraz okresowe repliki przy $-46{,}84$, $+20{,}00$ i $+53{,}42\ \text{m/s}$,
   - Udowodnienie kompromisu: większa odporność na wielodrogowość w ax kosztem 3,4-krotnie węższego zakresu prędkości jednoznacznej ($\pm 16{,}71\ \text{m/s}$ względem $\pm 56{,}82\ \text{m/s}$).
 - [x] 4. **Weryfikacja czytelności i estetyki (wzorzec z commita `dd69b70`)**:
-  - **Tytuł główny**: `sgtitle('Porównanie jednoznaczności prędkości: IEEE 802.11a vs 802.11ax', 'FontSize', 14, 'FontWeight', 'bold', 'Interpreter', 'none')`,
-  - **Krótkie tytuły podpaneli**: `title('a) IEEE 802.11a (T_sym = 4,0 µs)', 'FontSize', 11, 'FontWeight', 'bold', 'Interpreter', 'none')` oraz `title('b) IEEE 802.11ax (T_sym = 13,6 µs)', 'FontSize', 11, 'FontWeight', 'bold', 'Interpreter', 'none')`,
-  - **Minimalizm tekstu**: Brak rozwlekłych opisów na wykresie. Czyste pionowe linie przerywane wskazujące prędkość rzeczywistą oraz granice $\pm v_{\text{unamb}}$, prosta legenda pod osiami (`southoutside`), 100% język polski, `exportgraphics` 300 DPI.
+  - **Tytuł główny**: `title('Profile Dopplera w przedziale jednoznaczności IEEE 802.11a (±56,8 m/s)', 'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none')`,
+  - **Minimalizm tekstu**: Brak rozwlekłych opisów na wykresie. Czyste pionowe linie wskazujące prędkość rzeczywistą ($+20{,}0\ \text{m/s}$) oraz granice jednoznaczności 802.11ax ($\pm 16{,}7\ \text{m/s}$), legenda pod wykresem (`southoutside`), `box on`, 100% język polski, `exportgraphics` 300 DPI.
 - [x] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
 
 ---
 
 ### Krok 6: Eksperyment SIM-3 (E3) — Granica modulacji MCS i wzmocnienie szumu ZF (Rys. 4.3) `[ZROBIONE]`
 - [x] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_3_noise_enhancement.m`.
-  - Architektura (DRY): Pętla po indeksach MCS wywołująca `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` $\to$ `step4_interpreter`. Wykorzystanie zwracanych parametrów (`radar_data.zeta_zf_dB`, `pnfr.pnfr_dB`) bez pisania własnego demodulatora.
-  - Scenariusz: IEEE 802.11ax, CBW40, Model-C. Zestawienie MCS: MCS 0 (BPSK), MCS 3 (16-QAM), MCS 7 (64-QAM), MCS 11 (1024-QAM) przy dynamicznie skalowanym ładunku danych (stały czas trwania ramki $3871{,}2\ \mu\text{s}$, $M = 280$ symboli OFDM).
+  - Architektura (DRY): Pętla po wszystkich indeksach MCS 0–11 wywołująca `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` $\to$ `step4_interpreter`. Wykorzystanie zwracanych parametrów (`radar_data.zeta_zf_dB`, `pnfr.pnfr_dB`) bez pisania własnego demodulatora.
+  - Scenariusz: IEEE 802.11ax, CBW40, Model-C, $\text{SNR} = 25\ \text{dB}$, cel $R = 22{,}5\ \text{m}, v = +18{,}0\ \text{m/s}$. Wszystkie indeksy MCS 0–11 (BPSK, QPSK, 16-QAM, 64-QAM, 256-QAM, 1024-QAM) przy dynamicznie skalowanym ładunku PSDU ($8190 \to 136500\ \text{B}$) utrzymującym stały czas trwania ramki ($3871{,}2\ \mu\text{s}$, $M = 280$ symboli OFDM).
   - Wykres: Wykres z dwiema zsynchronizowanymi osiami Y (`yyaxis`, skala 1:1 dB) — współczynnik wzmocnienia szumu $\zeta_{\text{ZF}} = \mathbb{E}[|X|^2]\mathbb{E}[1/|X|^2]$ [dB] oraz zmierzony kontrast celu PNFR [dB].
 - [x] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_3_wzmocnienie_szumu_mcs.png`.
 - [x] 3. **Weryfikacja poprawności**:
-  - $\zeta_{\text{ZF}} = 0{,}00\ \text{dB}$ dla stałoamplitudowej modulacji BPSK (MCS 0),
-  - Monotoniczny wzrost $\zeta_{\text{ZF}}$: $2{,}69\ \text{dB}$ (MCS 3, 16-QAM) $\to 4{,}22\ \text{dB}$ (MCS 7, 64-QAM) $\to 6{,}15\ \text{dB}$ (MCS 11, 1024-QAM) wskutek dzielenia przez symbole o małej amplitudzie w estymatorze ZF,
-  - Lustrzany, proporcjonalny spadek kontrastu celu PNFR przy stałym czasie ramki ($M = 280$): $47{,}89\ \text{dB}$ (MCS 0) $\to 45{,}15\ \text{dB}$ (MCS 3) $\to 43{,}80\ \text{dB}$ (MCS 7) $\to 42{,}24\ \text{dB}$ (MCS 11), tj. spadek o $5{,}65\ \text{dB}$.
+  - $\zeta_{\text{ZF}} = 0{,}00\ \text{dB}$ dla stałoamplitudowych modulacji BPSK (MCS 0) i QPSK (MCS 1–2),
+  - Schodkowy wzrost $\zeta_{\text{ZF}}$ z rzędem modulacji: $2{,}69\ \text{dB}$ (MCS 3–4, 16-QAM) $\to 4{,}19\text{--}4{,}22\ \text{dB}$ (MCS 5–7, 64-QAM) $\to 5{,}27\text{--}5{,}31\ \text{dB}$ (MCS 8–9, 256-QAM) $\to 6{,}12\text{--}6{,}15\ \text{dB}$ (MCS 10–11, 1024-QAM) wskutek dzielenia przez symbole o małej amplitudzie w estymatorze ZF,
+  - Lustrzany, schodkowy spadek kontrastu celu PNFR przy stałym czasie ramki ($M = 280$): $47{,}96\ \text{dB}$ (MCS 0) $\to 45{,}20\text{--}45{,}25\ \text{dB}$ (16-QAM) $\to 43{,}80\text{--}43{,}83\ \text{dB}$ (64-QAM) $\to 42{,}89\text{--}42{,}65\ \text{dB}$ (256-QAM) $\to 41{,}61\text{--}42{,}27\ \text{dB}$ (1024-QAM), tj. spadek o $5{,}69\ \text{dB}$ dla MCS 11 (maks. $6{,}35\ \text{dB}$ dla MCS 10) i niezależność od stopy kodowania FEC wewnątrz grup modulacji.
 - [x] 4. **Weryfikacja czytelności i estetyki (wzorzec z commita `dd69b70`)**:
-  - **Tytuł główny**: `title('Wpływ rzędu modulacji MCS na wzmocnienie szumu i kontrast celu', 'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none')`,
-  - **Minimalizm tekstu**: Brak rozwlekłych komentarzy wewnątrz wykresu. Czyste zsynchronizowane osie Y (`yyaxis left`: „Współczynnik wzmocnienia szumu ζ_ZF [dB]”, `yyaxis right`: „Kontrast celu PNFR [dB]”), oś X: „Rząd modulacji (indeks MCS)”, legenda pod wykresem (`southoutside`), 100% język polski, `exportgraphics` 300 DPI.
+  - **Tytuł główny**: `title('Wpływ indeksu MCS na wzmocnienie szumu ZF i kontrast celu PNFR (IEEE 802.11ax)', 'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none')`,
+  - **Minimalizm tekstu**: Zsynchronizowane osie Y (`yyaxis left`: „Współczynnik wzmocnienia szumu ζ_ZF [dB]”, `yyaxis right`: „Kontrast celu PNFR [dB]”), oś X: „Indeks schematu modulacji i kodowania (MCS)”, legenda pod wykresem (`southoutside`), `box on`, 100% język polski, `exportgraphics` 300 DPI.
 - [x] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
 
 ---
@@ -206,37 +205,38 @@ flowchart TD
     - Model-E ($\tau_{\text{rms}} = 100\ \text{ns}$, duża hala przemysłowa).
   - Scenariusz: IEEE 802.11ax, CBW80, MCS 0, $\text{SNR} = 30\ \text{dB}$, cel: $R = 10{,}0\ \text{m}$, $v = +8{,}0\ \text{m/s}$ (obiekt w strefie aktywnej wielodrogi modeli C i E).
   - Izolacja zmiennej: Obliczenie periodogramu 2D przed i po MTI przy zachowaniu tego samego okna 2D Blackmana–Harrisa i interpolacji DC za pomocą `compute_range_doppler_map` z `lib/`.
-  - Wykres: Sześciopanelowe zestawienie map 2D Range–Doppler (siatka $3 \times 2$):
+  - Wykres: Sześciopanelowe zestawienie map 2D Range–Doppler (siatka $3 \times 2$) ze wspólną bezwzględną skalą barwną `[-100, 0]` dB względem mocy DPI w Modelu-A:
     - Kolumna lewa: mapy przed MTI ukazujące rozprzestrzenianie się stacjonarnego echa wielodrogowego wzdłuż $v = 0\ \text{m/s}$ w przestrzeni $R \times v$ dla modeli A, C i E,
-    - Kolumna prawa: mapy po MTI ukazujące wycięcie składowej stałej o $\ge 38\text{--}46\ \text{dB}$ (rowek filtracyjny) i odsłonięcie celu ($v = +8{,}0\ \text{m/s}$) w pełnym zakresie jednoznaczności prędkości ($\pm 16{,}7\ \text{m/s}$).
+    - Kolumna prawa: mapy po MTI ukazujące wycięcie składowej stałej (rowek filtracyjny przy $v = 0$) i odsłonięcie celu ($v = +8{,}0\ \text{m/s}$) w oknie $v \in [-20, 20]\ \text{m/s}$, $R \in [0, 25]\ \text{m}$.
 - [x] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_4_tlumienie_clutteru_mti.png`.
 - [x] 3. **Weryfikacja poprawności**:
-  - Skuteczne stłumienie składowej stacjonarnej ($v = 0\ \text{m/s}$) w Modelu-E o $46{,}3\ \text{dB}$ oraz w Modelu-C o $38{,}8\ \text{dB}$,
-  - Nienaruszona amplituda piku ruchomego celu ($v = +8{,}0\ \text{m/s}$),
-  - Pełne odsłonięcie celu zamaskowanego przed MTI pod tłem clutteru ($\text{SCR} = -3{,}9\ \text{dB} \to +4{,}1\ \text{dB}$ w Modelu-C oraz $+2{,}7\ \text{dB}$ w Modelu-E).
+  - Skuteczne stłumienie składowej stacjonarnej ($v = 0\ \text{m/s}$) w punkcie $R = 10{,}0\ \text{m}$ o $28{,}15\ \text{dB}$ w Modelu-C oraz $35{,}96\ \text{dB}$ w Modelu-E (oraz tłumienie DPI w $R = 0\ \text{m}$ o $> 70\ \text{dB}$),
+  - Odsłonięcie celu zamaskowanego przed MTI pod tłem clutteru ($\text{SCR} = -3{,}83 \to +3{,}32\ \text{dB}$ w Modelu-C oraz $-3{,}82 \to +3{,}00\ \text{dB}$ w Modelu-E),
+  - Obserwacja błędu synchronizacji w silnej wielodrożności Modelu-E: blokada `wlanSymbolTimingEstimate` na opóźnionym odbiciu przesuwa pozorną odległość celu na mapie z $10{,}0\ \text{m}$ do $6{,}09\ \text{m}$ ($-2$ próbki).
 - [x] 4. **Weryfikacja czytelności i estetyki**:
-  - **Tytuł główny**: `sgtitle('Wpływ wielodrogowości TGax i filtracji MTI na dwuwymiarowe mapy Range–Doppler', 'FontSize', 13.5, 'FontWeight', 'bold', 'Interpreter', 'none')`,
-  - **Siatka 3x2**: Wiersz 1: Model-A (a, d), Wiersz 2: Model-C (b, e), Wiersz 3: Model-E (c, f).
-  - Oś X: „Prędkość radialna [m/s]” (pełny zakres $\pm 16{,}7\ \text{m/s}$), Oś Y: „Odległość [m]” ($0\text{--}32\ \text{m}$), paleta barwna `turbo`, wspólny colorbar dB po prawej stronie, białe znaczniki celu z podpisem, `exportgraphics` 300 DPI.
+  - **Tytuł główny**: `sgtitle('Wpływ wielodrogowości kanału TGax i filtracji MTI na dwuwymiarowe mapy Range–Doppler', 'FontSize', 13.5, 'FontWeight', 'bold', 'Interpreter', 'none')`,
+  - **Siatka 3x2**: Wiersz 1: Model-A (a, b), Wiersz 2: Model-C (c, d), Wiersz 3: Model-E (e, f).
+  - Oś X: „Prędkość radialna [m/s]” ($[-20, 20]\ \text{m/s}$), Oś Y: „Odległość [m]” ($[0, 25]\ \text{m}$), paleta barwna `jet` (`[-100, 0]` dB), wspólny colorbar po prawej stronie, białe znaczniki celu z podpisem, `exportgraphics` 300 DPI.
 - [x] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
 
 ---
 
-### Krok 8: Eksperyment SIM-5 (E5) — Granica dynamiki mocy i Coherent CLEAN (Rys. 4.5) `[ZROBIONE]`
+### Krok 8: Eksperyment SIM-5 (E5) — Granica dynamiki mocy: Binary STC vs Coherent STC z progiem CFAR (Rys. 4.5) `[ZROBIONE]`
 - [x] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_5_clean_cut.m`.
-  - Architektura (DRY): Uruchomienie standardowego potoku `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` $\to$ `run_coherent_clean`. Skrypt pobiera historię okresogramów `CPer_history` bezpośrednio z rozszerzonej sygnatury `lib/run_coherent_clean.m`.
-  - Scenariusz: Asymetria mocy 30 dB w kanale Model-C ($\text{SNR} = 38\ \text{dB}$):
-    - Cel 1 (silny pojazd, $0\ \text{dB}$): $R_1 = 15{,}0\ \text{m}$, $v_1 = 8{,}0\ \text{m/s}$, $\text{gain} = 0{,}0500$,
-    - Cel 2 (słaby pieszy, $-30\ \text{dB}$): $R_2 = 30{,}0\ \text{m}$, $v_2 = 8{,}0\ \text{m/s}$, $\text{gain} = 0{,}00158$, zamaskowany początkowo w listkach bocznych pojazdu.
-  - Wykres: Trzy krzywe przekroju odległościowego na jednym rysunku (sygnał surowy, po 1. iteracji CLEAN, po 2. iteracji CLEAN) wraz z poziomą linią adaptacyjnego progu MAD ($T_{\text{stop}} = -34{,}8\ \text{dB}$).
+  - Architektura (DRY): Uruchomienie standardowego potoku `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver`, a następnie obu algorytmów Brauna przez `step4_interpreter(..., p_FA, 'binary')` oraz `step4_interpreter(..., p_FA, 'coherent')` ($p_{\text{FA}} = 10^{-3}$). Skrypt pobiera maskę `diag_bin.B` oraz historię okresogramów `diag_coh.Per_history`.
+  - Scenariusz: Asymetria mocy 30 dB w standardzie IEEE 802.11ax (`CBW20`, 20 MHz, MCS 0, Model-C, $\text{SNR} = 38\ \text{dB}$):
+    - Cel 1 (silny pojazd, $0\ \text{dB}$): $R_1 = 15{,}0\ \text{m}$, $v_1 = +8{,}0\ \text{m/s}$, $\text{gain} = 0{,}0500$,
+    - Cel 2 (słaby pieszy, $-30\ \text{dB}$): $R_2 = 30{,}0\ \text{m}$, $v_2 = +8{,}0\ \text{m/s}$, $\text{gain} = 0{,}00158$, położony wewnątrz szerokiego listka głównego Blackmana–Harrisa pojazdu.
+  - Wykres: Dwupanelowe zestawienie przekrojów odległościowych 1D w kolumnie Dopplera celu głównego z progiem CFAR $\eta$:
+    - (a) **Binary STC (maskowanie binarne)**: sygnał surowy, sygnał po maskowaniu $\mathrm{Per}_{\mathbf{F}} \cdot \mathbf{B}$, szare zacieniowanie strefy $B = 0$, pozycja pieszego ($30{,}0\ \text{m}$) i próg CFAR $\eta$,
+    - (b) **Coherent STC (odejmowanie koherentne)**: sygnał surowy, stan po usunięciu pojazdu (przed wykryciem pieszego), stan końcowy po zakończeniu pętli Coherent STC, pozycja pieszego ($30{,}0\ \text{m}$) i próg CFAR $\eta$.
 - [x] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_5_clean_prog_adaptacyjny.png`.
 - [x] 3. **Weryfikacja poprawności**:
-  - Skuteczna eliminacja listków bocznych funkcji PSF celu silnego pojazdu,
-  - Ujawnienie słabego celu pieszego przy $R = 30{,}01\ \text{m}$ (moc $-30{,}19\ \text{dB}$),
-  - Samoczynne, bezbłędne zakończenie dekonwolucji po dokładnie 2 iteracjach dzięki adaptacyjnemu progowi MAD (szum resztkowy $-57{,}56\ \text{dB} < T_{\text{stop}} = -34{,}83\ \text{dB}$, brak *over-cleaning*).
+  - **Binary STC**: wyzerowanie elipsy *null-to-null* ($N_{\text{win}} = 34{,}0$ binów $= 63{,}75\ \text{m}$) tworzy strefę ślepą $B = 0$ na przedziale $[0{,}00;\ 46{,}88]\ \text{m}$, która pochłania pieszego — 1 wykrycie ($\hat{d}_1 = 15{,}20\ \text{m}$, $\hat{v}_1 = +7{,}45\ \text{m/s}$), pieszy niewykryty,
+  - **Coherent STC**: po odjęciu repliki pojazdu i odrzuceniu 2 rezyduów w Kroku 4 (elipsa $-3\ \text{dB}$ o szerokości $N_{\text{win}} = 29{,}89\ \text{m}$) w iteracji 3 wyłania się wyraźny pik pieszego przy $\hat{d}_2 = 31{,}06\ \text{m}, \hat{v}_2 = +7{,}67\ \text{m/s}$ o mocy $-31{,}54\ \text{dB}$ ponad progiem CFAR $\eta = -39{,}66\ \text{dB}$ ($\text{PNFR} = 40{,}4\ \text{dB}$), a tło końcowe w kolumnie celu spada do $-45{,}71\ \text{dB} < \eta$.
 - [x] 4. **Weryfikacja czytelności i estetyki (wzorzec z commita `dd69b70`)**:
-  - **Tytuł główny**: `title('Odkrywanie słabego celu przez dekonwolucję Coherent CLEAN', 'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none')`,
-  - **Minimalizm tekstu**: Brak bloków tekstowych wewnątrz osi, zwięzła legenda pod wykresem (`southoutside`), zamknięta ramka (`box on`), siatka (`grid on`), grube linie ($\ge 1{,}5\ \text{pt}$), 100% język polski, `exportgraphics` 300 DPI.
+  - **Tytuł główny**: `sgtitle('Porównanie algorytmów Binary STC i Coherent STC (Braun) w scenariuszu dynamiki 30 dB', 'FontSize', 13.5, 'FontWeight', 'bold', 'Interpreter', 'none')`,
+  - **Minimalizm tekstu**: Brak bloków tekstowych wewnątrz osi, zwięzła legenda pod każdym panelem (`southoutside`), zamknięta ramka (`box on`), siatka (`grid on`), grube linie ($\ge 1{,}5\ \text{pt}$), 100% język polski, `exportgraphics` 300 DPI.
 - [x] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
 
 ---
@@ -261,7 +261,7 @@ flowchart TD
 - [ ] 1. Podrozdział 3.1: Środowisko symulacyjne MATLAB i toolboxy (WLAN Toolbox, Communications Toolbox, wkład własny).
 - [ ] 2. Podrozdział 3.2: Implementacja kanału (`step2_channel.m`, triada modeli TGax A/C/E, cele ruchome).
 - [ ] 3. Podrozdział 3.3: Implementacja odbiornika (`step3_receiver.m`, demodulacja, ZF, filtr MTI, interpolacja DC — włączenie Rysunku 3.1).
-- [ ] 4. Podrozdział 3.4: Implementacja interpretera (`step4_interpreter.m`, okienkowanie 2D, periodogram Range–Doppler — włączenie Rysunku 3.2, pętla Coherent CLEAN z progiem MAD, osie fizyczne).
+- [ ] 4. Podrozdział 3.4: Implementacja interpretera (`step4_interpreter.m`, `get_detection_algorithm.m`, okienkowanie 2D, periodogram Range–Doppler — włączenie Rysunku 3.2 i 3.3, implementacja Binary STC i Coherent STC z progiem CFAR $\eta$, osie fizyczne).
 
 ---
 
@@ -271,7 +271,7 @@ flowchart TD
 - [ ] 3. Podrozdział 4.3: Eksperyment E2 — Porównanie standardów 802.11a i ax, aliasing Dopplera (Rysunek 4.2).
 - [ ] 4. Podrozdział 4.4: Eksperyment E3 — Wpływ rzędu modulacji MCS i wzmocnienie szumu ZF (Rysunek 4.3).
 - [ ] 5. Podrozdział 4.5: Eksperyment E4 — Tłumienie clutteru wielodrogowego TGax i MTI (Rysunek 4.4).
-- [ ] 6. Podrozdział 4.6: Eksperyment E5 — Skuteczność Coherent CLEAN, próg adaptacyjny MAD (Rysunek 4.5) oraz analiza Monte Carlo (Rysunek 4.6).
+- [ ] 6. Podrozdział 4.6: Eksperyment E5 — Skuteczność Binary STC i Coherent STC z progiem CFAR $\eta$ (Rysunek 4.5) oraz analiza Monte Carlo (Rysunek 4.6).
 
 ---
 
@@ -281,7 +281,7 @@ flowchart TD
 - [ ] 3. Podrozdział 2.4: Estymacja kanału (paradygmat CIR vs funkcja wzajemnej niejednoznaczności CAF, estymator Zero-Forcing).
 - [ ] 4. Podrozdział 2.5: Filtracja ech stałych (filtr MTI w czasie wolnym, kompensacja luki nośnych DC).
 - [ ] 5. Podrozdział 2.6: Wyznaczanie mapy Range–Doppler (okno 2D Blackmana–Harrisa, IFFT/FFT).
-- [ ] 6. Podrozdział 2.7: Detekcja i ekstrakcja celów (algorytm Coherent CLEAN, estymacja tła szumowego MAD).
+- [ ] 6. Podrozdział 2.7: Detekcja i ekstrakcja celów (estymacja szumu ML, próg CFAR $\eta$, algorytmy Binary STC oraz Coherent STC).
 
 ---
 

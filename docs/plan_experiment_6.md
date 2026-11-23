@@ -4,8 +4,18 @@ Niniejszy dokument stanowi **szczegółowy plan techniczny wdrożenia Wariantu 4
 
 Powiązane dokumenty: [`plan_deliverables.md`](plan_deliverables.md), [`plan_work_order.md`](plan_work_order.md), [`plan_chapter_2.md`](plan_chapter_2.md).
 
+> [!WARNING]
+> **Aktualizacja po rewizji architektury detektora (commit `20afb5f`)**:
+> Plan poniżej opisuje historyczny Wariant 4A oparty na usuniętym module `lib/run_coherent_clean.m` oraz progu MAD. Od commitu `20afb5f` warstwa detekcji została zastąpiona kanonicznymi algorytmami Brauna (2014):
+> - [`lib/binary_successive_target_cancellation.m`](../lib/binary_successive_target_cancellation.m) (**Binary STC** — maskowanie binarne elipsą *null-to-null*),
+> - [`lib/coherent_successive_target_cancellation.m`](../lib/coherent_successive_target_cancellation.m) (**Coherent STC** — koherentne odejmowanie repliki zespolonej oraz Krok 4 odrzucania rezyduów wewnątrz elipsy $-3\ \text{dB}$),
+> - [`lib/get_detection_algorithm.m`](../lib/get_detection_algorithm.m) (centralny rejestr metod `'binary'` i `'coherent'`),
+> - z globalnym progiem **CFAR $\eta = -\hat{\sigma}^2 \ln\left(1 - (1 - p_{\mathrm{FA}})^{1/(NM)}\right)$** (estymacja $\hat{\sigma}^2$ poza $N_{\max}$), 2D interpolacją paraboliczną (Braun równ. 3.84–3.86), estymacją $\hat{\sigma}_{\mathrm{RCS}}$ oraz symetrycznym wycentrowaniem osi prędkości w [`lib/calculate_physical_axes.m`](../lib/calculate_physical_axes.m).
+>
+> W związku z tym **Kroki I–III** zostały zrealizowane/zastąpione nową architekturą STC (zweryfikowaną w [`tests/verify_regression.m`](../tests/verify_regression.m)). Przyszły skrypt **Eksperymentu 6 (Krok IV, `gen_fig_4_6_stat_pd_vs_snr.m`)** powinien zachować założenia fizyczne sceny z Sekcji 1 poniżej, ale bezpośrednio wywoływać `step4_interpreter(..., p_FA, 'binary')` oraz `step4_interpreter(..., p_FA, 'coherent')` w celu statystycznego porównania niezawodności detekcji Binary STC vs Coherent STC w Monte Carlo.
+
 > [!IMPORTANT]
-> **Status dokumentu**: Plan gotowy do przeglądu i zatwierdzenia. Przed akceptacją użytkownika nie wprowadzono żadnych zmian w plikach `.m`. Funkcja [`src/step2_channel.m`](../src/step2_channel.m) pozostaje całkowicie nietknięta — każda próba Monte Carlo losuje niezależną realizację wielodrogowego kanału `wlanTGaxChannel('Model-C')`.
+> **Status dokumentu**: Sekcja 1 (fizyka sceny, model odbicia celów, bramka Rayleigha) pozostaje aktualnym punktem odniesienia; sekcja 2 (Kroki I–III) ma charakter historyczny przed refaktoryzacją `20afb5f`. Funkcja [`src/step2_channel.m`](../src/step2_channel.m) pozostaje nietknięta — każda próba Monte Carlo losuje niezależną realizację wielodrogowego kanału `wlanTGaxChannel('Model-C')`.
 
 ---
 
