@@ -1,14 +1,14 @@
 function fig = gen_fig_3_2_range_doppler(show_figure, save_png)
 % GEN_FIG_3_2_RANGE_DOPPLER
-% Experiment IMPL-2: Comparison of Raw vs. Processed 2D Range-Doppler
+% Experiment IMPL-2: Comparison of Baseline vs. Conditioned 2D Range-Doppler
 % periodograms for IEEE 802.11ax (CBW80, 80 MHz) in a multipath TGax
 % Model-C channel with two moving targets (pedestrian and vehicle).
 %
 % Layout (2x2):
-%   (a) Before DSP - 3D mesh (full unambiguous map, no MTI, rectangular window)
-%   (b) After DSP  - 3D mesh (full unambiguous map, MTI + DC repair + 2D Blackman-Harris)
-%   (c) Before DSP - 2D zoom on target zone (R: 0-85 m, v: +/-25 m/s)
-%   (d) After DSP  - 2D zoom on target zone with Coherent STC detections
+%   (a) Baseline - 3D mesh (full unambiguous map, no static echo removal, rectangular window)
+%   (b) Conditioned - 3D mesh (slow-time mean subtraction + DC interpolation + 2D Blackman-Harris)
+%   (c) Baseline - 2D zoom on target zone (R: 0-85 m, v: +/-25 m/s)
+%   (d) Conditioned - 2D zoom on target zone with Coherent STC detections
 %
 % Output file: thesis/img/ch3_impl/rys_3_2_mapa_range_doppler.png
 
@@ -16,7 +16,7 @@ function fig = gen_fig_3_2_range_doppler(show_figure, save_png)
     if nargin < 2 || isempty(save_png),    save_png    = true; end
 
     fprintf('=================================================================\n');
-    fprintf('  Generating Fig. 3.2: Range-Doppler Map Before & After DSP (CBW80)\n');
+    fprintf('  Generating Fig. 3.2: Range-Doppler Map (Baseline vs Conditioned, CBW80)\n');
     fprintf('=================================================================\n');
 
     project_root = fullfile(fileparts(mfilename('fullpath')), '..', '..', '..');
@@ -50,7 +50,7 @@ function fig = gen_fig_3_2_range_doppler(show_figure, save_png)
     Nfft          = radar_data.Nfft;
     n_symbols     = radar_data.n_symbols;
 
-    % 2. Raw periodogram (no MTI, no DC repair, rectangular window) vs processed periodogram
+    % 2. Baseline periodogram (no static echo removal, no DC interpolation, rectangular window) vs conditioned
     C_raw     = compute_range_doppler_map(radar_data.H_raw, Nfft, n_symbols, params.active_mask, 4, false);
     P_raw_lin = abs(C_raw).^2;
     P_raw_dB  = 10 * log10(P_raw_lin / max(P_raw_lin(:)) + 1e-12);
@@ -67,13 +67,13 @@ function fig = gen_fig_3_2_range_doppler(show_figure, save_png)
     if ~isempty(pnfr.pnfr_dB)
         pnfr_str = sprintf('%.1f dB', pnfr.pnfr_dB(1));
     end
-    fprintf('  [Before DSP] Median = %.2f dB | T1 (human) = %+.2f dB | T2 (car) = %+.2f dB\n', ...
+    fprintf('  [Baseline]    Median = %.2f dB | T1 (human) = %+.2f dB | T2 (car) = %+.2f dB\n', ...
         median(P_raw_dB(:)), P_raw_dB(r1_idx, v1_idx), P_raw_dB(r2_idx, v2_idx));
-    fprintf('  [After DSP]  Median = %.2f dB | T1 (human) = %+.2f dB | T2 (car) = %+.2f dB | PNFR1 = %s\n', ...
+    fprintf('  [Conditioned] Median = %.2f dB | T1 (human) = %+.2f dB | T2 (car) = %+.2f dB | PNFR1 = %s\n', ...
         median(P_proc_dB(:)), P_proc_dB(r1_idx, v1_idx), P_proc_dB(r2_idx, v2_idx), pnfr_str);
 
     % 3. 2x2 figure: top row 3D, bottom row 2D zoom
-    fig = figure('Name', 'Figure 3.2 - Range-Doppler Map Before and After DSP (CBW80)', ...
+    fig = figure('Name', 'Figure 3.2 - Range-Doppler Map: Baseline vs Conditioned (CBW80)', ...
         'Color', 'white', 'Position', [60, 60, 1340, 960], 'Visible', 'off');
 
     clim_raw  = [-90, 0];
@@ -96,11 +96,11 @@ function fig = gen_fig_3_2_range_doppler(show_figure, save_png)
     xlim([axis_velocity(1), axis_velocity(end)]);
     ylim([0, axis_range(end)]);
     zlim([z_raw, 5]);
-    title('a) Przed DSP — Wykres 3D (cała mapa)', ...
+    title('a) Periodogram bazowy — widok 3D (cała mapa)', ...
         'FontSize', 11.5, 'FontWeight', 'bold', 'Interpreter', 'none');
     xlabel('Prędkość radialna [m/s]', 'FontSize', 10, 'Interpreter', 'none');
     ylabel('Odległość bistatyczna [m]', 'FontSize', 10, 'Interpreter', 'none');
-    zlabel('Moc [dB]', 'FontSize', 10, 'Interpreter', 'none');
+    zlabel('Moc znormalizowana [dB]', 'FontSize', 10, 'Interpreter', 'none');
     set(gca, 'FontSize', 9.5, 'LineWidth', 0.9);
     grid on;
 
@@ -125,11 +125,11 @@ function fig = gen_fig_3_2_range_doppler(show_figure, save_png)
     xlim([axis_velocity(1), axis_velocity(end)]);
     ylim([0, axis_range(end)]);
     zlim([z_proc, 5]);
-    title('b) Po DSP — Wykres 3D (cała mapa)', ...
-        'FontSize', 11.5, 'FontWeight', 'bold', 'Interpreter', 'none');
+    title('b) Po usunięciu echa stałego, interpolacji DC i oknie 2D — 3D', ...
+        'FontSize', 11, 'FontWeight', 'bold', 'Interpreter', 'none');
     xlabel('Prędkość radialna [m/s]', 'FontSize', 10, 'Interpreter', 'none');
     ylabel('Odległość bistatyczna [m]', 'FontSize', 10, 'Interpreter', 'none');
-    zlabel('Moc [dB]', 'FontSize', 10, 'Interpreter', 'none');
+    zlabel('Moc znormalizowana [dB]', 'FontSize', 10, 'Interpreter', 'none');
     set(gca, 'FontSize', 9.5, 'LineWidth', 0.9);
     grid on;
 
@@ -155,7 +155,7 @@ function fig = gen_fig_3_2_range_doppler(show_figure, save_png)
     c3.Label.String = 'Moc znormalizowana [dB]';
     c3.Label.FontSize = 10;
     c3.Label.Interpreter = 'none';
-    title('c) Przed DSP — Zbliżenie na strefę celów (2D)', ...
+    title('c) Periodogram bazowy — zbliżenie na strefę celów (2D)', ...
         'FontSize', 11.5, 'FontWeight', 'bold', 'Interpreter', 'none');
     xlabel('Prędkość radialna [m/s]', 'FontSize', 10.5, 'Interpreter', 'none');
     ylabel('Odległość bistatyczna [m]', 'FontSize', 10.5, 'Interpreter', 'none');
@@ -187,15 +187,15 @@ function fig = gen_fig_3_2_range_doppler(show_figure, save_png)
     c4.Label.String = 'Moc znormalizowana [dB]';
     c4.Label.FontSize = 10;
     c4.Label.Interpreter = 'none';
-    title('d) Po DSP — Zbliżenie na strefę celów (2D)', ...
-        'FontSize', 11.5, 'FontWeight', 'bold', 'Interpreter', 'none');
+    title('d) Po usunięciu echa stałego, interpolacji DC i oknie 2D — 2D', ...
+        'FontSize', 11, 'FontWeight', 'bold', 'Interpreter', 'none');
     xlabel('Prędkość radialna [m/s]', 'FontSize', 10.5, 'Interpreter', 'none');
     ylabel('Odległość bistatyczna [m]', 'FontSize', 10.5, 'Interpreter', 'none');
     set(gca, 'FontSize', 10, 'LineWidth', 1.0, 'Box', 'on');
     grid on; box on; set(gca, 'GridColor', [1 1 1], 'GridAlpha', 0.25);
 
-    sgtitle(sprintf('Mapa periodogramu Range-Doppler przed i po filtracji DSP (802.11ax, %s, %d MHz)', cbw, bw_mhz), ...
-        'FontSize', 14, 'FontWeight', 'bold', 'Interpreter', 'none');
+    sgtitle(sprintf('Periodogram Range-Doppler: bazowy oraz po usunięciu echa stałego, interpolacji DC i oknowaniu (802.11ax, %s)', cbw), ...
+        'FontSize', 12.5, 'FontWeight', 'bold', 'Interpreter', 'none');
 
     save_thesis_figure(fig, 'ch3_impl', 'rys_3_2_mapa_range_doppler.png', show_figure, save_png);
     if ~show_figure

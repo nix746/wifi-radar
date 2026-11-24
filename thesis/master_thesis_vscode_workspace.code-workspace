@@ -5,6 +5,7 @@
 		}
 	],
 	"settings": {
+		"latex-workshop.latex.outDir": "%DIR%/build",
 		"latex-workshop.latex.recipe.default": "first",
 		"latex-workshop.latex.tools": [
 			{
@@ -16,9 +17,12 @@
 					"-interaction=nonstopmode",
 					"-file-line-error",
 					"-pdf",
+					"-outdir=%OUTDIR%",
 					"%DOC%"
 				],
-				"env": {}
+				"env": {
+					"TEXMF_OUTPUT_DIRECTORY": "%OUTDIR%"
+				}
 			},
 			{
 				"name": "lualatexmk",
@@ -49,15 +53,18 @@
 					"-synctex=1",
 					"-interaction=nonstopmode",
 					"-file-line-error",
+					"-output-directory=%OUTDIR%",
 					"%DOC%"
 				],
-				"env": {}
+				"env": {
+					"TEXMF_OUTPUT_DIRECTORY": "%OUTDIR%"
+				}
 			},
 			{
 				"name": "bibtex",
 				"command": "bibtex",
 				"args": [
-					"%DOCFILE%"
+					"%OUTDIR%/%DOCFILE%"
 				],
 				"env": {}
 			},

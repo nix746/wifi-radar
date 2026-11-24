@@ -1,12 +1,12 @@
-function fig = gen_fig_4_4_tgax_mti_cut(show_figure, save_png)
-% GEN_FIG_4_4_TGAX_MTI_CUT
-% Experiment SIM-4 (E4): TGax multipath clutter (Models A, C, E) and slow-time MTI suppression.
+function fig = gen_fig_4_4_tgax_static_removal(show_figure, save_png)
+% GEN_FIG_4_4_TGAX_STATIC_REMOVAL
+% Experiment SIM-4 (E4): TGax multipath clutter (Models A, C, E) and slow-time mean subtraction.
 % Figure 4.4 for Chapter 4 of the thesis:
 %   3x2 grid of 2D Range-Doppler maps on a common dB scale (0 dB = Model-A DPI power),
-%   comparing pre-MTI clutter/DPI (left) and post-MTI cancellation (right) over
-%   v in [-20, +20] m/s, R in [0, 25] m, clim [-100, 0] dB.
+%   comparing maps with static echoes (left) and after slow-time mean subtraction (right)
+%   over v in [-20, +20] m/s, R in [0, 25] m, clim [-100, 0] dB.
 %
-% Output file: thesis/img/ch4_sim/rys_4_4_tlumienie_clutteru_mti.png
+% Output file: thesis/img/ch4_sim/rys_4_4_usuwanie_echa_stalego.png
 
     if nargin < 1 || isempty(show_figure), show_figure = true; end
     if nargin < 2 || isempty(save_png),    save_png    = true; end
@@ -56,7 +56,7 @@ function fig = gen_fig_4_4_tgax_mti_cut(show_figure, save_png)
             axis_v = radar_data.axis_velocity;
         end
 
-        % Apply identical DC null repair to H_raw so pre/post MTI maps match in windowing
+        % Apply identical DC null repair to H_raw so pre/post mean-subtraction maps match in windowing
         H_pre = interpolate_dc_nulls(radar_data.H_raw, params.dc_indices);
 
         C_pre_all{m}  = compute_range_doppler_map(H_pre, radar_data.Nfft, radar_data.n_symbols, params.active_mask, 4, true);
@@ -75,15 +75,15 @@ function fig = gen_fig_4_4_tgax_mti_cut(show_figure, save_png)
         scr_pre  = 10 * log10(P_pre_vt / P_pre_v0);
         scr_post = 10 * log10(P_post_vt / P_post_v0);
 
-        fprintf('  [%s @ R=%.1f m] MTI suppression (v=0): %5.1f dB | SCR: %+5.1f dB -> %+5.1f dB\n', ...
+        fprintf('  [%s @ R=%.1f m] Static echo suppression (v=0): %5.1f dB | SCR: %+5.1f dB -> %+5.1f dB\n', ...
             ch_name, r_target_m, notch_dB, scr_pre, scr_post);
     end
 
-    fig = figure('Name', 'Figure 4.4 - TGax Multipath Clutter & MTI (Exp. E4)', ...
+    fig = figure('Name', 'Figure 4.4 - TGax Multipath Clutter & Slow-Time Mean Subtraction (Exp. E4)', ...
         'Color', 'white', 'Position', [50, 50, 1150, 1150], 'Visible', 'off');
 
-    sgtitle('Wpływ wielodrogowości kanału TGax i filtracji MTI na dwuwymiarowe mapy Range–Doppler', ...
-        'FontSize', 13.5, 'FontWeight', 'bold', 'Interpreter', 'none');
+    sgtitle('Wpływ wielodrogowości kanału TGax i usuwania echa stałego (odjęcie średniej czasowej) na mapy Range–Doppler', ...
+        'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none');
 
     r_mask = axis_r >= 0 & axis_r <= 25;
     r_sub  = axis_r(r_mask);
@@ -102,7 +102,7 @@ function fig = gen_fig_4_4_tgax_mti_cut(show_figure, save_png)
     y_pos   = [0.650, 0.370, 0.090];
 
     for m = 1:numel(models)
-        % Column 1: Before MTI
+        % Column 1: With static echoes
         ax_l = axes('Parent', fig, 'Position', [x_left, y_pos(m), w, h]);
         P_pre_dB = 10 * log10(abs(C_pre_all{m}(r_mask, :)).^2 / p_ref_global + 1e-12);
         imagesc(ax_l, axis_v, r_sub, P_pre_dB);
@@ -111,11 +111,11 @@ function fig = gen_fig_4_4_tgax_mti_cut(show_figure, save_png)
         clim(ax_l, c_dyn_range);
         xlim(ax_l, v_lim);
         ylim(ax_l, [0, 25]);
-        ylabel(ax_l, 'Odległość [m]', 'FontSize', 10, 'Interpreter', 'none');
+        ylabel(ax_l, 'Odległość bistatyczna [m]', 'FontSize', 10, 'Interpreter', 'none');
         if m == 3
             xlabel(ax_l, 'Prędkość radialna [m/s]', 'FontSize', 10, 'Interpreter', 'none');
         end
-        title(ax_l, sprintf('%s) %s — Przed MTI', row_letters{1, m}, model_labels{m}), ...
+        title(ax_l, sprintf('%s) %s — Z echem stałym', row_letters{1, m}, model_labels{m}), ...
             'FontSize', 10, 'FontWeight', 'bold', 'Interpreter', 'tex');
         hold(ax_l, 'on');
         plot(ax_l, v_target_mps, r_target_m, 'wo', 'MarkerSize', 8, 'LineWidth', 1.8);
@@ -124,7 +124,7 @@ function fig = gen_fig_4_4_tgax_mti_cut(show_figure, save_png)
         hold(ax_l, 'off');
         set(ax_l, 'FontSize', 9.5, 'LineWidth', 0.9);
 
-        % Column 2: After MTI (identical [-100, 0] dB color scale)
+        % Column 2: After slow-time mean subtraction (identical [-100, 0] dB color scale)
         ax_r = axes('Parent', fig, 'Position', [x_right, y_pos(m), w, h]);
         P_post_dB = 10 * log10(abs(C_post_all{m}(r_mask, :)).^2 / p_ref_global + 1e-12);
         imagesc(ax_r, axis_v, r_sub, P_post_dB);
@@ -136,7 +136,7 @@ function fig = gen_fig_4_4_tgax_mti_cut(show_figure, save_png)
         if m == 3
             xlabel(ax_r, 'Prędkość radialna [m/s]', 'FontSize', 10, 'Interpreter', 'none');
         end
-        title(ax_r, sprintf('%s) %s — Po MTI', row_letters{2, m}, model_labels{m}), ...
+        title(ax_r, sprintf('%s) %s — Po odjęciu średniej', row_letters{2, m}, model_labels{m}), ...
             'FontSize', 10, 'FontWeight', 'bold', 'Interpreter', 'tex');
         hold(ax_r, 'on');
         plot(ax_r, v_target_mps, r_target_m, 'wo', 'MarkerSize', 8, 'LineWidth', 1.8);
@@ -147,9 +147,9 @@ function fig = gen_fig_4_4_tgax_mti_cut(show_figure, save_png)
     end
 
     cb = colorbar(ax_r, 'Position', [0.905, 0.090, 0.020, 0.795]);
-    ylabel(cb, 'Moc znormalizowana względem przesłuchu DPI [dB]', 'FontSize', 10, 'Interpreter', 'none');
+    ylabel(cb, 'Moc znormalizowana względem maksimum DPI (Model-A) [dB]', 'FontSize', 10, 'Interpreter', 'none');
 
-    save_thesis_figure(fig, 'ch4_sim', 'rys_4_4_tlumienie_clutteru_mti.png', show_figure, save_png);
+    save_thesis_figure(fig, 'ch4_sim', 'rys_4_4_usuwanie_echa_stalego.png', show_figure, save_png);
     if ~show_figure
         fig = [];
     end

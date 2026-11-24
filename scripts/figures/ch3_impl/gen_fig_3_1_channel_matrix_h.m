@@ -2,8 +2,8 @@ function fig = gen_fig_3_1_channel_matrix_h(show_figure, save_png)
 % GEN_FIG_3_1_CHANNEL_MATRIX_H
 % Experiment IMPL-1: Channel transfer matrix H(k,l) in the time-frequency domain.
 % Figure 3.1 for Chapter 3 of the thesis (IEEE 802.11ax, CBW80, TGax Model-C):
-%   (a) Raw transfer matrix before MTI (showing DPI crosstalk, multipath fading, and DC gap)
-%   (b) Transfer matrix after slow-time MTI filtering and linear DC interpolation
+%   (a) Direct channel estimate before static echo removal (showing DPI crosstalk, multipath fading, and DC gap)
+%   (b) Transfer matrix after static echo removal (slow-time mean subtraction) and linear DC interpolation
 %
 % Output file: thesis/img/ch3_impl/rys_3_1_macierz_transmitancji_h.png
 
@@ -52,9 +52,9 @@ function fig = gen_fig_3_1_channel_matrix_h(show_figure, save_png)
     total_power_proc_dB = 10 * log10(mean(abs(H_proc(:)).^2));
     total_drop_dB       = total_power_raw_dB - total_power_proc_dB;
 
-    fprintf('  Total power before MTI:    %+.2f dB\n', total_power_raw_dB);
-    fprintf('  Total power after MTI:     %+.2f dB (drop of %.2f dB)\n', total_power_proc_dB, total_drop_dB);
-    fprintf('  Static component suppress: > %.1f dB (MTI eliminates DPI)\n', min(suppression_dpi_dB, 120));
+    fprintf('  Total power before static removal: %+.2f dB\n', total_power_raw_dB);
+    fprintf('  Total power after static removal:  %+.2f dB (drop of %.2f dB)\n', total_power_proc_dB, total_drop_dB);
+    fprintf('  Static component suppress:         > %.1f dB (slow-time mean subtraction eliminates DPI)\n', min(suppression_dpi_dB, 120));
 
     % 4. Centered subcarrier axis and magnitude in dB
     k_range   = (-Nfft/2) : (Nfft/2 - 1);
@@ -70,36 +70,36 @@ function fig = gen_fig_3_1_channel_matrix_h(show_figure, save_png)
 
     sym_axis = 1:n_symbols;
 
-    % Panel (a): Raw transfer matrix before MTI filtering
+    % Panel (a): Direct channel estimate before static echo removal
     subplot(1, 2, 1);
     imagesc(sym_axis, k_range, H_raw_dB);
     axis xy;
     colormap(gca, 'parula');
     clim([-30, 8]); % Color limits highlighting multipath fading dips and DC notch
     c1 = colorbar;
-    c1.Label.String = 'Moc transmitancji [dB]';
+    c1.Label.String = 'Moduł transmitancji |H(k,l)| [dB]';
     c1.Label.FontSize = 10.5;
     c1.Label.Interpreter = 'none';
 
-    title('a) Przed MTI', 'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none');
+    title('a) Bezpośrednia estymata transmitancji (z echem stałym)', 'FontSize', 11.5, 'FontWeight', 'bold', 'Interpreter', 'none');
     xlabel('Numer symbolu OFDM (czas wolny)', 'FontSize', 11, 'Interpreter', 'none');
     ylabel('Indeks podnośnej k (częstotliwość)', 'FontSize', 11, 'Interpreter', 'none');
     set(gca, 'FontSize', 10, 'LineWidth', 1.0, 'Box', 'on');
     grid on; box on;
     set(gca, 'GridColor', [1 1 1], 'GridAlpha', 0.25);
 
-    % Panel (b): Transfer matrix after MTI filtering and DC interpolation
+    % Panel (b): Transfer matrix after slow-time mean subtraction and DC interpolation
     subplot(1, 2, 2);
     imagesc(sym_axis, k_range, H_proc_dB);
     axis xy;
     colormap(gca, 'parula');
-    clim([-40, -16]); % Color limits matched to post-MTI amplitude distribution at 25 dB SNR
+    clim([-40, -16]); % Color limits matched to post-removal amplitude distribution at 25 dB SNR
     c2 = colorbar;
-    c2.Label.String = 'Moc transmitancji [dB]';
+    c2.Label.String = 'Moduł transmitancji |H(k,l)| [dB]';
     c2.Label.FontSize = 10.5;
     c2.Label.Interpreter = 'none';
 
-    title('b) Po MTI i interpolacji DC', 'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none');
+    title('b) Po odjęciu średniej czasowej i interpolacji podnośnych DC', 'FontSize', 11.5, 'FontWeight', 'bold', 'Interpreter', 'none');
     xlabel('Numer symbolu OFDM (czas wolny)', 'FontSize', 11, 'Interpreter', 'none');
     ylabel('Indeks podnośnej k (częstotliwość)', 'FontSize', 11, 'Interpreter', 'none');
     set(gca, 'FontSize', 10, 'LineWidth', 1.0, 'Box', 'on');

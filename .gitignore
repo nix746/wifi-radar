@@ -60,6 +60,7 @@ desktop.ini
 *.ilg
 *-eps-converted-to.pdf
 _minted-*/
+thesis/build/
 
 # ==========================================
 # Dokumenty wyjściowe 

@@ -125,9 +125,9 @@ Katalogi wyjściowe figur:
 
 #### Twarde zasady implementacji skryptów figur (wzorzec z commita `dd69b70`):
 1. **Zasada DRY — zakaz duplikacji kodu potoku radaru**:
-   - Skrypty w `scripts/figures/` **bezwzględnie nie mogą powielać ani reimplementować logiki bloków DSP** (np. synchronizacji, demodulacji OFDM, usuwania CP, estymacji Zero-Forcing, filtracji MTI, okienkowania, transformacji FFT/IFFT czy pętli Binary/Coherent STC).
+   - Skrypty w `scripts/figures/` **bezwzględnie nie mogą powielać ani reimplementować logiki bloków przetwarzania sygnału** (np. synchronizacji, demodulacji OFDM, usuwania CP, estymacji odpowiedzi częstotliwościowej kanału przez dzielenie podnośnych, usuwania echa stałego przez odejmowanie średniej czasowej, okienkowania, transformacji FFT/IFFT czy pętli Binary/Coherent STC).
    - Skrypt generatora **ma bezpośrednio uruchamiać autorski kod projektu**: fasady `step1_transmitter`, `step2_channel`, `step3_receiver`, `step4_interpreter` oraz wyspecjalizowane funkcje z `lib/`.
-   - **Ekstrakcja stanów pośrednich przez rozszerzenie struktur wyjściowych**: Jeżeli eksperyment wymaga dostępu do danych pośrednich (np. macierzy $\hat{H}$ przed i po MTI), rozszerza się sygnaturę/strukturę zwracaną przez odpowiedni moduł produkcyjny (np. dodanie pól `H_raw`, `H_shifted` do struktury `radar_data` w `step3_receiver.m` lub zwrócenie drugiego argumentu w `estimate_channel_zf.m`), zamiast przepisywać wnętrze funkcji w skrypcie rysunku.
+   - **Ekstrakcja stanów pośrednich przez rozszerzenie struktur wyjściowych**: Jeżeli eksperyment wymaga dostępu do danych pośrednich (np. macierzy $\hat{H}$ przed i po odjęciu średniej czasowej), rozszerza się sygnaturę/strukturę zwracaną przez odpowiedni moduł produkcyjny (np. dodanie pól `H_raw`, `H_no_static`, `H_shifted` do struktury `radar_data` w `step3_receiver.m` lub zwrócenie dodatkowych argumentów w `estimate_channel.m`), zamiast przepisywać wnętrze funkcji w skrypcie rysunku.
 
 2. **Czystość kodu generatora**:
    - Skrypt figury pełni wyłącznie rolę **zwięzłego sterownika testowo-wizualizacyjnego**: przygotowanie parametrów wejściowych $\to$ wywołanie modułów $\to$ pobranie danych wyjściowych ze struktur $\to$ czyste wykreślenie i eksport grafiki przez `exportgraphics(fig, out_file, 'Resolution', 300)`.
@@ -136,21 +136,21 @@ Katalogi wyjściowe figur:
 
 | Nr w pracy | Plik graficzny | Skrypt testowy / generator | Eksperyment i zawartość merytoryczna |
 | :---: | :--- | :--- | :--- |
-| **Rys. 3.1** | `thesis/img/ch3_impl/rys_3_1_macierz_transmitancji_h.png` | `scripts/figures/ch3_impl/gen_fig_3_1_channel_matrix_h.m` | **IMPL-1**: Estymowana macierz transmitancji $\hat{H}(k, l)$ w dziedzinie czas--częstotliwość przed i po filtracji MTI oraz z interpolacją luki DC (802.11ax, CBW80) |
-| **Rys. 3.2** | `thesis/img/ch3_impl/rys_3_2_mapa_range_doppler.png` | `scripts/figures/ch3_impl/gen_fig_3_2_range_doppler.m` | **IMPL-2**: Mapa periodogramu Range--Doppler przed i po filtracji DSP w 3D (cała mapa) i 2D (zbliżenie na strefę celów z detekcją Coherent STC, 802.11ax, CBW80) |
-| **Rys. 3.3** | `thesis/img/ch3_impl/rys_3_3_etapy_przetwarzania_dsp.png` | `scripts/figures/ch3_impl/gen_fig_3_3_dsp_stages.m` | **IMPL-3**: Dekompozycja 4 kroków przetwarzania DSP w odbiorniku i interpreterze (Surowy $\to$ MTI $\to$ Okno 2D BH + DC $\to$ Ekstrakcja Coherent STC, 802.11ax, CBW80) |
+| **Rys. 3.1** | `thesis/img/ch3_impl/rys_3_1_macierz_transmitancji_h.png` | `scripts/figures/ch3_impl/gen_fig_3_1_channel_matrix_h.m` | **IMPL-1**: Estymowana macierz transmitancji $\hat{H}(k, l)$ w dziedzinie czas--częstotliwość przed i po odjęciu średniej czasowej oraz z interpolacją luki DC (802.11ax, CBW80) |
+| **Rys. 3.2** | `thesis/img/ch3_impl/rys_3_2_mapa_range_doppler.png` | `scripts/figures/ch3_impl/gen_fig_3_2_range_doppler.m` | **IMPL-2**: Periodogram Range--Doppler: bazowy oraz po usunięciu echa stałego, interpolacji DC i oknowaniu 2D w 3D (cała mapa) i 2D (zbliżenie na strefę celów z detekcją Coherent STC, 802.11ax, CBW80) |
+| **Rys. 3.3** | `thesis/img/ch3_impl/rys_3_3_etapy_przetwarzania.png` | `scripts/figures/ch3_impl/gen_fig_3_3_processing_stages.m` | **IMPL-3**: Dekompozycja 4 etapów przetwarzania w odbiorniku i interpreterze (Periodogram bazowy $\to$ Odjęcie średniej czasowej $\to$ Okno 2D BH + interpolacja DC $\to$ Ekstrakcja Coherent STC, 802.11ax, CBW80) |
 | **Rys. 4.1** | `thesis/img/ch4_sim/rys_4_1_przekroj_odleglosci_pasma.png` | `scripts/figures/ch4_sim/gen_fig_4_1_bandwidth_cut.m` | **SIM-1 (E1)**: Granica rozdzielczości odległościowej dla pasm 20, 40, 80, 160 MHz ($\Delta R = 3{,}75\ \text{m}$) a stała moc AP |
 | **Rys. 4.2** | `thesis/img/ch4_sim/rys_4_2_aliasing_dopplera.png` | `scripts/figures/ch4_sim/gen_fig_4_2_doppler_aliasing.m` | **SIM-2 (E2)**: Granica prędkości jednoznacznej -- porównanie 802.11a i 802.11ax dla szybkiego celu $v = 20\ \text{m/s}$ (aliasing w ax) |
-| **Rys. 4.3** | `thesis/img/ch4_sim/rys_4_3_wzmocnienie_szumu_mcs.png` | `scripts/figures/ch4_sim/gen_fig_4_3_noise_enhancement.m` | **SIM-3 (E3)**: Granica modulacji -- współczynnik wzmocnienia szumu $\zeta_{\text{ZF}}$ i kontrast celu PNFR w funkcji rzędu MCS (0–11) |
-| **Rys. 4.4** | `thesis/img/ch4_sim/rys_4_4_tlumienie_clutteru_mti.png` | `scripts/figures/ch4_sim/gen_fig_4_4_tgax_mti_cut.m` | **SIM-4 (E4)**: Wpływ otoczenia wielodrogowego -- tłumienie clutteru TGax (Modele A, C, E) przez filtr MTI w czasie wolnym |
-| **Rys. 4.5** | `thesis/img/ch4_sim/rys_4_5_clean_prog_adaptacyjny.png` | `scripts/figures/ch4_sim/gen_fig_4_5_clean_cut.m` | **SIM-5 (E5)**: Granica dynamiki mocy -- porównanie Binary STC (maskowanie binarne) i Coherent STC (odejmowanie koherentne) z progiem CFAR $\eta$ (odkrycie pieszego $-30\ \text{dB}$) |
+| **Rys. 4.3** | `thesis/img/ch4_sim/rys_4_3_wzmocnienie_szumu_mcs.png` | `scripts/figures/ch4_sim/gen_fig_4_3_noise_enhancement.m` | **SIM-3 (E3)**: Granica modulacji -- współczynnik wzmocnienia szumu $\zeta$ przy dzieleniu podnośnych i kontrast PNFR w funkcji rzędu MCS (0–11) |
+| **Rys. 4.4** | `thesis/img/ch4_sim/rys_4_4_usuwanie_echa_stalego.png` | `scripts/figures/ch4_sim/gen_fig_4_4_tgax_static_removal.m` | **SIM-4 (E4)**: Wpływ otoczenia wielodrogowego -- tłumienie clutteru TGax (Modele A, C, E) przez odejmowanie średniej w czasie wolnym |
+| **Rys. 4.5** | `thesis/img/ch4_sim/rys_4_5_porownanie_stc.png` | `scripts/figures/ch4_sim/gen_fig_4_5_stc_comparison.m` | **SIM-5 (E5)**: Granica dynamiki mocy -- porównanie Binary STC (maskowanie binarne) i Coherent STC (odejmowanie koherentne) z progiem CFAR $\eta$ (odkrycie pieszego $-30\ \text{dB}$) |
 | **Rys. 4.6** | `thesis/img/ch4_sim/rys_4_6_statystyka_pd_vs_snr.png` | `scripts/figures/ch4_sim/gen_fig_4_6_stat_pd_vs_snr.m` | **SIM-6 (MC)**: Granica czułości -- prawdopodobieństwo prawidłowej detekcji $P_D(\text{SNR})$ w funkcji SNR dla silnego i słabego celu w kanale Model-C |
 
 ### 4.6. Czystość kodu, listingi do pracy i weryfikacja regresyjna
 
 1. **Funkcje DSP w `lib/` (czyste funkcje numeryczne)**:
    - `lib/demodulate.m` — demodulacja OFDM i usuwanie CP,
-   - `lib/estimate_channel_zf.m` — estymacja Zero-Forcing, maska podnośnych, MTI i interpolacja luki DC,
+   - `lib/estimate_channel.m` — estymacja odpowiedzi częstotliwościowej kanału przez dzielenie podnośnych, maska podnośnych, usuwanie echa stałego (odejmowanie średniej czasowej) i interpolacja luki DC,
    - `lib/compute_range_doppler_map.m` — analityczne okno 2D Blackmana–Harrisa oraz periodogram 2D,
    - `lib/get_detection_algorithm.m` — centralny rejestr algorytmów detekcji (`'binary'`, `'coherent'`) rozwiązujący identyfikatory, opisy i uchwyty funkcji uruchomieniowych oraz wizualizacyjnych,
    - `lib/binary_successive_target_cancellation.m` — kanoniczna implementacja Binary STC Brauna (estymacja szumu ML poza $N_{\max}$, próg CFAR $\eta = -\hat{\sigma}^2 \ln(1 - (1 - p_{\mathrm{FA}})^{1/(NM)})$, 2D interpolacja paraboliczna piku, estymacja RCS i maskowanie binarne elipsą *null-to-null*),

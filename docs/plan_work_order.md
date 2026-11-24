@@ -126,11 +126,11 @@ flowchart TD
 ### Krok 3: Eksperyment IMPL-2 & IMPL-3 — Mapy periodogramu Range–Doppler przed i po DSP (Rys. 3.2 i 3.3) `[ZROBIONE]`
 - [x] 1. **Skrypty testowe (osobne pliki dla każdego rysunku, ujednolicone pasmo referencyjne CBW80 = 80 MHz)**:
   - `scripts/figures/ch3_impl/gen_fig_3_2_range_doppler.m` (Rys. 3.2 — porównanie mapy przed DSP i po DSP dla CBW80, układ 2x2: góra wykresy 3D całej mapy, dół zbliżenie 2D na strefę celów z detekcją Coherent STC przy CFAR $p_{\text{FA}} = 10^{-3}$),
-  - `scripts/figures/ch3_impl/gen_fig_3_3_dsp_stages.m` (Rys. 3.3 — dekompozycja 4 etapów DSP dla CBW80: Surowy $\to$ MTI $\to$ Okno 2D BH + DC $\to$ Ekstrakcja Coherent STC).
+  - `scripts/figures/ch3_impl/gen_fig_3_3_processing_stages.m` (Rys. 3.3 — dekompozycja 4 etapów przetwarzania dla CBW80: Periodogram bazowy $\to$ Odjęcie średniej czasowej $\to$ Okno 2D BH + interpolacja DC $\to$ Ekstrakcja Coherent STC).
   - Architektura (DRY): Bezpośrednie uruchomienie potoku `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` $\to$ `step4_interpreter` oraz funkcji `compute_range_doppler_map` z `lib/` bez duplikacji kodu okienkowania i FFT.
 - [x] 2. **Pliki wynikowe**:
   - `thesis/img/ch3_impl/rys_3_2_mapa_range_doppler.png`,
-  - `thesis/img/ch3_impl/rys_3_3_etapy_przetwarzania_dsp.png`.
+  - `thesis/img/ch3_impl/rys_3_3_etapy_przetwarzania.png`.
 - [x] 3. **Weryfikacja poprawności**:
   - Pełna spójność parametryczna pomiędzy Rys. 3.1, 3.2 i 3.3 (`cbw = 'CBW80'`, `mcs = 0`, `snr_dB = 25`, Model-C, ziarna `rng(42)` i `rng(23)`, jednakowe cele $22{,}5\ \text{m} / -4{,}0\ \text{m/s}$ oraz $67{,}5\ \text{m} / +18{,}0\ \text{m/s}$ i kadr $R \in [0, 85]\ \text{m}$, $v \in [-25, 25]\ \text{m/s}$),
   - Wyeliminowanie przesłuchu bezpośredniego DPI przez MTI, tłumienie listków bocznych przez okno 2D Blackmana–Harrisa oraz bezbłędna ekstrakcja obu celów przez Coherent STC ($p_{\text{FA}} = 10^{-3}$, 2 iteracje, 0 rezyduów).
@@ -182,7 +182,7 @@ flowchart TD
 
 ### Krok 6: Eksperyment SIM-3 (E3) — Granica modulacji MCS i wzmocnienie szumu ZF (Rys. 4.3) `[ZROBIONE]`
 - [x] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_3_noise_enhancement.m`.
-  - Architektura (DRY): Pętla po wszystkich indeksach MCS 0–11 wywołująca `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` $\to$ `step4_interpreter`. Wykorzystanie zwracanych parametrów (`radar_data.zeta_zf_dB`, `pnfr.pnfr_dB`) bez pisania własnego demodulatora.
+  - Architektura (DRY): Pętla po wszystkich indeksach MCS 0–11 wywołująca `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` $\to$ `step4_interpreter`. Wykorzystanie zwracanych parametrów (`radar_data.zeta_dB`, `pnfr.pnfr_dB`) bez pisania własnego demodulatora.
   - Scenariusz: IEEE 802.11ax, CBW40, Model-C, $\text{SNR} = 25\ \text{dB}$, cel $R = 22{,}5\ \text{m}, v = +18{,}0\ \text{m/s}$. Wszystkie indeksy MCS 0–11 (BPSK, QPSK, 16-QAM, 64-QAM, 256-QAM, 1024-QAM) przy dynamicznie skalowanym ładunku PSDU ($8190 \to 136500\ \text{B}$) utrzymującym stały czas trwania ramki ($3871{,}2\ \mu\text{s}$, $M = 280$ symboli OFDM).
   - Wykres: Wykres z dwiema zsynchronizowanymi osiami Y (`yyaxis`, skala 1:1 dB) — współczynnik wzmocnienia szumu $\zeta_{\text{ZF}} = \mathbb{E}[|X|^2]\mathbb{E}[1/|X|^2]$ [dB] oraz zmierzony kontrast celu PNFR [dB].
 - [x] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_3_wzmocnienie_szumu_mcs.png`.
@@ -197,8 +197,8 @@ flowchart TD
 
 ---
 
-### Krok 7: Eksperyment SIM-4 (E4) — Wpływ otoczenia wielodrogowego TGax (A, C, E) i filtr MTI (Rys. 4.4)
-- [x] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_4_tgax_mti_cut.m`.
+### Krok 7: Eksperyment SIM-4 (E4) — Wpływ otoczenia wielodrogowego TGax (A, C, E) i odejmowanie średniej czasowej (Rys. 4.4)
+- [x] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_4_tgax_static_removal.m`.
   - Architektura (DRY): Uruchomienie potoku `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` dla modeli TGax:
     - Model-A ($\tau_{\text{rms}} = 0\ \text{ns}$, brak wielodrogi / komora bezechowa),
     - Model-C ($\tau_{\text{rms}} = 30\ \text{ns}$, środowisko biurowe),
@@ -208,7 +208,7 @@ flowchart TD
   - Wykres: Sześciopanelowe zestawienie map 2D Range–Doppler (siatka $3 \times 2$) ze wspólną bezwzględną skalą barwną `[-100, 0]` dB względem mocy DPI w Modelu-A:
     - Kolumna lewa: mapy przed MTI ukazujące rozprzestrzenianie się stacjonarnego echa wielodrogowego wzdłuż $v = 0\ \text{m/s}$ w przestrzeni $R \times v$ dla modeli A, C i E,
     - Kolumna prawa: mapy po MTI ukazujące wycięcie składowej stałej (rowek filtracyjny przy $v = 0$) i odsłonięcie celu ($v = +8{,}0\ \text{m/s}$) w oknie $v \in [-20, 20]\ \text{m/s}$, $R \in [0, 25]\ \text{m}$.
-- [x] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_4_tlumienie_clutteru_mti.png`.
+- [x] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_4_usuwanie_echa_stalego.png`.
 - [x] 3. **Weryfikacja poprawności**:
   - Skuteczne stłumienie składowej stacjonarnej ($v = 0\ \text{m/s}$) w punkcie $R = 10{,}0\ \text{m}$ o $28{,}15\ \text{dB}$ w Modelu-C oraz $35{,}96\ \text{dB}$ w Modelu-E (oraz tłumienie DPI w $R = 0\ \text{m}$ o $> 70\ \text{dB}$),
   - Odsłonięcie celu zamaskowanego przed MTI pod tłem clutteru ($\text{SCR} = -3{,}83 \to +3{,}32\ \text{dB}$ w Modelu-C oraz $-3{,}82 \to +3{,}00\ \text{dB}$ w Modelu-E),
@@ -222,7 +222,7 @@ flowchart TD
 ---
 
 ### Krok 8: Eksperyment SIM-5 (E5) — Granica dynamiki mocy: Binary STC vs Coherent STC z progiem CFAR (Rys. 4.5) `[ZROBIONE]`
-- [x] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_5_clean_cut.m`.
+- [x] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_5_stc_comparison.m`.
   - Architektura (DRY): Uruchomienie standardowego potoku `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver`, a następnie obu algorytmów Brauna przez `step4_interpreter(..., p_FA, 'binary')` oraz `step4_interpreter(..., p_FA, 'coherent')` ($p_{\text{FA}} = 10^{-3}$). Skrypt pobiera maskę `diag_bin.B` oraz historię okresogramów `diag_coh.Per_history`.
   - Scenariusz: Asymetria mocy 30 dB w standardzie IEEE 802.11ax (`CBW20`, 20 MHz, MCS 0, Model-C, $\text{SNR} = 38\ \text{dB}$):
     - Cel 1 (silny pojazd, $0\ \text{dB}$): $R_1 = 15{,}0\ \text{m}$, $v_1 = +8{,}0\ \text{m/s}$, $\text{gain} = 0{,}0500$,
@@ -230,7 +230,7 @@ flowchart TD
   - Wykres: Dwupanelowe zestawienie przekrojów odległościowych 1D w kolumnie Dopplera celu głównego z progiem CFAR $\eta$:
     - (a) **Binary STC (maskowanie binarne)**: sygnał surowy, sygnał po maskowaniu $\mathrm{Per}_{\mathbf{F}} \cdot \mathbf{B}$, szare zacieniowanie strefy $B = 0$, pozycja pieszego ($30{,}0\ \text{m}$) i próg CFAR $\eta$,
     - (b) **Coherent STC (odejmowanie koherentne)**: sygnał surowy, stan po usunięciu pojazdu (przed wykryciem pieszego), stan końcowy po zakończeniu pętli Coherent STC, pozycja pieszego ($30{,}0\ \text{m}$) i próg CFAR $\eta$.
-- [x] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_5_clean_prog_adaptacyjny.png`.
+- [x] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_5_porownanie_stc.png`.
 - [x] 3. **Weryfikacja poprawności**:
   - **Binary STC**: wyzerowanie elipsy *null-to-null* ($N_{\text{win}} = 34{,}0$ binów $= 63{,}75\ \text{m}$) tworzy strefę ślepą $B = 0$ na przedziale $[0{,}00;\ 46{,}88]\ \text{m}$, która pochłania pieszego — 1 wykrycie ($\hat{d}_1 = 15{,}20\ \text{m}$, $\hat{v}_1 = +7{,}45\ \text{m/s}$), pieszy niewykryty,
   - **Coherent STC**: po odjęciu repliki pojazdu i odrzuceniu 2 rezyduów w Kroku 4 (elipsa $-3\ \text{dB}$ o szerokości $N_{\text{win}} = 29{,}89\ \text{m}$) w iteracji 3 wyłania się wyraźny pik pieszego przy $\hat{d}_2 = 31{,}06\ \text{m}, \hat{v}_2 = +7{,}67\ \text{m/s}$ o mocy $-31{,}54\ \text{dB}$ ponad progiem CFAR $\eta = -39{,}66\ \text{dB}$ ($\text{PNFR} = 40{,}4\ \text{dB}$), a tło końcowe w kolumnie celu spada do $-45{,}71\ \text{dB} < \eta$.

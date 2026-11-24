@@ -1,11 +1,11 @@
-function fig = gen_fig_4_5_clean_cut(show_figure, save_png)
-% GEN_FIG_4_5_CLEAN_CUT
+function fig = gen_fig_4_5_stc_comparison(show_figure, save_png)
+% GEN_FIG_4_5_STC_COMPARISON
 % Experiment SIM-5 (E5): Dynamic range limit - Binary STC vs Coherent STC (Braun 2014).
 % Figure 4.5 for Chapter 4 of the thesis:
 %   1D range cuts at the main target Doppler column in TGax Model-C (CBW20, 20 MHz)
 %   for a 30 dB power asymmetry (car at 15 m, pedestrian at 30 m inside BH main lobe).
 %
-% Output file: thesis/img/ch4_sim/rys_4_5_clean_prog_adaptacyjny.png
+% Output file: thesis/img/ch4_sim/rys_4_5_porownanie_stc.png
 
     if nargin < 1 || isempty(show_figure), show_figure = true; end
     if nargin < 2 || isempty(save_png),    save_png    = true; end
@@ -116,7 +116,7 @@ function fig = gen_fig_4_5_clean_cut(show_figure, save_png)
     end
 
     plot(r_axis, cut_raw_dB, 'Color', [0.0, 0.45, 0.74], 'LineStyle', '-', 'LineWidth', 2.0, ...
-        'DisplayName', 'Sygnał surowy');
+        'DisplayName', 'Periodogram przed detekcją');
     plot(r_axis, cut_after_bin, 'Color', [0.85, 0.33, 0.10], 'LineStyle', '--', 'LineWidth', 1.8, ...
         'DisplayName', sprintf('Po %s (Per_F · B)', alg_bin.name));
     xline(r2_m, ':k', 'LineWidth', 1.4, 'DisplayName', 'Pozycja pieszego (30,0 m)');
@@ -140,7 +140,7 @@ function fig = gen_fig_4_5_clean_cut(show_figure, save_png)
     subplot(1, 2, 2);
     hold on;
     plot(r_axis, cut_raw_dB, 'Color', [0.0, 0.45, 0.74], 'LineStyle', '-', 'LineWidth', 2.0, ...
-        'DisplayName', 'Sygnał surowy');
+        'DisplayName', 'Periodogram przed detekcją');
     plot(r_axis, cut_after_t1_dB, 'Color', [0.85, 0.33, 0.10], 'LineStyle', '--', 'LineWidth', 1.8, ...
         'DisplayName', 'Po usunięciu celu 1 (pojazd)');
     plot(r_axis, cut_final_coh, 'Color', [0.47, 0.67, 0.19], 'LineStyle', ':', 'LineWidth', 1.8, ...
@@ -162,7 +162,7 @@ function fig = gen_fig_4_5_clean_cut(show_figure, save_png)
     legend('Location', 'southoutside', 'Orientation', 'horizontal', ...
         'FontSize', 9.5, 'NumColumns', 2, 'Interpreter', 'none');
 
-    save_thesis_figure(fig, 'ch4_sim', 'rys_4_5_clean_prog_adaptacyjny.png', show_figure, save_png);
+    save_thesis_figure(fig, 'ch4_sim', 'rys_4_5_porownanie_stc.png', show_figure, save_png);
     if ~show_figure
         fig = [];
     end

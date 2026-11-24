@@ -1,5 +1,5 @@
 function radar_data = step3_receiver(signal, waveform, fs, fc, WIFI_STANDARD, cbw)
-% STEP3_RECEIVER OFDM demodulation, ZF channel estimation, MTI, and 2D Range-Doppler map.
+% STEP3_RECEIVER OFDM demodulation, channel estimation, static echo removal, and 2D Range-Doppler map.
 %
 % Inputs:
 %   signal        - Received baseband time-domain signal
@@ -58,8 +58,8 @@ function radar_data = step3_receiver(signal, waveform, fs, fc, WIFI_STANDARD, cb
 
     fprintf('  Demodulated %d OFDM symbols (%d subcarriers each, %s).\n', n_symbols, Nfft, cbw);
 
-    % 4. ZF channel estimation, MTI filtering, and DC null interpolation
-    [H_shifted, H_raw, zeta_zf_dB, H_mti] = estimate_channel_zf(F_rx, F_tx, params);
+    % 4. Channel frequency response estimation, static echo removal, and DC null interpolation
+    [H_shifted, H_raw, zeta_dB, H_no_static] = estimate_channel(F_rx, F_tx, params);
 
     % 5. 2D Blackman-Harris windowing and Range-Doppler periodogram
     [CPer_F, W, N_per, M_per, Per_F, N_act] = compute_range_doppler_map( ...
@@ -81,9 +81,9 @@ function radar_data = step3_receiver(signal, waveform, fs, fc, WIFI_STANDARD, cb
     radar_data.fs            = fs;
     radar_data.fc            = fc;
     radar_data.H_raw         = H_raw;
-    radar_data.H_mti         = H_mti;
+    radar_data.H_no_static   = H_no_static;
     radar_data.H_shifted     = H_shifted;
-    radar_data.zeta_zf_dB    = zeta_zf_dB;
+    radar_data.zeta_dB       = zeta_dB;
     radar_data.axis_range    = axis_range;
     radar_data.axis_velocity = axis_velocity;
     radar_data.params        = params;

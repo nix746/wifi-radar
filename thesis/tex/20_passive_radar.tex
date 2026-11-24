@@ -7,10 +7,10 @@
 % 2.1 Sygnał Wi-Fi 802.11 (ewolucja standardów, formaty ramek Non-HT i HE-SU)
 % 2.2 Modulacja OFDM (podnośne, prefiks cykliczny CP, parametry symbolu)
 % 2.3 Podstawy radaru OFDM (geometria pomiarowa, konfiguracja współlokowana, DPI, parametry siatki)
-% 2.4 Estymacja kanału (paradygmat CIR a funkcja CAF, estymator Zero-Forcing)
-% 2.5 Filtracja ech stałych (filtr MTI w czasie wolnym, kompensacja luki DC)
+% 2.4 Estymacja kanału (paradygmat CIR a funkcja CAF, estymacja odpowiedzi częstotliwościowej przez dzielenie podnośnych)
+% 2.5 Usuwanie ech stałych (odejmowanie średniej w czasie wolnym, interpolacja podnośnych DC)
 % 2.6 Wyznaczanie mapy Range–Doppler (okno 2D Blackmana--Harrisa, IFFT/FFT)
-% 2.7 Detekcja i ekstrakcja celów (algorytm Coherent CLEAN, próg szumu MAD)
+% 2.7 Detekcja i ekstrakcja celów (algorytm Coherent STC, próg CFAR)
 % ------------------------------------------------------------------------
 
 \subsection{Warstwa fizyczna standardu IEEE 802.11}
@@ -66,7 +66,7 @@ Alokacja podnośnych przenosi się bezpośrednio na właściwości wyznaczanej m
 \begin{itemize}
     \item Pasma ochronne ograniczają efektywnie zajęte pasmo (w~kanale 20~MHz do ok.~16,6~MHz w~802.11a oraz 19,1~MHz w~802.11ax), co determinuje rozdzielczość odległościową (podrozdział~\ref{subsec:pbr_fundamentals}).
     \item Wyzerowane podnośne DC tworzą nieciągłość (dziurę) wewnątrz widma, co po transformacji Fouriera podnosi tło listków bocznych w~osi odległości \cite{braun2014}. Zjawisko to kompensuje się za pomocą wielopunktowej interpolacji liniowej brakujących podnośnych na podstawie sąsiednich podnośnych aktywnych (podrozdział~\ref{subsec:clutter_filtering}).
-    \item Zmienna amplituda punktów konstelacji QAM w~polu danych powoduje wzmocnienie szumu estymaty kanału przy dzieleniu Zero-Forcing, co szczegółowo przeanalizowano w~podrozdziale~\ref{subsec:channel_estimation} i~zbadano w~podrozdziale~\ref{subsec:sim_mcs_noise_enhancement}.
+    \item Zmienna amplituda punktów konstelacji QAM w~polu danych powoduje wzmocnienie szumu estymaty kanału przy dzieleniu odebranych podnośnych przez podnośne wzorcowe, co szczegółowo przeanalizowano w~podrozdziale~\ref{subsec:channel_estimation} i~zbadano w~podrozdziale~\ref{subsec:sim_mcs_noise_enhancement}.
     \item Czterokrotnie mniejszy odstęp podnośnych w~802.11ax wydłuża czas trwania symbolu z~4,0 do 13,6~$\mu$s. Zwiększa to zasięg jednoznaczny, lecz proporcjonalnie obniża maksymalną jednoznaczną prędkość radaru (podrozdział~\ref{subsec:pbr_fundamentals}).
 \end{itemize}
 
@@ -108,7 +108,7 @@ W~radarze pasywnym prefiks cykliczny zapewnia dwie fundamentalne korzyści:
     \item \textbf{Przekształcenie splotu liniowego w~kołowy:} w~kanale wielodrogowym sygnał nadany ulega splotowi liniowemu z~odpowiedzią impulsową otoczenia. Okresowe powtórzenie próbek w~prefiksie sprawia, że dla części użytecznej symbolu operacja ta staje się splotem kołowym \cite{zielinski2007}. W~odbiorniku po odrzuceniu prefiksu i~wykonaniu transformaty FFT splot kołowy przechodzi w~zwykłe mnożenie punkt po punkcie. Wpływ kanału na każdej podnośnej sprowadza się wówczas do wymnożenia nadanego symbolu $X[k,l]$ przez zespoloną transmitancję $H[k,l]$ \cite{braun2014}.
 \end{enumerate}
 
-W~przetwarzaniu radarowym istotną rolę odgrywają również właściwości symboli $X[k,l]$. Sekwencje treningowe preambuły oraz podnośne pilotowe stosują modulację BPSK, w~której każdy punkt ma stałą, jednostkową amplitudę ($|X[k,l]| = 1$). W~polu danych rodzaj modulacji wynika natomiast z~zastosowanego schematu MCS \cite{1999,2021}. Modulacje najniższego rzędu (BPSK, QPSK) zachowują stałą energię symboli ($|X[k,l]|^2 = 1$). Z~kolei modulacje wyższych rzędów (16-QAM, 64-QAM, a~w~802.11ax do 1024-QAM) cechują się nierównomiernym rozkładem energii w~konstelacji. Wewnętrzne punkty takich konstelacji mają energię wielokrotnie niższą od energii średniej ($|X[k,l]|^2 \ll 1$). Gdy odbiornik radarowy dokonuje estymacji kanału metodą dzielenia (Zero-Forcing), dzielenie przez tak małe wartości prowadzi do silnego wzmocnienia szumu tła \cite{braun2014,wypich2026}. Mechanizm ten przeanalizowano szczegółowo w~podrozdziale~\ref{subsec:channel_estimation}, natomiast jego wpływ na wykrywalność celów zbadano w~podrozdziale~\ref{subsec:sim_mcs_noise_enhancement}.
+W~przetwarzaniu radarowym istotną rolę odgrywają również właściwości symboli $X[k,l]$. Sekwencje treningowe preambuły oraz podnośne pilotowe stosują modulację BPSK, w~której każdy punkt ma stałą, jednostkową amplitudę ($|X[k,l]| = 1$). W~polu danych rodzaj modulacji wynika natomiast z~zastosowanego schematu MCS \cite{1999,2021}. Modulacje najniższego rzędu (BPSK, QPSK) zachowują stałą energię symboli ($|X[k,l]|^2 = 1$). Z~kolei modulacje wyższych rzędów (16-QAM, 64-QAM, a~w~802.11ax do 1024-QAM) cechują się nierównomiernym rozkładem energii w~konstelacji. Wewnętrzne punkty takich konstelacji mają energię wielokrotnie niższą od energii średniej ($|X[k,l]|^2 \ll 1$). Gdy odbiornik radarowy dokonuje estymacji odpowiedzi częstotliwościowej kanału przez dzielenie element po elemencie podnośnych odebranych przez podnośne wzorcowe, dzielenie przez tak małe wartości prowadzi do silnego wzmocnienia szumu tła \cite{braun2014,wypich2026}. Mechanizm ten przeanalizowano szczegółowo w~podrozdziale~\ref{subsec:channel_estimation}, natomiast jego wpływ na wykrywalność celów zbadano w~podrozdziale~\ref{subsec:sim_mcs_noise_enhancement}.
 
 \subsection{Geometria pomiarowa i parametry radaru OFDM}
 \label{subsec:pbr_fundamentals}

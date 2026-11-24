@@ -165,5 +165,5 @@ flowchart TD
 ### Krok V: Weryfikacja po wdrożeniu i synchronizacja dokumentacji
 
 1. Uruchomienie [`tests/verify_regression.m`](../tests/verify_regression.m) (wymagane 100% zaliczonych testów regresyjnych i jednostkowych).
-2. Ponowne uruchomienie [`scripts/figures/ch4_sim/gen_fig_4_5_clean_cut.m`](../scripts/figures/ch4_sim/gen_fig_4_5_clean_cut.m) celem potwierdzenia braku regresji w Eksperymencie E5.
+2. Ponowne uruchomienie [`scripts/figures/ch4_sim/gen_fig_4_5_stc_comparison.m`](../scripts/figures/ch4_sim/gen_fig_4_5_stc_comparison.m) celem potwierdzenia braku regresji w Eksperymencie E5.
 3. Uruchomienie `scripts/figures/ch4_sim/gen_fig_4_6_stat_pd_vs_snr.m`, wizualna inspekcja wygenerowanego obrazu PNG (`read_file`) oraz aktualizacja opisu Kroku 9 w [`plan_work_order.md`](plan_work_order.md) i [`plan_deliverables.md`](plan_deliverables.md).
