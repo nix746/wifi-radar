@@ -28,7 +28,7 @@ function fig = gen_fig_4_3_noise_enhancement(show_figure, save_png)
     channel_model = 'Model-C';
     snr_dB        = 25.0;
 
-    targets = struct('type', 'car', 'range_m', 22.5, 'velocity_mps', 18.0, 'gain', 0.05);
+    targets = struct('type', 'car', 'range_m', 22.5, 'velocity_mps', 18.0);
 
     mcs_list  = 0:11;
     n_mcs     = numel(mcs_list);
@@ -87,8 +87,9 @@ function fig = gen_fig_4_3_noise_enhancement(show_figure, save_png)
         'LineWidth', 2.0, 'MarkerSize', 7.5, ...
         'DisplayName', 'Kontrast celu PNFR [dB]');
     ylabel('Kontrast celu PNFR [dB]', 'FontSize', 11, 'Interpreter', 'none');
-    ylim([40.6, 48.4]);
-    yticks(41:1:48);
+    y_top = ceil(max(pnfr_dB));
+    ylim([y_top - 7.4, y_top + 0.4]);
+    yticks((y_top - 7):1:y_top);
     ax.YColor = color_right;
 
     xlim([-0.6, 11.6]);
