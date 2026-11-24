@@ -53,7 +53,7 @@ model_labels = { ...
 
 % 2. Synteza wspólnego pakietu nadawczego IEEE 802.11ax
 rng(42);
-[waveform, fs, params, cfg] = step1_transmitter(wifi_standard, false, cbw, mcs);
+[waveform, fs, params, cfg] = step1_transmitter(wifi_standard, cbw, mcs);
 
 C_pre_all  = cell(1, numel(models));
 C_post_all = cell(1, numel(models));
@@ -65,7 +65,7 @@ for m = 1:numel(models)
     ch_name = models{m};
     rng(23); % Determinizm realizacji kanału
     [rx_signal, fc] = step2_channel(waveform, fs, ch_name, cfg, target, snr_dB);
-    radar_data      = step3_receiver(rx_signal, waveform, fs, fc, params, false);
+    radar_data      = step3_receiver(rx_signal, waveform, fs, fc, params);
 
     if isempty(axis_r)
         axis_r = radar_data.axis_range;
@@ -90,7 +90,7 @@ for m = 1:numel(models)
 
     % Obliczenie periodogramu przed i po MTI z identycznym oknem 2D Blackmana-Harrisa
     C_pre_all{m}  = compute_range_doppler_map(H_pre, radar_data.Nfft, radar_data.n_symbols, params.active_mask, 4, true);
-    C_post_all{m} = radar_data.CPer_base;
+    C_post_all{m} = radar_data.CPer_F;
 
     % Metryki kontrolne w punkcie celu i składowej stałej
     [~, r_idx]  = min(abs(axis_r - r_target_m));

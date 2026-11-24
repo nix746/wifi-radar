@@ -52,10 +52,10 @@ nf_cut_dB = zeros(1, 2);
 for i = 1:numel(standards)
     std_name = standards{i};
     rng(42);
-    [waveform, fs, params, cfg] = step1_transmitter(std_name, false, cbw, mcs);
+    [waveform, fs, params, cfg] = step1_transmitter(std_name, cbw, mcs);
     [rx_signal, ~]              = step2_channel(waveform, fs, channel_model, cfg, targets, snr_dB, fc_base);
-    radar_data                  = step3_receiver(rx_signal, waveform, fs, fc_eff, params, false);
-    [targets_det, ~, ~, ~, pnfr] = step4_interpreter(radar_data, fs, fc_eff, std_name, false);
+    radar_data                  = step3_receiver(rx_signal, waveform, fs, fc_eff, params);
+    [targets_det, ~, ~, ~, pnfr] = step4_interpreter(radar_data, fs, fc_eff, std_name);
 
     % Extract 1D Doppler velocity profile at the detected target range bin
     r_idx   = targets_det(1).r_idx;

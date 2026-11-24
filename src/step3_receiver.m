@@ -1,21 +1,16 @@
-function radar_data = step3_receiver(signal, waveform, fs, fc, WIFI_STANDARD, ENABLE_VISUALIZATIONS, cbw)
+function radar_data = step3_receiver(signal, waveform, fs, fc, WIFI_STANDARD, cbw)
 % STEP3_RECEIVER OFDM demodulation, ZF channel estimation, MTI, and 2D Range-Doppler map.
 %
 % Inputs:
-%   signal                - Received baseband time-domain signal
-%   waveform              - Reference transmitted time-domain waveform
-%   fs                    - Sampling frequency [Hz]
-%   fc                    - Carrier frequency [Hz]
-%   WIFI_STANDARD         - Standard name ('802.11a', '802.11ax') or params struct
-%   ENABLE_VISUALIZATIONS - Logical flag to enable diagnostic plots
-%   cbw                   - (Optional) Channel bandwidth ('CBW20', 'CBW40', 'CBW80', 'CBW160')
+%   signal        - Received baseband time-domain signal
+%   waveform      - Reference transmitted time-domain waveform
+%   fs            - Sampling frequency [Hz]
+%   fc            - Carrier frequency [Hz]
+%   WIFI_STANDARD - Standard name ('802.11a', '802.11ax') or params struct
+%   cbw           - (Optional) Channel bandwidth ('CBW20', 'CBW40', 'CBW80', 'CBW160')
 %
 % Output:
-%   radar_data            - Struct containing complex periodogram, axes, and intermediate matrices
-
-if nargin < 6 || isempty(ENABLE_VISUALIZATIONS)
-    ENABLE_VISUALIZATIONS = false;
-end
+%   radar_data    - Struct containing complex periodogram, axes, and intermediate matrices
 
 fprintf('>> Running Receiver Pipeline...\n');
 
@@ -24,7 +19,7 @@ if isstruct(WIFI_STANDARD) && isfield(WIFI_STANDARD, 'standard')
     params        = WIFI_STANDARD;
     WIFI_STANDARD = params.standard;
 else
-    if nargin < 7 || isempty(cbw)
+    if nargin < 6 || isempty(cbw)
         cbw = sprintf('CBW%d', round(fs / 1e6));
     end
     params = get_wifi_params(WIFI_STANDARD, [], cbw);
@@ -79,8 +74,6 @@ radar_data.CPer_F        = CPer_F;
 radar_data.Per_F         = Per_F;
 radar_data.W             = W;
 radar_data.N_act         = N_act;
-radar_data.CPer_base     = CPer_F;
-radar_data.W_2D          = W;
 radar_data.N_per         = N_per;
 radar_data.M_per         = M_per;
 radar_data.Nfft          = Nfft;
@@ -97,12 +90,4 @@ radar_data.axis_velocity = axis_velocity;
 radar_data.params        = params;
 
 fprintf('  Pipeline complete. Radar map matrix: %d (Range bins) x %d (Doppler bins).\n', N_per, M_per);
-
-%% 7. Diagnostic Visualization
-if ENABLE_VISUALIZATIONS
-    constellation_diagram(F_rx(:), sprintf('Receiver - Demodulated Constellation (RX) (%s, %s)', WIFI_STANDARD, cbw));
-    radar_heatmap(fftshift(F_rx, 1), sprintf('Demodulated Symbols (%s, %s)', WIFI_STANDARD, cbw), 'Symbol Index (Time)', 'Subcarrier Index (Frequency)');
-    radar_heatmap(H_raw, sprintf('Channel Response (H Matrix) (%s, %s)', WIFI_STANDARD, cbw), 'Symbol Index (Time)', 'Subcarrier Index (Freq)');
-    range_doppler_3d(CPer_F, axis_velocity, axis_range, sprintf('Receiver - 3D Range-Doppler Map (%s, %s)', WIFI_STANDARD, cbw));
-end
 end

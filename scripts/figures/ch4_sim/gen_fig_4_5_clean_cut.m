@@ -50,19 +50,19 @@ targets = [ ...
 
 % 2. Wykonanie potoku nadawczo-odbiorczego (DRY)
 rng(42);
-[waveform, fs, params, cfg] = step1_transmitter(wifi_standard, false, cbw, mcs);
+[waveform, fs, params, cfg] = step1_transmitter(wifi_standard, cbw, mcs);
 
 rng(23); % Stałe ziarno wielodrogi TGax
 [rx_signal, fc] = step2_channel(waveform, fs, channel_model, cfg, targets, snr_dB);
 
-radar_data = step3_receiver(rx_signal, waveform, fs, fc, params, false);
+radar_data = step3_receiver(rx_signal, waveform, fs, fc, params);
 
 % 3. Uruchomienie obu metod Brauna na tej samej mapie
 p_FA = 1e-3;
 [targets_bin, ~, Per_after_bin, eta_bin, ~, diag_bin] = step4_interpreter( ...
-    radar_data, fs, fc, wifi_standard, false, p_FA, alg_bin);
+    radar_data, fs, fc, wifi_standard, p_FA, alg_bin);
 [targets_coh, ~, Per_after_coh, eta_coh, ~, diag_coh] = step4_interpreter( ...
-    radar_data, fs, fc, wifi_standard, false, p_FA, alg_coh);
+    radar_data, fs, fc, wifi_standard, p_FA, alg_coh);
 
 ped_bin = any(abs([targets_bin.d_hat] - r2_m) < 2.5 & abs([targets_bin.v_hat] - v2_ms) < 2.0);
 ped_coh = any(abs([targets_coh.d_hat] - r2_m) < 2.5 & abs([targets_coh.v_hat] - v2_ms) < 2.0);

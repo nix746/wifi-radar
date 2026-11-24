@@ -51,7 +51,7 @@ for i = 1:numel(cbw_list)
     K   = bw_mhz(i) / 20;
 
     rng(42);
-    [waveform, fs, params, cfg] = step1_transmitter(wifi_standard, false, cbw, mcs);
+    [waveform, fs, params, cfg] = step1_transmitter(wifi_standard, cbw, mcs);
 
     % Scale per-subcarrier echo amplitude for constant total AP power P_tx
     g_eff = (g0 / sqrt(K)) / eta(i);
@@ -63,8 +63,8 @@ for i = 1:numel(cbw_list)
     rng(seeds(i));
     [rx_signal, fc] = step2_channel(waveform, fs, channel_model, cfg, targets, snr_in_dB(i));
 
-    radar_data = step3_receiver(rx_signal, waveform, fs, fc, params, false);
-    [~, ~, ~, ~, pnfr] = step4_interpreter(radar_data, fs, fc, wifi_standard, false);
+    radar_data = step3_receiver(rx_signal, waveform, fs, fc, params);
+    [~, ~, ~, ~, pnfr] = step4_interpreter(radar_data, fs, fc, wifi_standard);
 
     % Extract 1D range cut at the target Doppler velocity bin
     P_map = radar_data.Per_F;

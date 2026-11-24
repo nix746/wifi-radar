@@ -1,7 +1,7 @@
 function alg = get_detection_algorithm(method)
 % GET_DETECTION_ALGORITHM Single source of truth for radar detection algorithms.
 % Resolves algorithm identifiers, display names, Polish descriptions, default
-% selection, and execution/visualization handlers in one centralized place.
+% selection, and execution handlers in one centralized place.
 %
 % Input:
 %   method - (Optional) Algorithm ID ('binary', 'coherent'), empty/missing for
@@ -9,7 +9,7 @@ function alg = get_detection_algorithm(method)
 %
 % Output:
 %   alg    - Struct with fields:
-%            id, name, full_name, description_pl, is_default, run, plot
+%            id, name, full_name, description_pl, is_default, run
 
     DEFAULT_METHOD    = 'binary';
     SUPPORTED_METHODS = {'binary', 'coherent'};
@@ -39,8 +39,7 @@ function alg = get_detection_algorithm(method)
                 'full_name',      'Binary Successive Target Cancellation', ...
                 'description_pl', 'maskowanie binarne', ...
                 'is_default',     strcmp('binary', DEFAULT_METHOD), ...
-                'run',            @run_binary_stc, ...
-                'plot',           @plot_binary_stc);
+                'run',            @run_binary_stc);
 
         case 'coherent'
             alg = struct( ...
@@ -49,8 +48,7 @@ function alg = get_detection_algorithm(method)
                 'full_name',      'Coherent Successive Target Cancellation', ...
                 'description_pl', 'odejmowanie koherentne', ...
                 'is_default',     strcmp('coherent', DEFAULT_METHOD), ...
-                'run',            @run_coherent_stc, ...
-                'plot',           @plot_coherent_stc);
+                'run',            @run_coherent_stc);
 
         otherwise
             error('Unsupported detection algorithm ''%s''. Supported options: %s.', ...
@@ -71,14 +69,4 @@ function [targets, CPer_F, Per_F, eta, diag_info] = run_coherent_stc(radar_data,
     [targets, CPer_F, Per_F, eta, diag_info] = coherent_successive_target_cancellation( ...
         radar_data.CPer_F, radar_data.Per_F, radar_data.W, radar_data.N_act, radar_data.n_symbols, ...
         radar_data.Nfft, radar_data.Ncp, fs, fc, p_FA);
-end
-
-function plot_binary_stc(Per_F_in, ~, diag_info, axis_velocity, axis_range, targets, fig_title, alg)
-% PLOT_BINARY_STC Render diagnostic figure for Binary STC results.
-    binary_stc_results(Per_F_in, diag_info.B, axis_velocity, axis_range, targets, fig_title, alg);
-end
-
-function plot_coherent_stc(Per_F_in, Per_F_out, ~, axis_velocity, axis_range, targets, fig_title, alg)
-% PLOT_COHERENT_STC Render diagnostic figure for Coherent STC results.
-    coherent_stc_results(Per_F_in, Per_F_out, axis_velocity, axis_range, targets, fig_title, alg);
 end

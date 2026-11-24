@@ -13,13 +13,13 @@ init_paths();
 rng(42, 'twister');
 
 % Run pipeline with exact same seed as generate_golden_master
-[waveform, fs, params, cfg] = step1_transmitter('802.11ax', false, 'CBW20', 0);
+[waveform, fs, params, cfg] = step1_transmitter('802.11ax', 'CBW20', 0);
 [signal, fc] = step2_channel(waveform, fs, 'Model-A', cfg);
-radar_data = step3_receiver(signal, waveform, fs, fc, '802.11ax', false, 'CBW20');
+radar_data = step3_receiver(signal, waveform, fs, fc, '802.11ax', 'CBW20');
 [targets_bin, CPer_F_bin, Per_F_bin, eta_bin, ~, diag_bin] = step4_interpreter( ...
-    radar_data, fs, fc, '802.11ax', false);
+    radar_data, fs, fc, '802.11ax');
 [targets_coh, CPer_F_coh, Per_F_coh, eta_coh] = step4_interpreter( ...
-    radar_data, fs, fc, '802.11ax', false, 1e-3, 'coherent');
+    radar_data, fs, fc, '802.11ax', 1e-3, 'coherent');
 
 fprintf('--- 1. Verifying against Golden Master ---\n');
 has_error = false;
@@ -193,19 +193,19 @@ fprintf('--- 3. Running End-to-End Pipeline Tests (Coherent STC) ---\n');
 
 % E2E 1: Symmetry in Model-A (R = 23.4 m, v = -12 vs +12 m/s, SNR = 35 dB)
 rng(42, 'twister');
-[wf_e, fs_e, p_e, cfg_e] = step1_transmitter('802.11ax', false, 'CBW20', 0);
+[wf_e, fs_e, p_e, cfg_e] = step1_transmitter('802.11ax', 'CBW20', 0);
 
 rng(23, 'twister');
 [rx_neg, fc_e] = step2_channel(wf_e, fs_e, 'Model-A', cfg_e, ...
     struct('type', 'car', 'range_m', 23.4, 'velocity_mps', -12.0), 35.0);
-rd_neg = step3_receiver(rx_neg, wf_e, fs_e, fc_e, p_e, false);
-[t_e_neg, ~, P_e_neg, eta_e_neg] = step4_interpreter(rd_neg, fs_e, fc_e, '802.11ax', false, 1e-3, 'coherent');
+rd_neg = step3_receiver(rx_neg, wf_e, fs_e, fc_e, p_e);
+[t_e_neg, ~, P_e_neg, eta_e_neg] = step4_interpreter(rd_neg, fs_e, fc_e, '802.11ax', 1e-3, 'coherent');
 
 rng(23, 'twister');
 [rx_pos, fc_e] = step2_channel(wf_e, fs_e, 'Model-A', cfg_e, ...
     struct('type', 'car', 'range_m', 23.4, 'velocity_mps', +12.0), 35.0);
-rd_pos = step3_receiver(rx_pos, wf_e, fs_e, fc_e, p_e, false);
-[t_e_pos, ~, P_e_pos, eta_e_pos] = step4_interpreter(rd_pos, fs_e, fc_e, '802.11ax', false, 1e-3, 'coherent');
+rd_pos = step3_receiver(rx_pos, wf_e, fs_e, fc_e, p_e);
+[t_e_pos, ~, P_e_pos, eta_e_pos] = step4_interpreter(rd_pos, fs_e, fc_e, '802.11ax', 1e-3, 'coherent');
 
 fprintf('E2E 1 (Model-A Symmetry): neg=(%.2fm, %+.2fm/s, RCS=%.2f) | pos=(%.2fm, %+.2fm/s, RCS=%.2f)\n', ...
     t_e_neg(1).d_hat, t_e_neg(1).v_hat, t_e_neg(1).sigma_RCS_hat, ...
@@ -221,15 +221,15 @@ end
 
 % E2E 2: 30 dB Dynamic Range (E5 scenario: CBW20, Model-C, SNR = 38 dB)
 rng(42, 'twister');
-[wf_e5, fs_e5, p_e5, cfg_e5] = step1_transmitter('802.11ax', false, 'CBW20', 0);
+[wf_e5, fs_e5, p_e5, cfg_e5] = step1_transmitter('802.11ax', 'CBW20', 0);
 tgts_e5 = [ ...
     struct('type', 'car',   'range_m', 15.0, 'velocity_mps', 8.0, 'gain', 0.0500), ...
     struct('type', 'human', 'range_m', 30.0, 'velocity_mps', 8.0, 'gain', 0.0500 * 10^(-30/20)) ...
 ];
 rng(23, 'twister');
 [rx_e5, fc_e5] = step2_channel(wf_e5, fs_e5, 'Model-C', cfg_e5, tgts_e5, 38.0);
-rd_e5 = step3_receiver(rx_e5, wf_e5, fs_e5, fc_e5, p_e5, false);
-[t_e5, ~, P_e5, eta_e5, ~, di_e5] = step4_interpreter(rd_e5, fs_e5, fc_e5, '802.11ax', false, 1e-3, 'coherent');
+rd_e5 = step3_receiver(rx_e5, wf_e5, fs_e5, fc_e5, p_e5);
+[t_e5, ~, P_e5, eta_e5, ~, di_e5] = step4_interpreter(rd_e5, fs_e5, fc_e5, '802.11ax', 1e-3, 'coherent');
 
 has_car = any(abs([t_e5.d_hat] - 15.0) < 1.5 & abs([t_e5.v_hat] - 8.0) < 1.5);
 has_ped = any(abs([t_e5.d_hat] - 30.0) < 2.0 & abs([t_e5.v_hat] - 8.0) < 1.5);
@@ -296,15 +296,15 @@ end
 
 % Binary E2E 1: IMPL23 (CBW80, Model-C, SNR = 45 dB, default 'binary') - no MTI ghosts
 rng(42, 'twister');
-[wf_i, fs_i, p_i, cfg_i] = step1_transmitter('802.11ax', false, 'CBW80', 0);
+[wf_i, fs_i, p_i, cfg_i] = step1_transmitter('802.11ax', 'CBW80', 0);
 tgts_i = [ ...
     struct('range_m', 22.5, 'velocity_mps', -4.0,  'type', 'human'), ...
     struct('range_m', 67.5, 'velocity_mps', +18.0, 'type', 'car') ...
 ];
 rng(23, 'twister');
 [rx_i, fc_i] = step2_channel(wf_i, fs_i, 'Model-C', cfg_i, tgts_i, 45.0);
-rd_i = step3_receiver(rx_i, wf_i, fs_i, fc_i, p_i, false);
-[t_bi, ~, P_bi, eta_bi, ~, di_bi] = step4_interpreter(rd_i, fs_i, fc_i, '802.11ax', false);
+rd_i = step3_receiver(rx_i, wf_i, fs_i, fc_i, p_i);
+[t_bi, ~, P_bi, eta_bi, ~, di_bi] = step4_interpreter(rd_i, fs_i, fc_i, '802.11ax');
 
 has_t1_bi    = any(abs([t_bi.d_hat] - 22.5) < 1.0 & abs([t_bi.v_hat] - (-7.0)) < 2.0);
 has_t2_bi    = any(abs([t_bi.d_hat] - 67.5) < 1.0 & abs([t_bi.v_hat] - 18.0) < 2.0);
@@ -320,7 +320,7 @@ end
 
 % Binary E2E 2: E5 (30 dB Dynamic Range) - Binary misses pedestrian inside B = 0
 [t_be5, ~, P_be5, eta_be5, ~, di_be5] = step4_interpreter( ...
-    rd_e5, fs_e5, fc_e5, '802.11ax', false, 1e-3, 'binary');
+    rd_e5, fs_e5, fc_e5, '802.11ax', 1e-3, 'binary');
 has_car_bin = any(abs([t_be5.d_hat] - 15.0) < 1.5 & abs([t_be5.v_hat] - 8.0) < 1.5);
 has_ped_bin = any(abs([t_be5.d_hat] - 30.0) < 2.5 & abs([t_be5.v_hat] - 8.0) < 2.0);
 fprintf('Binary E2E 2 (E5 30 dB): has_car=%d | has_ped=%d (masked inside ~B as expected)\n', ...
@@ -352,7 +352,7 @@ diag_ok     = strcmp(diag_bin.algorithm.name, alg_bin_ref.name) && ...
               strcmp(diag_bin.algorithm_name, alg_bin_ref.name);
 
 [~, CPer_F_coh_st, Per_F_coh_st, eta_coh_st, ~, diag_coh_st] = step4_interpreter( ...
-    radar_data, fs, fc, '802.11ax', false, 1e-3, alg_coh_st);
+    radar_data, fs, fc, '802.11ax', 1e-3, alg_coh_st);
 struct_dispatch_ok = max(abs(CPer_F_coh_st(:) - CPer_F_coh(:))) <= tol && ...
                      max(abs(Per_F_coh_st(:)  - Per_F_coh(:)))  <= tol && ...
                      abs(eta_coh_st - eta_coh) <= tol && ...

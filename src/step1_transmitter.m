@@ -1,29 +1,25 @@
-function [waveform, fs, params, cfg] = step1_transmitter(WIFI_STANDARD, ENABLE_VISUALIZATIONS, cbw, mcs, psdu_length)
+function [waveform, fs, params, cfg] = step1_transmitter(WIFI_STANDARD, cbw, mcs, psdu_length)
 % STEP1_TRANSMITTER Generates IEEE 802.11a/ax compliant OFDM baseband waveform.
 %
 % Inputs:
-%   WIFI_STANDARD         - '802.11a' or '802.11ax'
-%   ENABLE_VISUALIZATIONS - Logical flag to enable diagnostic plots
-%   cbw                   - (Optional) Channel bandwidth ('CBW20', 'CBW40', 'CBW80', 'CBW160')
-%   mcs                   - (Optional) Modulation and coding scheme index (0-11)
-%   psdu_length           - (Optional) Payload length in bytes (default: auto-scaled for constant frame duration)
+%   WIFI_STANDARD - '802.11a' or '802.11ax'
+%   cbw           - (Optional) Channel bandwidth ('CBW20', 'CBW40', 'CBW80', 'CBW160')
+%   mcs           - (Optional) Modulation and coding scheme index (0-11)
+%   psdu_length   - (Optional) Payload length in bytes (default: auto-scaled for constant frame duration)
 %
 % Outputs:
-%   waveform              - Complex baseband time-domain waveform
-%   fs                    - Sampling frequency [Hz]
-%   params                - Struct with Wi-Fi and OFDM parameters
-%   cfg                   - WLAN Toolbox configuration object
+%   waveform      - Complex baseband time-domain waveform
+%   fs            - Sampling frequency [Hz]
+%   params        - Struct with Wi-Fi and OFDM parameters
+%   cfg           - WLAN Toolbox configuration object
 
-    if nargin < 2 || isempty(ENABLE_VISUALIZATIONS)
-        ENABLE_VISUALIZATIONS = false;
-    end
-    if nargin < 3 || isempty(cbw)
+    if nargin < 2 || isempty(cbw)
         cbw = 'CBW20';
     end
-    if nargin < 4 || isempty(mcs)
+    if nargin < 3 || isempty(mcs)
         mcs = 0;
     end
-    if nargin < 5
+    if nargin < 4
         psdu_length = [];
     end
 
@@ -48,9 +44,4 @@ function [waveform, fs, params, cfg] = step1_transmitter(WIFI_STANDARD, ENABLE_V
     waveform     = wlanWaveformGenerator(payload_bits, cfg);
 
     fprintf('  Waveform generated (%d samples).\n', length(waveform));
-
-    %% 3. Diagnostic Visualization
-    if ENABLE_VISUALIZATIONS
-        power_spectral_density(waveform, fs, sprintf('Transmitter - Power Spectral Density (%s)', WIFI_STANDARD));
-    end
 end

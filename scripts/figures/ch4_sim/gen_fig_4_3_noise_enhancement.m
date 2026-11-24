@@ -42,11 +42,11 @@ for i = 1:n_mcs
     mcs = mcs_list(i);
 
     rng(42);
-    [waveform, fs, params, cfg] = step1_transmitter(wifi_standard, false, cbw, mcs);
+    [waveform, fs, params, cfg] = step1_transmitter(wifi_standard, cbw, mcs);
     rng(42);
     [rx_signal, fc]             = step2_channel(waveform, fs, channel_model, cfg, targets, snr_dB);
-    radar_data                  = step3_receiver(rx_signal, waveform, fs, fc, params, false);
-    [targets_det, ~, ~, ~, pnfr] = step4_interpreter(radar_data, fs, fc, wifi_standard, false);
+    radar_data                  = step3_receiver(rx_signal, waveform, fs, fc, params);
+    [targets_det, ~, ~, ~, pnfr] = step4_interpreter(radar_data, fs, fc, wifi_standard);
 
     zeta_zf_dB(i) = radar_data.zeta_zf_dB;
     pnfr_dB(i)    = pnfr.pnfr_dB(1);

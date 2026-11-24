@@ -35,14 +35,14 @@ targets = [ ...
 
 % 2. Simulate transmission, multipath channel, receiver DSP, and target interpreter
 rng(42);
-[waveform, fs, params, cfg] = step1_transmitter(wifi_standard, false, cbw, 0);
+[waveform, fs, params, cfg] = step1_transmitter(wifi_standard, cbw, 0);
 
 rng(23); % Deterministic seed where Model-C LOS locks at intrinsic delay (0 m bias)
 [rx_signal, fc] = step2_channel(waveform, fs, channel_model, cfg, targets, snr_dB);
 
-radar_data = step3_receiver(rx_signal, waveform, fs, fc, params, false);
+radar_data = step3_receiver(rx_signal, waveform, fs, fc, params);
 [targets_det, ~, ~, ~, pnfr, diag_info] = step4_interpreter( ...
-    radar_data, fs, fc, wifi_standard, false, 1e-3, 'coherent');
+    radar_data, fs, fc, wifi_standard, 1e-3, 'coherent');
 
 axis_range    = radar_data.axis_range;
 axis_velocity = radar_data.axis_velocity;

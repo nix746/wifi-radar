@@ -23,7 +23,7 @@ function gen_fig_3_1_channel_matrix_h()
     snr_dB = 25;
 
     % 2. Generate transmitted baseband waveform (IEEE 802.11ax HE-SU, CBW80)
-    [waveform, fs, params, cfg] = step1_transmitter(wifi_standard, false, cbw, 0);
+    [waveform, fs, params, cfg] = step1_transmitter(wifi_standard, cbw, 0);
 
     % 3. Simulate multipath TGax channel with two moving targets (matching Figs. 3.2 & 3.3)
     rng(23); % Deterministic seed where Model-C LOS locks at intrinsic delay (0 m bias)
@@ -34,7 +34,7 @@ function gen_fig_3_1_channel_matrix_h()
     [rx_signal, fc] = step2_channel(waveform, fs, channel_model, cfg, targets, snr_dB);
 
     % 4. Run receiver pipeline (step3_receiver) directly
-    radar_data = step3_receiver(rx_signal, waveform, fs, fc, params, false);
+    radar_data = step3_receiver(rx_signal, waveform, fs, fc, params);
     H_raw     = radar_data.H_raw;
     H_proc    = radar_data.H_shifted;
     n_symbols = radar_data.n_symbols;

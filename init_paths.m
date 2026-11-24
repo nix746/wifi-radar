@@ -9,15 +9,12 @@ function [project_root, src_dir, lib_dir, scripts_dir] = init_paths()
 %   scripts_dir  - Absolute path to the scripts/ directory
 
     [project_root, ~, ~] = fileparts(mfilename('fullpath'));
-    
+
     src_dir = fullfile(project_root, 'src');
     lib_dir = fullfile(project_root, 'lib');
-    vis_dir = fullfile(lib_dir, 'visualizations');
     scripts_dir = fullfile(project_root, 'scripts');
-    
+
     addpath(src_dir);
     addpath(lib_dir);
-    addpath(vis_dir);
-    addpath(scripts_dir);
     addpath(genpath(scripts_dir));
 end
