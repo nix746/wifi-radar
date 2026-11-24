@@ -1,4 +1,4 @@
-function gen_fig_4_2_doppler_aliasing()
+function fig = gen_fig_4_2_doppler_aliasing(show_figure, save_png)
 % GEN_FIG_4_2_DOPPLER_ALIASING
 % Experiment SIM-2 (E2): Unambiguous velocity limit comparison (802.11a vs 802.11ax).
 % Figure 4.2 for Chapter 4 of the thesis:
@@ -11,6 +11,9 @@ function gen_fig_4_2_doppler_aliasing()
 %   both standards exhibit a peak at the true velocity (+20.0 m/s).
 %
 % Output file: thesis/img/ch4_sim/rys_4_2_aliasing_dopplera.png
+
+if nargin < 1 || isempty(show_figure), show_figure = true; end
+if nargin < 2 || isempty(save_png),    save_png    = true; end
 
 fprintf('=================================================================\n');
 fprintf('  Generating Fig. 4.2: Doppler Velocity Aliasing (Exp. E2)\n');
@@ -146,16 +149,9 @@ grid on; box on;
 set(gca, 'GridAlpha', 0.25);
 
 % 4. Export figure in 300 DPI
-[script_path, ~, ~] = fileparts(mfilename('fullpath'));
-project_root = fullfile(script_path, '..', '..', '..');
-out_dir = fullfile(project_root, 'thesis', 'img', 'ch4_sim');
-if ~exist(out_dir, 'dir')
-    mkdir(out_dir);
+save_thesis_figure(fig, 'ch4_sim', 'rys_4_2_aliasing_dopplera.png', show_figure, save_png);
+if ~show_figure
+    fig = [];
 end
-out_file = fullfile(out_dir, 'rys_4_2_aliasing_dopplera.png');
-
-exportgraphics(fig, out_file, 'Resolution', 300);
-close(fig);
-
-fprintf('  Figure successfully saved to: %s\n', out_file);
+fprintf('=================================================================\n');
 end

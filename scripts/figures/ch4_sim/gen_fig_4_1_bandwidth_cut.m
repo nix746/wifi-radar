@@ -1,4 +1,4 @@
-function gen_fig_4_1_bandwidth_cut()
+function fig = gen_fig_4_1_bandwidth_cut(show_figure, save_png)
 % GEN_FIG_4_1_BANDWIDTH_CUT
 % Experiment SIM-1 (E1): Range resolution limit vs. channel bandwidth.
 % Figure 4.1 for Chapter 4 of the thesis:
@@ -9,11 +9,16 @@ function gen_fig_4_1_bandwidth_cut()
 %
 % Output file: thesis/img/ch4_sim/rys_4_1_przekroj_odleglosci_pasma.png
 
+if nargin < 1 || isempty(show_figure), show_figure = true; end
+if nargin < 2 || isempty(save_png),    save_png    = true; end
+
 fprintf('=================================================================\n');
 fprintf('  Generating Fig. 4.1: Bandwidth vs Range Resolution (Exp. E1)\n');
 fprintf('=================================================================\n');
 
 % 1. Initialize project paths
+project_root = fullfile(fileparts(mfilename('fullpath')), '..', '..', '..');
+addpath(project_root);
 init_paths();
 
 wifi_standard = '802.11ax';
@@ -144,16 +149,9 @@ grid on; box on;
 set(gca, 'GridAlpha', 0.25);
 
 % 4. Export figure in 300 DPI
-[script_path, ~, ~] = fileparts(mfilename('fullpath'));
-project_root = fullfile(script_path, '..', '..', '..');
-out_dir = fullfile(project_root, 'thesis', 'img', 'ch4_sim');
-if ~exist(out_dir, 'dir')
-    mkdir(out_dir);
+save_thesis_figure(fig, 'ch4_sim', 'rys_4_1_przekroj_odleglosci_pasma.png', show_figure, save_png);
+if ~show_figure
+    fig = [];
 end
-out_file = fullfile(out_dir, 'rys_4_1_przekroj_odleglosci_pasma.png');
-
-exportgraphics(fig, out_file, 'Resolution', 300);
-fprintf('  Figure saved to: %s\n', out_file);
-close(fig);
 fprintf('=================================================================\n');
 end

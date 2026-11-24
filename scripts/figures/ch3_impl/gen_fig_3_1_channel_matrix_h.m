@@ -1,4 +1,4 @@
-function gen_fig_3_1_channel_matrix_h()
+function fig = gen_fig_3_1_channel_matrix_h(show_figure, save_png)
 % GEN_FIG_3_1_CHANNEL_MATRIX_H
 % Experiment IMPL-1: Channel transfer matrix H(k,l) in the time-frequency domain.
 % Figure 3.1 for Chapter 3 of the thesis (IEEE 802.11ax, CBW80, TGax Model-C):
@@ -7,11 +7,16 @@ function gen_fig_3_1_channel_matrix_h()
 %
 % Output file: thesis/img/ch3_impl/rys_3_1_macierz_transmitancji_h.png
 
+    if nargin < 1 || isempty(show_figure), show_figure = true; end
+    if nargin < 2 || isempty(save_png),    save_png    = true; end
+
     fprintf('=================================================================\n');
     fprintf('  Generating Fig. 3.1: Channel matrix H (802.11ax, CBW80)\n');
     fprintf('=================================================================\n');
 
     % 1. Initialize project paths and random number generator seed
+    project_root = fullfile(fileparts(mfilename('fullpath')), '..', '..', '..');
+    addpath(project_root);
     init_paths();
     rng(42); % Ensure repeatability of noise and random payload data
 
@@ -55,18 +60,12 @@ function gen_fig_3_1_channel_matrix_h()
     fprintf('  Total power after MTI:     %+.2f dB (drop of %.2f dB)\n', total_power_proc_dB, total_drop_dB);
     fprintf('  Static component suppress: > %.1f dB (MTI eliminates DPI)\n', min(suppression_dpi_dB, 120));
 
-    % 6. Extract active subcarrier range (for 802.11ax CBW80: indices -500 to +500)
-    ofdminfo = wlanHEOFDMInfo('HE-Data', cfg);
-    act_idx  = ofdminfo.ActiveFrequencyIndices;
-    k_range  = min(act_idx) : max(act_idx);         % -500 .. +500
-    k_indices_in_matrix = (1 + Nfft/2) + k_range;   % 1-based matrix row indices
-
-    H_raw_sub  = H_raw(k_indices_in_matrix, :);
-    H_proc_sub = H_proc(k_indices_in_matrix, :);
+    % 6. Full centered subcarrier range (including guard bands and DC nulls: -Nfft/2 .. +Nfft/2-1)
+    k_range = (-Nfft/2) : (Nfft/2 - 1);
 
     % Convert magnitude to decibel scale [dB]
-    H_raw_dB  = 20 * log10(abs(H_raw_sub) + 1e-9);
-    H_proc_dB = 20 * log10(abs(H_proc_sub) + 1e-9);
+    H_raw_dB  = 20 * log10(abs(H_raw) + 1e-9);
+    H_proc_dB = 20 * log10(abs(H_proc) + 1e-9);
 
     fprintf('  H_raw_dB percentiles [1, 5, 50, 95, 99, max]:  [%.1f, %.1f, %.1f, %.1f, %.1f, %.1f] dB\n', ...
         prctile(H_raw_dB(:), 1), prctile(H_raw_dB(:), 5), median(H_raw_dB(:)), ...
@@ -122,16 +121,9 @@ function gen_fig_3_1_channel_matrix_h()
         'FontSize', 14, 'FontWeight', 'bold', 'Interpreter', 'none');
 
     % 8. Export figure in high resolution (300 DPI) to thesis directory
-    [script_path, ~, ~] = fileparts(mfilename('fullpath'));
-    project_root = fullfile(script_path, '..', '..', '..');
-    out_dir = fullfile(project_root, 'thesis', 'img', 'ch3_impl');
-    if ~exist(out_dir, 'dir')
-        mkdir(out_dir);
+    save_thesis_figure(fig, 'ch3_impl', 'rys_3_1_macierz_transmitancji_h.png', show_figure, save_png);
+    if ~show_figure
+        fig = [];
     end
-    out_file = fullfile(out_dir, 'rys_3_1_macierz_transmitancji_h.png');
-
-    exportgraphics(fig, out_file, 'Resolution', 300);
-    fprintf('  Figure saved to: %s\n', out_file);
-    close(fig);
     fprintf('=================================================================\n');
 end

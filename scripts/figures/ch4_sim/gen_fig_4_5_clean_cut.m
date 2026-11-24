@@ -1,4 +1,4 @@
-function gen_fig_4_5_clean_cut()
+function fig = gen_fig_4_5_clean_cut(show_figure, save_png)
 % GEN_FIG_4_5_CLEAN_CUT
 % Eksperyment SIM-5 (E5): Granica dynamiki mocy — porównanie algorytmów
 % Binary STC (maskowanie binarne) oraz Coherent STC (odejmowanie koherentne)
@@ -19,6 +19,9 @@ function gen_fig_4_5_clean_cut()
 %        pik pieszego powyżej progu CFAR eta i pozwala wykryć oba cele.
 %
 % Plik wynikowy: thesis/img/ch4_sim/rys_4_5_clean_prog_adaptacyjny.png
+
+if nargin < 1 || isempty(show_figure), show_figure = true; end
+if nargin < 2 || isempty(save_png),    save_png    = true; end
 
 % 1. Inicjalizacja ścieżek projektu i definicji algorytmów
 [script_path, ~, ~] = fileparts(mfilename('fullpath'));
@@ -95,7 +98,8 @@ eta_coh_dB      = 10 * log10(eta_coh / max_pwr + 1e-12);
 fprintf('  Próg CFAR (eta): %s = %.2f dB | %s = %.2f dB\n', alg_bin.name, eta_bin_dB, alg_coh.name, eta_coh_dB);
 
 % 5. Dwupanelowa wizualizacja porównawcza
-fig = figure('Color', 'w', 'Position', [80, 100, 1280, 500], 'Visible', 'off');
+fig = figure('Name', 'Figure 4.5 - Binary STC vs Coherent STC (30 dB Dynamic Range)', ...
+    'Color', 'w', 'Position', [80, 100, 1280, 500], 'Visible', 'off');
 sgtitle(sprintf('Porównanie algorytmów %s i %s (Braun) w scenariuszu dynamiki 30 dB', alg_bin.name, alg_coh.name), ...
     'FontSize', 13.5, 'FontWeight', 'bold', 'Interpreter', 'none');
 
@@ -176,14 +180,9 @@ legend('Location', 'southoutside', 'Orientation', 'horizontal', ...
     'FontSize', 9.5, 'NumColumns', 2, 'Interpreter', 'none');
 
 % 6. Zapis grafiki w wysokiej rozdzielczości (300 DPI)
-out_dir = fullfile(project_root, 'thesis', 'img', 'ch4_sim');
-if ~exist(out_dir, 'dir')
-    mkdir(out_dir);
+save_thesis_figure(fig, 'ch4_sim', 'rys_4_5_clean_prog_adaptacyjny.png', show_figure, save_png);
+if ~show_figure
+    fig = [];
 end
-out_file = fullfile(out_dir, 'rys_4_5_clean_prog_adaptacyjny.png');
-exportgraphics(fig, out_file, 'Resolution', 300);
-close(fig);
-
-fprintf('  Grafika wyeksportowana pomyślnie do:\n  %s\n', out_file);
 fprintf('=================================================================\n');
 end

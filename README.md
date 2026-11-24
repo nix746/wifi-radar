@@ -2,41 +2,49 @@
 
 Symulator pasywnego radaru bistatycznego (PBR) wykorzystujący sygnały standardów **IEEE 802.11a** oraz **IEEE 802.11ax (Wi-Fi 6)** w środowisku MATLAB.
 
-Projekt realizuje pełny łańcuch przetwarzania sygnałowego: syntezę ramek transmisyjnych, symulację kanału wielodrogowego z celami ruchomymi (model syntetyczny oraz TGax Model-B), estymację transmitancji kanału (Zero-Forcing), filtrację MTI, dwuwymiarowy periodogram Range-Doppler oraz usuwanie listków bocznych algorytmem Coherent CLEAN.
+Projekt realizuje pełny łańcuch przetwarzania sygnałowego: syntezę ramek transmisyjnych, symulację kanału wielodrogowego TGax z celami ruchomymi, estymację transmitancji kanału (Zero-Forcing), filtrację MTI, naprawę luki DC, dwuwymiarowy periodogram Range–Doppler oraz sekwencyjną detekcję i ekstrakcję celów algorytmami **Binary STC** i **Coherent STC** z progiem CFAR $\eta$ (wg M. Brauna, 2014).
+
+---
+
+## Szybki Start
+
+Wymagania: **MATLAB** (R2021a+) wraz z **WLAN Toolbox** oraz **Communications Toolbox** (`awgn`).
+
+Uruchomienie bezpośrednio z katalogu głównego projektu (po `init_paths` lub przez `run(...)`) albo z podfolderów `scripts/`:
+
+- **Wygenerowanie i wyświetlenie wszystkich rysunków z pracy dyplomowej** (9 osobnych okien + eksport PNG 300 DPI do `thesis/img/`):
+  ```matlab
+  run('scripts/figures/run_all_figures.m')
+  % lub po init_paths():
+  run_all_figures
+  ```
+- **Pokazówka losowych celów i porównanie detekcji Binary STC vs Coherent STC**:
+  ```matlab
+  run('scripts/run_random_demo.m')
+  % lub po init_paths():
+  run_random_demo
+  ```
+- **Testy regresyjne i jednostkowe** (Golden Master + testy Binary/Coherent STC):
+  ```matlab
+  run('tests/verify_regression.m')
+  ```
 
 ---
 
 ## Główne Cechy i Parametry
 
 - **Obsługiwane standardy**:
-  - **802.11a (Legacy)**: $N_{\text{fft}} = 64$, 52 podnośne aktywne, $T_{\text{sym}} = 4.0\ \mu\text{s}$, prędkość jednoznaczna $v_{\text{unamb}} \approx 68.2\ \text{m/s}$.
-  - **802.11ax (Wi-Fi 6 HE-SU)**: $N_{\text{fft}} = 256$, 242 podnośne aktywne, $T_{\text{sym}} = 13.6\ \mu\text{s}$, prędkość jednoznaczna $v_{\text{unamb}} \approx 16.7\ \text{m/s}$.
+  - **802.11a (Legacy)**: $N_{\text{fft}} = 64$, 52 podnośne aktywne, $T_{\text{sym}} = 4{,}0\ \mu\text{s}$, prędkość jednoznaczna $v_{\text{unamb}} \approx \pm 68{,}2\ \text{m/s}$ (przy $f_c = 5{,}5\ \text{GHz}$: $\pm 56{,}8\ \text{m/s}$ dla okresu $T_{\text{sym}}$ z CP $0{,}8\ \mu\text{s}$).
+  - **802.11ax (Wi-Fi 6 HE-SU)**: $N_{\text{fft}} = 256\text{–}2048$ (`CBW20`–`CBW160`), $T_{\text{sym}} = 13{,}6\ \mu\text{s}$, prędkość jednoznaczna $v_{\text{unamb}} \approx \pm 16{,}7\ \text{m/s}$ (przy $f_c = 5{,}5\ \text{GHz}$).
 - **Modele kanału**:
-  - **Ideal Channel**: Dyskretna linia opóźniająca z celami ruchomymi i przesłuchem bezpośrednim (DPI).
-  - **TGax Multipath**: Model wewnątrzbudynkowy `wlanTGaxChannel` (Model-B) z realistycznym profilem clutteru i opóźnieniem filtru.
+  - **TGax (`wlanTGaxChannel`)**: profile wewnątrzbudynkowe `Model-A` (brak wielodrogi, $\tau_{\text{rms}} = 0\ \text{ns}$), `Model-B` ($\tau_{\text{rms}} = 15\ \text{ns}$), `Model-C` ($\tau_{\text{rms}} = 30\ \text{ns}$), `Model-E` ($\tau_{\text{rms}} = 100\ \text{ns}$) z realistycznym przesłuchem bezpośrednim (DPI), opóźnieniem filtru i szumem AWGN.
 - **Moduły DSP**:
   - Synchronizacja pakietu (`wlanPacketDetect`, `wlanSymbolTimingEstimate`).
   - Ręczna demodulacja OFDM i estymacja kanału Zero-Forcing ($H = Y / X$).
   - Filtracja MTI w dziedzinie wolnego czasu (usuwanie DPI i obiektów stacjonarnych).
-  - Adaptacyjna interpolacja luki nośnych stałoprądowych (DC).
-  - Okienkowanie Blackman-Harris 2D oraz periodogram Range-Doppler.
-  - Detekcja celów i tłumienie listków bocznych algorytmem Coherent CLEAN.
-
----
-
-## Porównanie Parametrów Fizycznych i Radarowych
-
-| Parametr | IEEE 802.11a | IEEE 802.11ax (HE-SU) | Wpływ na radar pasywny |
-| :--- | :---: | :---: | :--- |
-| **Pasmo ($B$)** | 20 MHz | 20 MHz | Jednakowe dla obu standardów |
-| **Częstotliwość próbkowania ($f_s$)** | 20 MHz | 20 MHz | Krok dyskretnego czasu $T_s = 50\ \text{ns}$ |
-| **Rozmiar FFT ($N_{\text{fft}}$)** | 64 | 256 | 4-krotnie gęstsze próbkowanie pasma w 802.11ax |
-| **Odstęp między podnośnymi ($\Delta f$)** | 312.5 kHz | 78.125 kHz | $\Delta f = 1 / T_{\text{fft}}$ |
-| **Czas trwania symbolu ($T_{\text{sym}}$)** | $4.0\ \mu\text{s}$ | $13.6\ \mu\text{s}$ | Wpływa bezpośrednio na jednoznaczność prędkości |
-| **Podnośne aktywne** | 52 | 242 | Większa gęstość informacji o transmitancji kanału |
-| **Luka DC** | 1 nośna | 3 nośne ([-1, 0, 1]) | Wymaga wielopunktowej interpolacji w 802.11ax |
-| **Rozdzielczość odległości ($\Delta R$)** | **7.5 m** | **7.5 m** | $\Delta R = c / (2B)$ |
-| **Prędkość jednoznaczna ($v_{\text{unamb}}$)** | **$\approx 68.2\ \text{m/s}$** | **$\approx 16.7\ \text{m/s}$** | $v_{\text{unamb}} = \lambda / (2 T_{\text{sym}})$ |
+  - Adaptacyjna interpolacja luki podnośnych stałoprądowych (DC).
+  - Okienkowanie Blackmana–Harrisa 2D oraz periodogram Range–Doppler (`compute_range_doppler_map`).
+  - Sekwencyjna ekstrakcja celów **Binary STC** (maskowanie binarne) oraz **Coherent STC** (koherentne odejmowanie repliki celu) z globalnym progiem **CFAR $\eta$**, estymacją mocy szumu ML poza $N_{\max}$, 2D interpolacją paraboliczną oraz oceną kontrastu **PNFR**.
 
 ---
 
@@ -45,42 +53,22 @@ Projekt realizuje pełny łańcuch przetwarzania sygnałowego: syntezę ramek tr
 ```text
 +-----------------------+      +---------------------------+
 |  step1_transmitter    | ---> |       step2_channel       |
-|  (802.11a / 802.11ax) |      | (Ideal / TGax Multipath)  |
-+-----------------------+      +---------------------------+
+|  (802.11a / 802.11ax) |      |  (TGax Model A/B/C/E +    |
++-----------------------+      |   Moving Radar Targets)   |
+                               +---------------------------+
                                              |
                                              v
 +-----------------------+      +---------------------------+
 |  step4_interpreter    | <--- |      step3_receiver       |
-| (Coherent CLEAN, 2D)  |      | (PktSync, ZF, MTI, DC, Win)|
-+-----------------------+      +---------------------------+
+| (Binary/Coherent STC, |      | (PktSync, ZF, MTI, DC, Win)|
+|  CFAR, PNFR)          |      +---------------------------+
++-----------------------+
 ```
 
 1. **`src/step1_transmitter.m`**: Generacja ramki transmisyjnej (`wlanWaveformGenerator`).
-2. **`src/step2_channel.m`**: Nałożenie celów radarowych, przesłuchu DPI, modelu kanału (Ideal / TGax) i szumu AWGN.
-3. **`src/step3_receiver.m`**: Synchronizacja czasowa, demodulacja, estymacja ZF, filtracja MTI, interpolacja DC i periodogram Range-Doppler.
-4. **`src/step4_interpreter.m`**: Detekcja celów, eliminacja listków bocznych Coherent CLEAN i zapis wykresów.
-
----
-
-## Szybki Start
-
-Wymagania: **MATLAB** (R2021a+) wraz z **WLAN Toolbox**.
-
-Uruchomienie pełnego zestawu symulacji (4 konfiguracje):
-
-```matlab
-% W konsoli MATLAB:
-cd('scripts');
-run_full_simulation;
-```
-
-Kombinacje scenariuszy:
-1. `802.11a` + `Ideal Channel`
-2. `802.11ax` + `Ideal Channel`
-3. `802.11a` + `TGax Multipath`
-4. `802.11ax` + `TGax Multipath`
-
-Wykresy wynikowe zapisywane są automatycznie w katalogu `results/figures/run_YYYY-MM-DD_HH-MM-SS/`.
+2. **`src/step2_channel.m`**: Nałożenie celów radarowych, kanału wielodrogowego TGax (z DPI) i szumu AWGN.
+3. **`src/step3_receiver.m`**: Synchronizacja czasowa, demodulacja, estymacja ZF, filtracja MTI, interpolacja DC i periodogram Range–Doppler.
+4. **`src/step4_interpreter.m`**: Detekcja celów algorytmami Binary/Coherent STC oraz wyznaczenie kontrastu PNFR.
 
 ---
 
@@ -90,13 +78,12 @@ Wykresy wynikowe zapisywane są automatycznie w katalogu `results/figures/run_YY
 WiFi-Radar/
 ├── init_paths.m          # Konfiguracja ścieżek MATLAB-a
 ├── src/                  # 4 etapy przetwarzania (transmitter -> channel -> receiver -> interpreter)
-├── lib/                  # Biblioteki DSP (demodulacja, estymacja ZF, MTI, CLEAN)
-│   └── visualizations/   # Generatory wykresów (spektrum, konstelacja, mapy 2D/3D)
-├── scripts/              # Skrypt uruchomieniowy run_full_simulation.m
-├── tests/                # Testy regresyjne (verify_regression.m)
-├── results/figures/      # Wygenerowane wyniki i mapy radarowe
-├── docs/                 # Notatki merytoryczne i dokumentacja
-└── thesis/               # Pliki pracy dyplomowej (LaTeX)
+├── lib/                  # Biblioteki DSP (demodulacja, estymacja ZF, MTI, Binary/Coherent STC, PNFR)
+├── scripts/              # Skrypty uruchomieniowe (run_random_demo.m)
+│   └── figures/          # Skrypty generujące rysunki (run_all_figures.m oraz ch2–ch4)
+├── tests/                # Testy regresyjne i jednostkowe (verify_regression.m)
+├── docs/                 # Notatki merytoryczne i plany eksperymentów
+└── thesis/               # Pliki pracy dyplomowej (LaTeX) i wyeksportowane rysunki (thesis/img/)
 ```
 
 ---

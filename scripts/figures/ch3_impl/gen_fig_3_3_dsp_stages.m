@@ -1,4 +1,4 @@
-function gen_fig_3_3_dsp_stages()
+function fig = gen_fig_3_3_dsp_stages(show_figure, save_png)
 % GEN_FIG_3_3_DSP_STAGES
 % Experiment IMPL-3: Step-by-step decomposition of the receiver and
 % interpreter DSP pipeline on the 2D Range-Doppler map for IEEE 802.11ax
@@ -12,11 +12,16 @@ function gen_fig_3_3_dsp_stages()
 %
 % Output file: thesis/img/ch3_impl/rys_3_3_etapy_przetwarzania_dsp.png
 
+if nargin < 1 || isempty(show_figure), show_figure = true; end
+if nargin < 2 || isempty(save_png),    save_png    = true; end
+
 fprintf('=================================================================\n');
 fprintf('  Generating Fig. 3.3: DSP Pipeline Stages Decomposition (CBW80)\n');
 fprintf('=================================================================\n');
 
 % 1. Initialize project paths
+project_root = fullfile(fileparts(mfilename('fullpath')), '..', '..', '..');
+addpath(project_root);
 init_paths();
 
 wifi_standard = '802.11ax';
@@ -141,16 +146,9 @@ sgtitle('Dekompozycja etapów przetwarzania DSP w odbiorniku i interpreterze (80
     'FontSize', 14, 'FontWeight', 'bold', 'Interpreter', 'none');
 
 % 6. Export figure in 300 DPI
-[script_path, ~, ~] = fileparts(mfilename('fullpath'));
-project_root = fullfile(script_path, '..', '..', '..');
-out_dir = fullfile(project_root, 'thesis', 'img', 'ch3_impl');
-if ~exist(out_dir, 'dir')
-    mkdir(out_dir);
+save_thesis_figure(fig, 'ch3_impl', 'rys_3_3_etapy_przetwarzania_dsp.png', show_figure, save_png);
+if ~show_figure
+    fig = [];
 end
-out_file = fullfile(out_dir, 'rys_3_3_etapy_przetwarzania_dsp.png');
-
-exportgraphics(fig, out_file, 'Resolution', 300);
-fprintf('\n  Figure saved successfully to: %s\n', out_file);
-close(fig);
 fprintf('=================================================================\n');
 end

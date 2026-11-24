@@ -1,4 +1,4 @@
-function gen_fig_4_4_tgax_mti_cut()
+function fig = gen_fig_4_4_tgax_mti_cut(show_figure, save_png)
 % GEN_FIG_4_4_TGAX_MTI_CUT
 % Eksperyment SIM-4 (E4): Wpływ otoczenia wielodrogowego TGax (Modele A, C, E)
 % i tłumienie clutteru stacjonarnego przez filtr MTI w czasie wolnym.
@@ -21,6 +21,9 @@ function gen_fig_4_4_tgax_mti_cut()
 %     Paleta barwna: klasyczna radarowa 'jet' ze wspólnym zakresem [-90, 0] dB.
 %
 % Plik wynikowy: thesis/img/ch4_sim/rys_4_4_tlumienie_clutteru_mti.png
+
+if nargin < 1 || isempty(show_figure), show_figure = true; end
+if nargin < 2 || isempty(save_png),    save_png    = true; end
 
 fprintf('=================================================================\n');
 fprintf('  Generowanie Rys. 4.4: Mapy 2D TGax (wspolna skala wzgledem DPI)\n');
@@ -188,14 +191,9 @@ cb = colorbar(ax_r, 'Position', [0.905, 0.090, 0.020, 0.795]);
 ylabel(cb, 'Moc znormalizowana względem przesłuchu DPI [dB]', 'FontSize', 10, 'Interpreter', 'none');
 
 % 5. Zapis grafiki w wysokiej rozdzielczości (300 DPI)
-out_dir = fullfile(project_root, 'thesis', 'img', 'ch4_sim');
-if ~exist(out_dir, 'dir')
-    mkdir(out_dir);
+save_thesis_figure(fig, 'ch4_sim', 'rys_4_4_tlumienie_clutteru_mti.png', show_figure, save_png);
+if ~show_figure
+    fig = [];
 end
-out_png = fullfile(out_dir, 'rys_4_4_tlumienie_clutteru_mti.png');
-exportgraphics(fig, out_png, 'Resolution', 300);
-fprintf('  Zapisano Rysunek 4.4 (300 DPI, wspolna skala wzgledem DPI) do:\n    %s\n', out_png);
-
-close(fig);
 fprintf('=================================================================\n\n');
 end

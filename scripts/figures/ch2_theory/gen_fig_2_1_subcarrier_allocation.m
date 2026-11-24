@@ -1,4 +1,4 @@
-function gen_fig_2_1_subcarrier_allocation()
+function fig = gen_fig_2_1_subcarrier_allocation(show_figure, save_png)
 % GEN_FIG_2_1_SUBCARRIER_ALLOCATION
 % Figure 2.1 for Chapter 2 of the thesis: subcarrier allocation in the
 % data field of IEEE 802.11a (Non-HT) and IEEE 802.11ax (HE-SU, CBW20):
@@ -8,10 +8,15 @@ function gen_fig_2_1_subcarrier_allocation()
 %
 % Output file: thesis/img/ch2_theory/rys_2_1_alokacja_podnosnych.png
 
+    if nargin < 1 || isempty(show_figure), show_figure = true; end
+    if nargin < 2 || isempty(save_png),    save_png    = true; end
+
     fprintf('=================================================================\n');
     fprintf('  Generating Fig. 2.1: Subcarrier allocation (802.11a vs 802.11ax)\n');
     fprintf('=================================================================\n');
 
+    project_root = fullfile(fileparts(mfilename('fullpath')), '..', '..', '..');
+    addpath(project_root);
     init_paths();
 
     % 1. IEEE 802.11a (Non-HT, 20 MHz): fixed allocation from the standard
@@ -61,16 +66,10 @@ function gen_fig_2_1_subcarrier_allocation()
         'FontSize', 14, 'FontWeight', 'bold', 'Interpreter', 'none');
 
     % 4. Export (300 DPI)
-    [script_path, ~, ~] = fileparts(mfilename('fullpath'));
-    project_root = fullfile(script_path, '..', '..', '..');
-    out_dir = fullfile(project_root, 'thesis', 'img', 'ch2_theory');
-    if ~exist(out_dir, 'dir')
-        mkdir(out_dir);
+    save_thesis_figure(fig, 'ch2_theory', 'rys_2_1_alokacja_podnosnych.png', show_figure, save_png);
+    if ~show_figure
+        fig = [];
     end
-    out_file = fullfile(out_dir, 'rys_2_1_alokacja_podnosnych.png');
-    exportgraphics(fig, out_file, 'Resolution', 300);
-    fprintf('  Figure saved to: %s\n', out_file);
-    close(fig);
     fprintf('=================================================================\n');
 end
 

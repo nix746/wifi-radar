@@ -1,4 +1,4 @@
-function gen_fig_3_2_range_doppler()
+function fig = gen_fig_3_2_range_doppler(show_figure, save_png)
 % GEN_FIG_3_2_RANGE_DOPPLER
 % Experiment IMPL-2: Comparison of Raw vs. Processed 2D Range-Doppler
 % periodograms for IEEE 802.11ax (CBW80, 80 MHz) in a multipath TGax
@@ -12,11 +12,16 @@ function gen_fig_3_2_range_doppler()
 %
 % Output file: thesis/img/ch3_impl/rys_3_2_mapa_range_doppler.png
 
+if nargin < 1 || isempty(show_figure), show_figure = true; end
+if nargin < 2 || isempty(save_png),    save_png    = true; end
+
 fprintf('=================================================================\n');
 fprintf('  Generating Fig. 3.2: Range-Doppler Map Before & After DSP (CBW80)\n');
 fprintf('=================================================================\n');
 
 % 1. Initialize project paths
+project_root = fullfile(fileparts(mfilename('fullpath')), '..', '..', '..');
+addpath(project_root);
 init_paths();
 
 wifi_standard = '802.11ax';
@@ -200,16 +205,9 @@ sgtitle(sprintf('Mapa periodogramu Range-Doppler przed i po filtracji DSP (802.1
     'FontSize', 14, 'FontWeight', 'bold', 'Interpreter', 'none');
 
 % 7. Export figure in 300 DPI
-[script_path, ~, ~] = fileparts(mfilename('fullpath'));
-project_root = fullfile(script_path, '..', '..', '..');
-out_dir = fullfile(project_root, 'thesis', 'img', 'ch3_impl');
-if ~exist(out_dir, 'dir')
-    mkdir(out_dir);
+save_thesis_figure(fig, 'ch3_impl', 'rys_3_2_mapa_range_doppler.png', show_figure, save_png);
+if ~show_figure
+    fig = [];
 end
-out_file = fullfile(out_dir, 'rys_3_2_mapa_range_doppler.png');
-
-exportgraphics(fig, out_file, 'Resolution', 300);
-fprintf('\n  Figure saved successfully to: %s\n', out_file);
-close(fig);
 fprintf('=================================================================\n');
 end
