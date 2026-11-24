@@ -1,5 +1,5 @@
 function [targets, CPer_F, Per_F, eta, pnfr, diag_info] = step4_interpreter( ...
-    radar_data, fs, fc, WIFI_STANDARD, p_FA, stc_method)
+    radar_data, fs, fc, ~, p_FA, stc_method)
 % STEP4_INTERPRETER Target detection via Successive Target Cancellation (Braun 2014) and PNFR evaluation.
 % Algorithm selection, naming, and dispatch are centralized in get_detection_algorithm.
 %
@@ -7,7 +7,7 @@ function [targets, CPer_F, Per_F, eta, pnfr, diag_info] = step4_interpreter( ...
 %   radar_data    - Struct returned by step3_receiver
 %   fs            - Sampling frequency [Hz]
 %   fc            - Carrier frequency [Hz]
-%   WIFI_STANDARD - Standard name ('802.11a', '802.11ax')
+%   ~             - Unused (kept for 6-argument API compatibility)
 %   p_FA          - (Optional) CFAR false-alarm probability per frame (default: 1e-3)
 %   stc_method    - (Optional) Detection algorithm ID or config struct
 %                   from get_detection_algorithm (default: registry default)
@@ -30,29 +30,16 @@ function [targets, CPer_F, Per_F, eta, pnfr, diag_info] = step4_interpreter( ...
     alg = get_detection_algorithm(stc_method);
     fprintf('>> Running Target Detection Interpreter: %s (%s)...\n', alg.full_name, alg.id);
 
-    %% 1. Unpack Radar Data
     CPer_F_in = radar_data.CPer_F;
-    Per_F_in  = radar_data.Per_F;
-    Nfft      = radar_data.Nfft;
-    Ncp       = radar_data.Ncp;
-    N_per     = radar_data.N_per;
-    M_per     = radar_data.M_per;
 
-    %% 2. Target Detection & Cancellation (Braun 2014, Sec. 3.3.7)
+    % Target detection & cancellation (Braun 2014, Sec. 3.3.7)
     fprintf('  Executing %s (CFAR p_FA = %.1e)...\n', alg.name, p_FA);
     [targets, CPer_F, Per_F, eta, diag_info] = alg.run(radar_data, fs, fc, p_FA);
     diag_info.method         = alg.id;
     diag_info.algorithm_name = alg.name;
     diag_info.algorithm      = alg;
 
-    %% 3. Calibrated Physical Axes and PNFR Metric
-    if isfield(radar_data, 'axis_range') && isfield(radar_data, 'axis_velocity')
-        axis_range    = radar_data.axis_range;
-        axis_velocity = radar_data.axis_velocity;
-    else
-        [axis_range, axis_velocity] = calculate_physical_axes(fs, fc, Nfft, Ncp, N_per, M_per);
-    end
-
+    % Compute PNFR metric across detected peaks
     if ~isempty(targets)
         target_idx = [[targets.r_idx].', [targets.d_idx].'];
         pnfr = compute_pnfr(CPer_F_in, target_idx);

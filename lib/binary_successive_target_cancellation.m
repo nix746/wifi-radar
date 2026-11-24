@@ -111,7 +111,7 @@ function [targets, B, Per_F_masked, eta, diag_info] = binary_successive_target_c
             'v_hat', v_hat, ...
             'Per_peak', Per_interp, ...
             'sigma_RCS_hat', sigma_RCS_hat, ...
-            'iter', i);
+            'iter', i); %#ok<AGROW>
 
         % Step 5: Zero out main-lobe ellipse in binary map B (periodic wrap on FFT axes)
         dn = abs(n_grid - n_hat);
@@ -122,10 +122,10 @@ function [targets, B, Per_F_masked, eta, diag_info] = binary_successive_target_c
         B(in_ellipse) = false;
 
         if record_history
-            B_history{end + 1} = B;
+            B_history{end + 1} = B; %#ok<AGROW>
         end
 
-        % Step 6-7: Increment i and continue at Step 2
+        % Step 6-7: Advance iteration counter
         i = i + 1;
     end
 

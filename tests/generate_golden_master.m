@@ -8,10 +8,10 @@ sim_tests_dir = fullfile(sim_project_root, 'tests');
 addpath(sim_project_root);
 init_paths();
 
-% 1. Set seed for reproducibility
+% Seed for reproducibility
 rng(42, 'twister');
 
-% 2. Run simulation steps using current pipeline functions
+% Run simulation pipeline
 fprintf('Running step1_transmitter...\n');
 [waveform, fs, params, cfg] = step1_transmitter('802.11ax', 'CBW20', 0);
 save(fullfile(sim_tests_dir, 'golden_waveform.mat'), 'waveform', 'fs');

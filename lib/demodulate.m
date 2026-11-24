@@ -24,15 +24,9 @@ function [F_matrix, n_syms] = demodulate(signal, n_fft, n_cp)
         error('Input signal is shorter than a single OFDM symbol (%d samples).', sym_len);
     end
 
-    % Truncate signal to an integer number of symbols
-    sig_truncated = signal(1 : n_syms * sym_len);
-
-    % Reshape to matrix: columns represent consecutive OFDM symbols in time
+    % Truncate to whole OFDM symbols, strip cyclic prefix, and FFT along fast time
+    sig_truncated       = signal(1 : n_syms * sym_len);
     matrix_time_with_cp = reshape(sig_truncated, sym_len, n_syms);
-
-    % Remove Cyclic Prefix: keep samples from (n_cp + 1) to the end of each symbol
-    matrix_time_no_cp = matrix_time_with_cp(n_cp + 1 : end, :);
-
-    % FFT along fast-time dimension (columns: time -> subcarriers)
-    F_matrix = fft(matrix_time_no_cp, n_fft, 1);
+    matrix_time_no_cp   = matrix_time_with_cp(n_cp + 1 : end, :);
+    F_matrix            = fft(matrix_time_no_cp, n_fft, 1);
 end

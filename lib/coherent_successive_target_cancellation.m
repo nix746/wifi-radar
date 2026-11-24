@@ -110,36 +110,7 @@ function [targets, CPer_F, Per_F, eta, diag_info] = coherent_successive_target_c
 
         % Step 5: Quadratic interpolation (eqs. 3.84-3.86) and physical estimation (eqs. 3.32, 3.34)
         if ~is_residual
-            rn_m = mod(rn - 2, N_Per) + 1;
-            rn_p = mod(rn,     N_Per) + 1;
-            dm_m = mod(dm - 2, M_Per) + 1;
-            dm_p = mod(dm,     M_Per) + 1;
-
-            p_c  = Per_F(rn, dm);
-            p_rm = Per_F(rn_m, dm);
-            p_rp = Per_F(rn_p, dm);
-            p_dm = Per_F(rn, dm_m);
-            p_dp = Per_F(rn, dm_p);
-
-            denom_n = 2 * (p_rm + p_rp - 2 * p_c);
-            if denom_n < -eps
-                delta_n = max(-0.5, min(0.5, (p_rm - p_rp) / denom_n));
-            else
-                delta_n = 0;
-            end
-
-            denom_m = 2 * (p_dm + p_dp - 2 * p_c);
-            if denom_m < -eps
-                delta_m = max(-0.5, min(0.5, (p_dm - p_dp) / denom_m));
-            else
-                delta_m = 0;
-            end
-
-            n_tilde = max(0, n_hat + delta_n);
-            m_tilde = m_hat + delta_m;
-
-            Per_interp = p_c - 0.25 * ((p_rm - p_rp) * delta_n + (p_dm - p_dp) * delta_m);
-            Per_interp = max(Per_interp, p_c);
+            [n_tilde, m_tilde, Per_interp] = quadratic_peak_interp(Per_F, rn, dm, n_hat, m_hat, N_Per, M_Per);
 
             d_hat         = (n_tilde * c0) / (2 * delta_f * N_Per);
             v_hat         = (m_tilde * c0) / (2 * fc * T_O * M_Per);
@@ -157,7 +128,7 @@ function [targets, CPer_F, Per_F, eta, diag_info] = coherent_successive_target_c
                 'v_hat', v_hat, ...
                 'Per_peak', Per_interp, ...
                 'sigma_RCS_hat', sigma_RCS_hat, ...
-                'iter', i);
+                'iter', i); %#ok<AGROW>
         end
 
         % Step 6: Single-target radar processing matrix and complex periodogram (eqs. 3.99-3.100)
@@ -165,18 +136,16 @@ function [targets, CPer_F, Per_F, eta, diag_info] = coherent_successive_target_c
         CPer_target      = fftshift(N_Per * ifft(fft(F_target .* W, M_Per, 2), N_Per, 1), 2);
         CPer_target_norm = CPer_target / CPer_target(rn, dm);
 
-        % Step 7: Coherent subtraction from complex periodogram (eq. 3.101)
+        % Step 7-8: Coherent subtraction and real periodogram update (eqs. 3.101-3.102)
         CPer_F = CPer_F - CPer_F(rn, dm) * CPer_target_norm;
-
-        % Step 8: Update real-valued periodogram (eq. 3.102)
-        Per_F = (1 / (N * M)) * abs(CPer_F).^2;
+        Per_F  = (1 / (N * M)) * abs(CPer_F).^2;
 
         if record_history
-            Per_history{end + 1}         = Per_F;
-            iter_is_residual(end + 1, 1) = is_residual;
+            Per_history{end + 1}         = Per_F; %#ok<AGROW>
+            iter_is_residual(end + 1, 1) = is_residual; %#ok<AGROW>
         end
 
-        % Step 9-10: Increment iteration counter and continue at Step 2
+        % Step 9-10: Advance iteration counter
         i = i + 1;
     end
 
@@ -192,6 +161,38 @@ function [targets, CPer_F, Per_F, eta, diag_info] = coherent_successive_target_c
             'M_win', M_win, ...
             'p_FA', p_FA);
     end
+end
+
+function [n_tilde, m_tilde, Per_interp] = quadratic_peak_interp(Per_F, rn, dm, n_hat, m_hat, N_Per, M_Per)
+% QUADRATIC_PEAK_INTERP 2D parabolic peak interpolation (Braun 2014, eqs. 3.84-3.86).
+    rn_m = mod(rn - 2, N_Per) + 1;
+    rn_p = mod(rn,     N_Per) + 1;
+    dm_m = mod(dm - 2, M_Per) + 1;
+    dm_p = mod(dm,     M_Per) + 1;
+
+    p_c  = Per_F(rn, dm);
+    p_rm = Per_F(rn_m, dm);
+    p_rp = Per_F(rn_p, dm);
+    p_dm = Per_F(rn, dm_m);
+    p_dp = Per_F(rn, dm_p);
+
+    denom_n = 2 * (p_rm + p_rp - 2 * p_c);
+    if denom_n < -eps
+        delta_n = max(-0.5, min(0.5, (p_rm - p_rp) / denom_n));
+    else
+        delta_n = 0;
+    end
+
+    denom_m = 2 * (p_dm + p_dp - 2 * p_c);
+    if denom_m < -eps
+        delta_m = max(-0.5, min(0.5, (p_dm - p_dp) / denom_m));
+    else
+        delta_m = 0;
+    end
+
+    n_tilde    = max(0, n_hat + delta_n);
+    m_tilde    = m_hat + delta_m;
+    Per_interp = max(p_c - 0.25 * ((p_rm - p_rp) * delta_n + (p_dm - p_dp) * delta_m), p_c);
 end
 
 function bw_3dB = compute_mainlobe_3dB_width(w, L_fft)

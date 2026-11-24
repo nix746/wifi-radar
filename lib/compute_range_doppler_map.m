@@ -22,53 +22,52 @@ function [CPer_F, W, N_per, M_per, Per_F, N_act] = compute_range_doppler_map(H_s
 %   Per_F       - Real-valued power periodogram (1/(N_act*M)) * |CPer_F|^2
 %   N_act       - Number of active subcarriers (N in Braun's notation)
 
-if nargin < 5 || isempty(pad_factor)
-    pad_factor = 4;
-end
-if nargin < 6 || isempty(use_window)
-    use_window = true;
-end
-
-% 1. Determine active subcarrier span and count N_act
-if nargin < 4 || isempty(active_mask)
-    idx   = find(any(H_shifted, 2));
-    N_act = numel(idx);
-else
-    idx   = find(active_mask);
-    N_act = nnz(active_mask);
-end
-if isempty(idx)
-    idx   = 1:Nfft;
-    N_act = Nfft;
-elseif N_act == 0
-    N_act = numel(idx);
-end
-
-% 2. 2D Window construction (Blackman-Harris or Rectangular)
-% Normalized to unit mean energy per Braun (2014), eq. (3.70) & Fig. 3.11a
-if use_window
-    L_active = idx(end) - idx(1) + 1;
-    w_d_act  = blackmanharris(L_active);
-    if norm(w_d_act) > 0
-        w_d_act = w_d_act * sqrt(L_active) / norm(w_d_act);
+    if nargin < 5 || isempty(pad_factor)
+        pad_factor = 4;
     end
-    win_f = zeros(Nfft, 1);
-    win_f(idx(1):idx(end)) = w_d_act;
-
-    win_t = blackmanharris(n_symbols).';
-    if norm(win_t) > 0
-        win_t = win_t * sqrt(n_symbols) / norm(win_t);
+    if nargin < 6 || isempty(use_window)
+        use_window = true;
     end
-    W = win_f .* win_t;
-else
-    W = ones(Nfft, n_symbols);
-end
 
-% 3. Range-Doppler periodogram per Braun (2014), eq. (3.31) & (3.69)
-% MATLAB's ifft divides by N_per, so multiply by N_per to match the exact DFT/IDFT sum.
-N_per  = pad_factor * 2^nextpow2(Nfft);
-M_per  = pad_factor * 2^nextpow2(n_symbols);
-H_win  = H_shifted .* W;
-CPer_F = fftshift(N_per * ifft(fft(H_win, M_per, 2), N_per, 1), 2);
-Per_F  = (1 / (N_act * n_symbols)) * abs(CPer_F).^2;
+    % Determine active subcarrier span and count N_act
+    if nargin < 4 || isempty(active_mask)
+        idx   = find(any(H_shifted, 2));
+        N_act = numel(idx);
+    else
+        idx   = find(active_mask);
+        N_act = nnz(active_mask);
+    end
+    if isempty(idx)
+        idx   = 1:Nfft;
+        N_act = Nfft;
+    elseif N_act == 0
+        N_act = numel(idx);
+    end
+
+    % 2D window normalized to unit mean energy per Braun (2014), eq. (3.70) & Fig. 3.11a
+    if use_window
+        L_active = idx(end) - idx(1) + 1;
+        w_d_act  = blackmanharris(L_active);
+        if norm(w_d_act) > 0
+            w_d_act = w_d_act * sqrt(L_active) / norm(w_d_act);
+        end
+        win_f = zeros(Nfft, 1);
+        win_f(idx(1):idx(end)) = w_d_act;
+
+        win_t = blackmanharris(n_symbols).';
+        if norm(win_t) > 0
+            win_t = win_t * sqrt(n_symbols) / norm(win_t);
+        end
+        W = win_f .* win_t;
+    else
+        W = ones(Nfft, n_symbols);
+    end
+
+    % Range-Doppler periodogram per Braun (2014), eq. (3.31) & (3.69)
+    % Multiply by N_per to compensate MATLAB ifft's 1/N_per normalization.
+    N_per  = pad_factor * 2^nextpow2(Nfft);
+    M_per  = pad_factor * 2^nextpow2(n_symbols);
+    H_win  = H_shifted .* W;
+    CPer_F = fftshift(N_per * ifft(fft(H_win, M_per, 2), N_per, 1), 2);
+    Per_F  = (1 / (N_act * n_symbols)) * abs(CPer_F).^2;
 end

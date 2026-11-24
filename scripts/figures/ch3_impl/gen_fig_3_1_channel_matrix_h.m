@@ -14,23 +14,20 @@ function fig = gen_fig_3_1_channel_matrix_h(show_figure, save_png)
     fprintf('  Generating Fig. 3.1: Channel matrix H (802.11ax, CBW80)\n');
     fprintf('=================================================================\n');
 
-    % 1. Initialize project paths and random number generator seed
+    % 1. Initialize paths and deterministic seed
     project_root = fullfile(fileparts(mfilename('fullpath')), '..', '..', '..');
     addpath(project_root);
     init_paths();
-    rng(42); % Ensure repeatability of noise and random payload data
+    rng(42);
 
     wifi_standard = '802.11ax';
     cbw           = 'CBW80';
     channel_model = 'Model-C';
+    snr_dB        = 25;
 
-    % Realistic Wi-Fi SNR (25 dB, matching Figs. 3.2 & 3.3)
-    snr_dB = 25;
-
-    % 2. Generate transmitted baseband waveform (IEEE 802.11ax HE-SU, CBW80)
+    % 2. Run transmitter, TGax channel, and receiver pipeline
     [waveform, fs, params, cfg] = step1_transmitter(wifi_standard, cbw, 0);
 
-    % 3. Simulate multipath TGax channel with two moving targets (matching Figs. 3.2 & 3.3)
     rng(23); % Deterministic seed where Model-C LOS locks at intrinsic delay (0 m bias)
     targets = [ ...
         struct('range_m', 22.5, 'velocity_mps', -4.0,  'type', 'human'), ...
@@ -38,14 +35,13 @@ function fig = gen_fig_3_1_channel_matrix_h(show_figure, save_png)
     ];
     [rx_signal, fc] = step2_channel(waveform, fs, channel_model, cfg, targets, snr_dB);
 
-    % 4. Run receiver pipeline (step3_receiver) directly
     radar_data = step3_receiver(rx_signal, waveform, fs, fc, params);
     H_raw     = radar_data.H_raw;
     H_proc    = radar_data.H_shifted;
     n_symbols = radar_data.n_symbols;
     Nfft      = radar_data.Nfft;
 
-    % 5. Numerical validation of direct path (DPI) suppression
+    % 3. Validate DPI suppression
     static_component_raw  = mean(H_raw, 2);
     static_component_proc = mean(H_proc, 2);
     p_static_raw  = mean(abs(static_component_raw(params.active_mask > 0)).^2);
@@ -60,21 +56,15 @@ function fig = gen_fig_3_1_channel_matrix_h(show_figure, save_png)
     fprintf('  Total power after MTI:     %+.2f dB (drop of %.2f dB)\n', total_power_proc_dB, total_drop_dB);
     fprintf('  Static component suppress: > %.1f dB (MTI eliminates DPI)\n', min(suppression_dpi_dB, 120));
 
-    % 6. Full centered subcarrier range (including guard bands and DC nulls: -Nfft/2 .. +Nfft/2-1)
-    k_range = (-Nfft/2) : (Nfft/2 - 1);
-
-    % Convert magnitude to decibel scale [dB]
+    % 4. Centered subcarrier axis and magnitude in dB
+    k_range   = (-Nfft/2) : (Nfft/2 - 1);
     H_raw_dB  = 20 * log10(abs(H_raw) + 1e-9);
     H_proc_dB = 20 * log10(abs(H_proc) + 1e-9);
 
-    fprintf('  H_raw_dB percentiles [1, 5, 50, 95, 99, max]:  [%.1f, %.1f, %.1f, %.1f, %.1f, %.1f] dB\n', ...
-        prctile(H_raw_dB(:), 1), prctile(H_raw_dB(:), 5), median(H_raw_dB(:)), ...
-        prctile(H_raw_dB(:), 95), prctile(H_raw_dB(:), 99), max(H_raw_dB(:)));
-    fprintf('  H_proc_dB percentiles [1, 5, 50, 95, 99, max]: [%.1f, %.1f, %.1f, %.1f, %.1f, %.1f] dB\n', ...
-        prctile(H_proc_dB(:), 1), prctile(H_proc_dB(:), 5), median(H_proc_dB(:)), ...
-        prctile(H_proc_dB(:), 95), prctile(H_proc_dB(:), 99), max(H_proc_dB(:)));
+    fprintf('  H_raw_dB [median, max]:  [%.1f, %.1f] dB\n', median(H_raw_dB(:)), max(H_raw_dB(:)));
+    fprintf('  H_proc_dB [median, max]: [%.1f, %.1f] dB\n', median(H_proc_dB(:)), max(H_proc_dB(:)));
 
-    % 7. Two-panel plot for the thesis
+    % 5. Two-panel plot
     fig = figure('Name', 'Figure 3.1 - Channel Transfer Matrix H(k,l) (CBW80)', ...
         'Color', 'white', 'Position', [100, 100, 1260, 560], 'Visible', 'off');
 

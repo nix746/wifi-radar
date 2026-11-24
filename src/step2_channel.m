@@ -5,9 +5,10 @@ function [signal, fc] = step2_channel(waveform, fs, model, cfg, targets, snr_dB,
 %   waveform - Transmitted baseband waveform
 %   fs       - Sampling frequency [Hz]
 %   model    - TGax delay profile model:
-%                * 'Model-A' (or 'A'): Flat fading (Direct path only, no multipath clutter)
+%                * 'Model-A' (or 'A'): Flat fading (direct path only, no multipath clutter)
 %                * 'Model-B' (or 'B'): Indoor residential clutter
-%                * 'Model-D' (or 'D'): Office environment clutter
+%                * 'Model-C' (or 'C'): Small office clutter (tau_rms = 30 ns)
+%                * 'Model-E' (or 'E'): Large hall/office clutter (tau_rms = 100 ns)
 %   cfg      - WLAN configuration object (from step1_transmitter)
 %   targets  - (Optional) Struct or array of structs defining target properties:
 %                * type: 'human', 'car', 'pet', or 'custom'
@@ -30,7 +31,7 @@ function [signal, fc] = step2_channel(waveform, fs, model, cfg, targets, snr_dB,
         [fc, ~] = get_carrier_frequency(fc_input);
     end
 
-    % Normalize model format (support direct 'Model-A' / 'Model-B' as well as 'A' / 'B')
+    % Normalize model format (support both 'Model-A' and 'A')
     if ischar(model) || isstring(model)
         model = char(model);
         if ~startsWith(upper(model), 'MODEL-')
@@ -38,41 +39,41 @@ function [signal, fc] = step2_channel(waveform, fs, model, cfg, targets, snr_dB,
         end
     end
 
-    fprintf(">> Running Channel Simulation (Model: %s, fc: %.3f GHz, SNR: %.1f dB)...\n", model, fc / 1e9, snr_dB);
+    fprintf('>> Running Channel Simulation (Model: %s, fc: %.3f GHz, SNR: %.1f dB)...\n', model, fc / 1e9, snr_dB);
 
     N = length(waveform);
     t = (0 : N-1).' / fs;
     c = 3e8;
 
-    %% 1. Radar Target Parameters (Moving Objects)
+    % 1. Target parameters
     sample_res = c / (2 * fs);
 
     if nargin < 5 || isempty(targets)
-        % Default targets for backward compatibility
-        target_delays = round([5, 13.5] / sample_res); % Targets at 52.5 m and 105 m
-        taps     = [ 0.02, 0.01 ];
+        % Default targets at 5.0 m and 13.5 m for backward compatibility
+        target_delays = round([5, 13.5] / sample_res);
+        taps     = [0.02, 0.01];
         delays   = target_delays;
-        dopplers = [ -50, 2 ];
+        dopplers = [-50, 2];
         target_info = [];
     else
         [delays, dopplers, taps, target_info] = configure_targets(targets, fs, fc);
     end
 
-    fprintf("  Configured %d radar targets:\n", length(taps));
+    fprintf('  Configured %d radar targets:\n', length(taps));
     for k = 1 : length(taps)
         range_m = delays(k) * sample_res;
         vel_ms = (dopplers(k) * c) / (2 * fc);
         if ~isempty(target_info) && isfield(target_info(k), 'type')
-            fprintf("    Target %d [%s, RCS=%.2f m^2]: Delay=%.1f spl (%.2f m), Doppler=%+.1f Hz (%+.2f m/s), Gain=%.4f\n", ...
+            fprintf('    Target %d [%s, RCS=%.2f m^2]: Delay=%.1f spl (%.2f m), Doppler=%+.1f Hz (%+.2f m/s), Gain=%.4f\n', ...
                 k, upper(target_info(k).type), target_info(k).rcs, delays(k), range_m, dopplers(k), vel_ms, abs(taps(k)));
         else
-            fprintf("    Target %d: Delay=%.1f spl (%.2f m), Doppler=%+.1f Hz (%+.2f m/s), Gain=%.4f\n", ...
+            fprintf('    Target %d: Delay=%.1f spl (%.2f m), Doppler=%+.1f Hz (%+.2f m/s), Gain=%.4f\n', ...
                 k, delays(k), range_m, dopplers(k), vel_ms, abs(taps(k)));
         end
     end
 
-    %% 2. Background Clutter & Direct Path (TGax Channel)
-    fprintf("  Generating TGax channel propagation (%s, %s)...\n", model, cfg.ChannelBandwidth);
+    % 2. Background clutter & direct path (TGax channel)
+    fprintf('  Generating TGax channel propagation (%s, %s)...\n', model, cfg.ChannelBandwidth);
     tgax = wlanTGaxChannel;
     tgax.SampleRate              = fs;
     tgax.ChannelBandwidth        = cfg.ChannelBandwidth;
@@ -84,14 +85,13 @@ function [signal, fc] = step2_channel(waveform, fs, model, cfg, targets, snr_dB,
     clutter_signal = tgax(waveform);
     intrinsic_delay = info(tgax).ChannelFilterDelay;
 
-    % Match length to transmitted waveform
     if length(clutter_signal) > N
         clutter_signal = clutter_signal(1:N);
     elseif length(clutter_signal) < N
         clutter_signal = [clutter_signal; zeros(N - length(clutter_signal), 1)];
     end
 
-    %% 3. Target Reflections
+    % 3. Moving target reflections (integer + fractional delay via FFT phase ramp)
     target_signal = zeros(N, 1);
     for k = 1 : length(taps)
         delay  = delays(k) + intrinsic_delay;
@@ -109,9 +109,8 @@ function [signal, fc] = step2_channel(waveform, fs, model, cfg, targets, snr_dB,
 
     signal = clutter_signal + target_signal;
 
-    %% 4. Additive White Gaussian Noise (AWGN)
-    % Anchor noise power to direct path + clutter so target presence/RCS does not alter noise floor
+    % 4. Anchor AWGN noise power to direct path + clutter so target RCS does not alter noise floor
     ref_power_dBW = 10 * log10(max(mean(abs(clutter_signal).^2), eps));
     signal = awgn(signal, snr_dB, ref_power_dBW);
-    fprintf("  Channel simulation complete (SNR = %.1f dB).\n", snr_dB);
+    fprintf('  Channel simulation complete (SNR = %.1f dB).\n', snr_dB);
 end

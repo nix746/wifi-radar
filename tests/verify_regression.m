@@ -25,7 +25,6 @@ fprintf('--- 1. Verifying against Golden Master ---\n');
 has_error = false;
 tol = 1e-12;
 
-% Check waveform
 gw = load(fullfile(sim_tests_dir, 'golden_waveform.mat'), 'waveform');
 err_wf = max(abs(waveform(:) - gw.waveform(:)));
 fprintf('Waveform max diff: %g\n', err_wf);
@@ -34,7 +33,6 @@ if err_wf > tol
     has_error = true;
 end
 
-% Check signal
 gs = load(fullfile(sim_tests_dir, 'golden_signal.mat'), 'signal');
 err_sig = max(abs(signal(:) - gs.signal(:)));
 fprintf('Signal max diff: %g\n', err_sig);
@@ -43,7 +41,6 @@ if err_sig > tol
     has_error = true;
 end
 
-% Check radar_data
 gr = load(fullfile(sim_tests_dir, 'golden_radar_data.mat'), 'CPer_F', 'Per_F', 'W');
 err_cper = max(abs(radar_data.CPer_F(:) - gr.CPer_F(:)));
 err_per  = max(abs(radar_data.Per_F(:)  - gr.Per_F(:)));

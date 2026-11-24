@@ -19,14 +19,14 @@ function fig = gen_fig_2_1_subcarrier_allocation(show_figure, save_png)
     addpath(project_root);
     init_paths();
 
-    % 1. IEEE 802.11a (Non-HT, 20 MHz): fixed allocation from the standard
+    % IEEE 802.11a (Non-HT, 20 MHz)
     Nfft_a   = 64;
     k_a      = -Nfft_a/2 : Nfft_a/2 - 1;
     pilots_a = [-21, -7, 7, 21];
     active_a = [-26:-1, 1:26];
     [data_a, dc_a, guard_a] = classify(k_a, active_a, pilots_a);
 
-    % 2. IEEE 802.11ax (HE-SU, CBW20): allocation queried from WLAN Toolbox
+    % IEEE 802.11ax (HE-SU, CBW20)
     cfg = wlanHESUConfig('ChannelBandwidth', 'CBW20');
     ofdminfo = wlanHEOFDMInfo('HE-Data', cfg);
     Nfft_ax   = ofdminfo.FFTLength;
@@ -40,7 +40,6 @@ function fig = gen_fig_2_1_subcarrier_allocation(show_figure, save_png)
     fprintf('  802.11ax: %d data, %d pilots, %d DC nulls, %d guard\n', ...
         numel(data_ax), numel(pilots_ax), numel(dc_ax), numel(guard_ax));
 
-    % 3. Three-panel plot
     fig = figure('Name', 'Figure 2.1 - Subcarrier allocation', ...
         'Color', 'white', 'Position', [100, 100, 1200, 900], 'Visible', 'off');
 

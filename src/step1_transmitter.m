@@ -25,7 +25,6 @@ function [waveform, fs, params, cfg] = step1_transmitter(WIFI_STANDARD, cbw, mcs
 
     fprintf('>> Running Transmitter...\n');
 
-    %% 1. Wi-Fi Frame Configuration
     params      = get_wifi_params(WIFI_STANDARD, psdu_length, cbw, mcs);
     psdu_length = params.psdu_length;
     cfg         = params.cfg;
@@ -39,7 +38,6 @@ function [waveform, fs, params, cfg] = step1_transmitter(WIFI_STANDARD, cbw, mcs
     fprintf('  Modulation:       MCS %d\n', cfg.MCS);
     fprintf('  Payload Size:     %d bytes\n', psdu_length);
 
-    %% 2. Baseband Waveform Synthesis
     payload_bits = randi([0, 1], psdu_length * 8, 1);
     waveform     = wlanWaveformGenerator(payload_bits, cfg);
 
