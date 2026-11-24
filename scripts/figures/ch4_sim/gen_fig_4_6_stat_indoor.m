@@ -1,0 +1,63 @@
+function fig = gen_fig_4_6_stat_indoor(show_figure, save_png, force_recompute)
+% GEN_FIG_4_6_STAT_INDOOR
+% Experiment SIM-6a (Monte Carlo, Indoor): detection probability vs. range
+% for Binary STC and Coherent STC in a random indoor scene.
+% Figure 4.6 for Chapter 4 of the thesis:
+%   IEEE 802.11ax CBW80, MCS 4, TGax Model-B (residential), R in [1, 15] m,
+%   3-4 slowly walking people + 1-2 animals (walking or running) per trial,
+%   fresh scene, channel realization and AWGN in every trial.
+%
+% Results are cached in results/exp6_mc_indoor.mat (recomputed when the
+% scenario config changes or force_recompute is true).
+%
+% Output file: thesis/img/ch4_sim/rys_4_6_statystyka_indoor.png
+
+    if nargin < 1 || isempty(show_figure),     show_figure     = true;  end
+    if nargin < 2 || isempty(save_png),        save_png        = true;  end
+    if nargin < 3 || isempty(force_recompute), force_recompute = false; end
+
+    project_root = fullfile(fileparts(mfilename('fullpath')), '..', '..', '..');
+    addpath(project_root);
+    project_root = init_paths();
+
+    fprintf('=================================================================\n');
+    fprintf('  Generating Fig. 4.6: Indoor Monte Carlo P_D(R) (Exp. SIM-6a)\n');
+    fprintf('=================================================================\n');
+
+    cfg = struct( ...
+        'name',          'Indoor', ...
+        'standard',      '802.11ax', ...
+        'cbw',           'CBW80', ...
+        'mcs',           4, ...
+        'channel_model', 'Model-B', ...
+        'snr_dB',        25.0, ...
+        'p_FA',          1e-3, ...
+        'n_trials',      60, ...
+        'seed',          2026, ...
+        'range_lim',     [1, 15], ...
+        'range_edges',   1:2:15, ...
+        'gate_v_factor', 1.25);
+
+    cfg.classes = [ ...
+        struct('key', 'human_walk', 'type', 'human', 'rcs', 1.0, 'count_set', [3, 4], 'vel_abs_lim', [0.8, 2.2]), ...
+        struct('key', 'animal',     'type', 'pet',   'rcs', 0.1, 'count_set', [1, 2], 'vel_abs_lim', [0.8, 6.0]) ...
+        ];
+
+    cache_file = fullfile(project_root, 'results', 'exp6_mc_indoor.mat');
+    mc = run_detection_monte_carlo(cfg, cache_file, force_recompute);
+
+    sig = char(963); sq = char(178);
+    styles = [ ...
+        struct('label', sprintf('Człowiek – chód (%s = 1 m%s)', sig, sq),  'color', [0.00, 0.45, 0.74], 'marker', 'o'), ...
+        struct('label', sprintf('Zwierzę (%s = 0,1 m%s)', sig, sq),        'color', [0.85, 0.33, 0.10], 'marker', 's') ...
+        ];
+
+    fig = plot_detection_vs_range(mc, styles, ...
+        'Skuteczność detekcji w funkcji odległości – scenariusz wewnętrzny (TGax Model-B, 80 MHz)');
+
+    save_thesis_figure(fig, 'ch4_sim', 'rys_4_6_statystyka_indoor.png', show_figure, save_png);
+    if ~show_figure
+        fig = [];
+    end
+    fprintf('=================================================================\n');
+end

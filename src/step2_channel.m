@@ -1,4 +1,4 @@
-function [signal, fc] = step2_channel(waveform, fs, model, cfg, targets, snr_dB, fc_input)
+function [signal, fc, intrinsic_delay] = step2_channel(waveform, fs, model, cfg, targets, snr_dB, fc_input)
 % STEP2_CHANNEL Simulates a multipath radar channel with delay, Doppler shifts, and AWGN noise.
 %
 % Inputs:
@@ -21,6 +21,7 @@ function [signal, fc] = step2_channel(waveform, fs, model, cfg, targets, snr_dB,
 % Output:
 %   signal   - Received baseband signal containing direct path, clutter, and target reflections
 %   fc       - Carrier frequency [Hz]
+%   intrinsic_delay - TGax channel filter delay [samples] (ideal packet sync index)
 
     if nargin < 6 || isempty(snr_dB)
         snr_dB = 25;

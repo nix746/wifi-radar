@@ -87,6 +87,7 @@ function radar_data = step3_receiver(signal, waveform, fs, fc, WIFI_STANDARD, cb
     radar_data.axis_range    = axis_range;
     radar_data.axis_velocity = axis_velocity;
     radar_data.params        = params;
+    radar_data.sync_idx      = sync_idx;
 
     fprintf('  Pipeline complete. Radar map matrix: %d (Range bins) x %d (Doppler bins).\n', N_per, M_per);
 end
