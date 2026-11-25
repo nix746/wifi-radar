@@ -17,7 +17,7 @@ Ten dokument mówi **w jakiej kolejności** robić zadania. *Co* ma powstać, je
 | **Krok 7** | Eksperyment SIM-4 (E4): Wpływ otoczenia wielodrogowego TGax (A, C, E) i filtr MTI (Rys. 4.4) | `[ZROBIONE]` |
 | **Krok 8** | Eksperyment SIM-5 (E5): Granica dynamiki mocy — **Binary STC vs Coherent STC** z progiem CFAR $\eta$ (Rys. 4.5) | `[ZROBIONE]` |
 | **Krok 9** | Eksperymenty SIM-6a/6b (MC): Analiza statystyczna Monte Carlo $P_D(R)$ z 95% przedziałami Wilsona — Indoor Model-B 80 MHz (Rys. 4.6) oraz Outdoor Model-E 40 MHz (Rys. 4.7) | `[ZROBIONE]` |
-| **Krok 10a** | Migracja struktury LaTeX do nowego układu pracy wg [`plan_structure_migration.md`](plan_structure_migration.md) (Wstęp nienumerowany, `1. Sygnał 802.11`, `2. Radar pasywny`, `3. Opis oprogramowania`, `4. Opis eksperymentów`, Wnioski końcowe, Literatura, Dodatki) | `[DO ZROBIENIA]` |
+| **Krok 10a** | Migracja struktury LaTeX do nowego układu pracy wg [`plan_structure_migration.md`](plan_structure_migration.md) (Wstęp nienumerowany, `1. Sygnał 802.11`, `2. Radar pasywny`, `3. Opis oprogramowania`, `4. Opis eksperymentów`, Wnioski końcowe, Literatura — bez Dodatków) | `[ZROBIONE]` |
 | **Krok 10b** | Redakcja Rozdziału 3 (`3. Opis oprogramowania`) w LaTeX (`30_radar_implementation.tex`) wg [`plan_chapter_3.md`](plan_chapter_3.md) | `[DO ZROBIENIA]` |
 | **Krok 11** | Redakcja Rozdziału 4 (`4. Opis eksperymentów`) w LaTeX (`40_simulation_results.tex`) sekcja po sekcji | `[DO ZROBIENIA]` |
 | **Krok 12** | Redakcja Rozdziału 2 (`2. Radar pasywny`, podrozdziały 2.1–2.5) w LaTeX (`20_passive_radar.tex`) wg [`plan_chapter_2.md`](plan_chapter_2.md) | `[DO ZROBIENIA]` |
@@ -250,11 +250,11 @@ flowchart TD
 
 ---
 
-### Krok 10a: Migracja struktury LaTeX (`docs/plan_structure_migration.md`)
-- [ ] 1. Wydzielenie podrozdziałów `1.1–1.2` z `20_passive_radar.tex` do `thesis/tex/10_wifi_signal.tex` (`1. Sygnał 802.11`).
-- [ ] 2. Przekształcenie Wstępu (`05_introduction.tex`) oraz Wniosków końcowych (`50_conclusion.tex`) na sekcje nienumerowane (bez numerowanych `\subsection`).
-- [ ] 3. Zmiana tytułów Rozdziałów 3 (`Opis oprogramowania`) i 4 (`Opis eksperymentów`), utworzenie `60_appendices.tex` (`Dodatki`), dodanie `tikz` i polskich nazw `appendix` w `00_preambule.tex` oraz aktualizacja `thesis/main.tex`.
-- [ ] 4. Próbna kompilacja `pdflatex` + `bibtex` i weryfikacja spisu treści oraz odwołań.
+### Krok 10a: Migracja struktury LaTeX (`docs/plan_structure_migration.md`) `[ZROBIONE]`
+- [x] 1. Wydzielenie podrozdziałów `1.1–1.2` z `20_passive_radar.tex` do `thesis/tex/10_wifi_signal.tex` (`1. Sygnał 802.11`).
+- [x] 2. Przekształcenie Wstępu (`05_introduction.tex`) oraz Wniosków końcowych (`50_conclusion.tex`) na sekcje nienumerowane (bez numerowanych `\subsection`).
+- [x] 3. Zmiana tytułów Rozdziałów 3 (`Opis oprogramowania`) i 4 (`Opis eksperymentów`), dodanie `tikz` w `00_preambule.tex` oraz aktualizacja `thesis/main.tex` (bez Dodatków).
+- [x] 4. Próbna kompilacja `pdflatex` + `bibtex` i weryfikacja spisu treści oraz odwołań.
 
 ---
 
