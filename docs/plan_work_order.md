@@ -16,11 +16,12 @@ Ten dokument mówi **w jakiej kolejności** robić zadania. *Co* ma powstać, je
 | **Krok 6** | Eksperyment SIM-3 (E3): Granica modulacji MCS i wzmocnienie szumu ZF (Rys. 4.3) | `[ZROBIONE]` |
 | **Krok 7** | Eksperyment SIM-4 (E4): Wpływ otoczenia wielodrogowego TGax (A, C, E) i filtr MTI (Rys. 4.4) | `[ZROBIONE]` |
 | **Krok 8** | Eksperyment SIM-5 (E5): Granica dynamiki mocy — **Binary STC vs Coherent STC** z progiem CFAR $\eta$ (Rys. 4.5) | `[ZROBIONE]` |
-| **Krok 9** | Eksperyment SIM-6 (MC): Granica czułości SNR – analiza statystyczna Monte Carlo $P_D(\text{SNR})$ (Rys. 4.6) | `[DO ZROBIENIA]` |
-| **Krok 10** | Redakcja Rozdziału 3 w LaTeX (`30_radar_implementation.tex`) sekcja po sekcji | `[DO ZROBIENIA]` |
-| **Krok 11** | Redakcja Rozdziału 4 w LaTeX (`40_simulation_results.tex`) sekcja po sekcji | `[DO ZROBIENIA]` |
-| **Krok 12** | Redakcja Rozdziału 2 w LaTeX (`20_passive_radar.tex`) sekcja po sekcji | `[DO ZROBIENIA]` |
-| **Krok 13** | Domknięcie: Wstęp (`10_introduction.tex`), Wnioski (`50_conclusion.tex`), program pracy, weryfikacja bibliografii | `[DO ZROBIENIA]` |
+| **Krok 9** | Eksperymenty SIM-6a/6b (MC): Analiza statystyczna Monte Carlo $P_D(R)$ z 95% przedziałami Wilsona — Indoor Model-B 80 MHz (Rys. 4.6) oraz Outdoor Model-E 40 MHz (Rys. 4.7) | `[ZROBIONE]` |
+| **Krok 10a** | Migracja struktury LaTeX do nowego układu pracy wg [`plan_structure_migration.md`](plan_structure_migration.md) (Wstęp nienumerowany, `1. Sygnał 802.11`, `2. Radar pasywny`, `3. Opis oprogramowania`, `4. Opis eksperymentów`, Wnioski końcowe, Literatura, Dodatki) | `[DO ZROBIENIA]` |
+| **Krok 10b** | Redakcja Rozdziału 3 (`3. Opis oprogramowania`) w LaTeX (`30_radar_implementation.tex`) wg [`plan_chapter_3.md`](plan_chapter_3.md) | `[DO ZROBIENIA]` |
+| **Krok 11** | Redakcja Rozdziału 4 (`4. Opis eksperymentów`) w LaTeX (`40_simulation_results.tex`) sekcja po sekcji | `[DO ZROBIENIA]` |
+| **Krok 12** | Redakcja Rozdziału 2 (`2. Radar pasywny`, podrozdziały 2.1–2.5) w LaTeX (`20_passive_radar.tex`) wg [`plan_chapter_2.md`](plan_chapter_2.md) | `[DO ZROBIENIA]` |
+| **Krok 13** | Domknięcie: Wstęp (`05_introduction.tex`), Wnioski końcowe (`50_conclusion.tex`), Dodatki (`60_appendices.tex`), program pracy, weryfikacja bibliografii | `[DO ZROBIENIA]` |
 
 ---
 
@@ -76,22 +77,24 @@ flowchart TD
         K6["Krok 6: E3 (Rys. 4.3 Granica modulacji: wzmocnienie szumu ZF dla MCS)"]
         K7["Krok 7: E4 (Rys. 4.4 Wpływ otoczenia: wielodrogowość TGax i filtr MTI)"]
         K8["Krok 8: E5 (Rys. 4.5 Granica dynamiki: Binary vs Coherent STC i CFAR)"]
-        K9["Krok 9: E6/MC (Rys. 4.6 Granica czułości: Monte Carlo PD vs SNR)"]
+        K9["Krok 9: E6a/E6b MC (Rys. 4.6 Indoor, Rys. 4.7 Outdoor) [ZROBIONE]"]
     end
 
-    subgraph LATEX["Redakcja tekstu pracy w LaTeX (5 rozdziałów)"]
-        K10["Krok 10: Redakcja Rozdziału 3 (Implementacja radaru)"]
-        K11["Krok 11: Redakcja Rozdziału 4 (Badania symulacyjne)"]
-        K12["Krok 12: Redakcja Rozdziału 2 (Radar Pasywny)"]
-        K13["Krok 13: Wstęp (Rozdz. 1), Wnioski (Rozdz. 5), bibliografia i PDF"]
+    subgraph LATEX["Migracja i redakcja tekstu pracy w LaTeX"]
+        K10a["Krok 10a: Migracja struktury LaTeX (plan_structure_migration.md)"]
+        K10b["Krok 10b: Redakcja Rozdziału 3 (Opis oprogramowania — plan_chapter_3.md)"]
+        K11["Krok 11: Redakcja Rozdziału 4 (Opis eksperymentów)"]
+        K12["Krok 12: Redakcja Rozdziału 2 (Radar pasywny — plan_chapter_2.md)"]
+        K13["Krok 13: Wstęp, Wnioski końcowe, Dodatki, bibliografia i PDF"]
     end
 
     D --> K1
     K1 --> K2
     K2 --> K3
     K3 --> K4 --> K5 --> K6 --> K7 --> K8 --> K9
-    K9 --> K10
-    K10 --> K11
+    K9 --> K10a
+    K10a --> K10b
+    K10b --> K11
     K11 --> K12
     K12 --> K13
 ```
@@ -210,9 +213,9 @@ flowchart TD
     - Kolumna prawa: mapy po MTI ukazujące wycięcie składowej stałej (rowek filtracyjny przy $v = 0$) i odsłonięcie celu ($v = +8{,}0\ \text{m/s}$) w oknie $v \in [-20, 20]\ \text{m/s}$, $R \in [0, 25]\ \text{m}$.
 - [x] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_4_usuwanie_echa_stalego.png`.
 - [x] 3. **Weryfikacja poprawności**:
-  - Skuteczne stłumienie składowej stacjonarnej ($v = 0\ \text{m/s}$) w punkcie $R = 10{,}0\ \text{m}$ o $28{,}15\ \text{dB}$ w Modelu-C oraz $35{,}96\ \text{dB}$ w Modelu-E (oraz tłumienie DPI w $R = 0\ \text{m}$ o $> 70\ \text{dB}$),
-  - Odsłonięcie celu zamaskowanego przed MTI pod tłem clutteru ($\text{SCR} = -3{,}83 \to +3{,}32\ \text{dB}$ w Modelu-C oraz $-3{,}82 \to +3{,}00\ \text{dB}$ w Modelu-E),
-  - Obserwacja błędu synchronizacji w silnej wielodrożności Modelu-E: blokada `wlanSymbolTimingEstimate` na opóźnionym odbiciu przesuwa pozorną odległość celu na mapie z $10{,}0\ \text{m}$ do $6{,}09\ \text{m}$ ($-2$ próbki).
+  - Skuteczne stłumienie składowej stacjonarnej ($v = 0\ \text{m/s}$) w punkcie $R = 10{,}0\ \text{m}$ o $28{,}1\ \text{dB}$ w Modelu-C oraz $24{,}2\ \text{dB}$ w Modelu-E (oraz tłumienie DPI w $R = 0\ \text{m}$ o $> 70\ \text{dB}$),
+  - Odsłonięcie celu zamaskowanego przed MTI pod tłem clutteru ($\text{SCR} = -3{,}8 \to +3{,}3\ \text{dB}$ w Modelu-C oraz $-3{,}4 \to +3{,}4\ \text{dB}$ w Modelu-E),
+  - Weryfikacja poprawionej synchronizacji z WLAN Toolbox (*leading-edge* na metryce L-LTF z `wlanSymbolTimingEstimate`, próg $0{,}20 \cdot M_{\max}$): wyeliminowanie blokady na opóźnionym klastrze wielodrogowym w Modelu-E — cel leży dokładnie na nominalnej odległości $R = 10{,}0\ \text{m}$ ($0$ próbek błędu synchronizacji zamiast wcześniejszego przesunięcia do $6{,}09\ \text{m}$).
 - [x] 4. **Weryfikacja czytelności i estetyki**:
   - **Tytuł główny**: `sgtitle('Wpływ wielodrogowości kanału TGax i filtracji MTI na dwuwymiarowe mapy Range–Doppler', 'FontSize', 13.5, 'FontWeight', 'bold', 'Interpreter', 'none')`,
   - **Siatka 3x2**: Wiersz 1: Model-A (a, b), Wiersz 2: Model-C (c, d), Wiersz 3: Model-E (e, f).
@@ -241,52 +244,51 @@ flowchart TD
 
 ---
 
-### Krok 9: Eksperyment SIM-6 (MC) — Granica czułości SNR: analiza Monte Carlo $P_D(\text{SNR})$ (Rys. 4.6)
-- [ ] 1. **Skrypt testowy**: `scripts/figures/ch4_sim/gen_fig_4_6_stat_pd_vs_snr.m`.
-  - Architektura (DRY): Pętla Monte Carlo wywołująca standardowy łańcuch `step1_transmitter` $\to$ `step2_channel` $\to$ `step3_receiver` $\to$ `step4_interpreter` bez powielania kodu detektora.
-  - Scenariusz: Próba statystyczna Monte Carlo ($N_{\text{prób}} = 30$, $\text{SNR} \in [0, 30]\ \text{dB}$ z krokiem 5 dB) w realistycznym kanale Model-C przy dwóch celach (silny $0\ \text{dB}$ i słaby $-30\ \text{dB}$).
-  - Wykres: Krzywe prawdopodobieństwa prawidłowej detekcji $P_D$ w funkcji SNR osobno dla celu silnego i słabego pieszego.
-- [ ] 2. **Plik wynikowy**: `thesis/img/ch4_sim/rys_4_6_statystyka_pd_vs_snr.png`.
-- [ ] 3. **Weryfikacja poprawności**:
-  - Monotoniczny wzrost $P_D \to 1{,}0$ wraz ze wzrostem SNR (przesunięcie progu detekcji pieszego o ok. 10–12 dB względem pojazdu),
-  - Wskazanie minimalnego progu SNR wymaganego do detekcji człowieka w środowisku biurowym.
-- [ ] 4. **Weryfikacja czytelności i estetyki (wzorzec z commita `dd69b70`)**:
-  - **Tytuł główny**: `title('Prawdopodobieństwo prawidłowej detekcji w funkcji SNR (Monte Carlo)', 'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none')`,
-  - **Minimalizm tekstu**: Brak rozwlekłych ramek na wykresie. Zwięzła legenda (Cel silny, Cel słaby - pieszy), oś X: „Stosunek sygnału do szumu (SNR) [dB]”, oś Y: „Prawdopodobieństwo detekcji P_D”, czytelne markery i siatka, 100% język polski, `exportgraphics` 300 DPI.
-- [ ] 5. **Prezentacja i zatwierdzenie przez Użytkownika**.
+### Krok 9: Eksperymenty SIM-6a i SIM-6b (MC) — Analiza Monte Carlo $P_D(R)$ (Rys. 4.6 i 4.7) `[ZROBIONE]`
+- [x] 1. **Skrypty testowe i silnik Monte Carlo**: `lib/run_detection_monte_carlo.m`, `lib/plot_detection_vs_range.m`, `scripts/figures/ch4_sim/gen_fig_4_6_stat_indoor.m`, `scripts/figures/ch4_sim/gen_fig_4_7_stat_outdoor.m`.
+- [x] 2. **Pliki wynikowe**: `thesis/img/ch4_sim/rys_4_6_statystyka_indoor.png` (scenariusz wewnętrzny: 802.11ax `CBW80`, MCS 4, `Model-B`, $R \in [1, 15]\ \text{m}$) oraz `thesis/img/ch4_sim/rys_4_7_statystyka_outdoor.png` (scenariusz otwarty: 802.11ax `CBW40`, MCS 4, `Model-E`, $R \in [5, 105]\ \text{m}$).
 
 ---
 
-### Krok 10: Redakcja Rozdziału 3 w LaTeX (`thesis/tex/30_radar_implementation.tex`)
-- [ ] 1. Podrozdział 3.1: Środowisko symulacyjne MATLAB i toolboxy (WLAN Toolbox, Communications Toolbox, wkład własny).
-- [ ] 2. Podrozdział 3.2: Implementacja kanału (`step2_channel.m`, triada modeli TGax A/C/E, cele ruchome).
-- [ ] 3. Podrozdział 3.3: Implementacja odbiornika (`step3_receiver.m`, demodulacja, ZF, filtr MTI, interpolacja DC — włączenie Rysunku 3.1).
-- [ ] 4. Podrozdział 3.4: Implementacja interpretera (`step4_interpreter.m`, `get_detection_algorithm.m`, okienkowanie 2D, periodogram Range–Doppler — włączenie Rysunku 3.2 i 3.3, implementacja Binary STC i Coherent STC z progiem CFAR $\eta$, osie fizyczne).
+### Krok 10a: Migracja struktury LaTeX (`docs/plan_structure_migration.md`)
+- [ ] 1. Wydzielenie podrozdziałów `1.1–1.2` z `20_passive_radar.tex` do `thesis/tex/10_wifi_signal.tex` (`1. Sygnał 802.11`).
+- [ ] 2. Przekształcenie Wstępu (`05_introduction.tex`) oraz Wniosków końcowych (`50_conclusion.tex`) na sekcje nienumerowane (bez numerowanych `\subsection`).
+- [ ] 3. Zmiana tytułów Rozdziałów 3 (`Opis oprogramowania`) i 4 (`Opis eksperymentów`), utworzenie `60_appendices.tex` (`Dodatki`), dodanie `tikz` i polskich nazw `appendix` w `00_preambule.tex` oraz aktualizacja `thesis/main.tex`.
+- [ ] 4. Próbna kompilacja `pdflatex` + `bibtex` i weryfikacja spisu treści oraz odwołań.
+
+---
+
+### Krok 10b: Redakcja Rozdziału 3 w LaTeX (`thesis/tex/30_radar_implementation.tex`) wg `docs/plan_chapter_3.md`
+- [ ] 1. Podrozdział 3.1: Środowisko symulacyjne MATLAB i wykorzystane pakiety narzędziowe (WLAN Toolbox, Communications Toolbox, Signal Processing Toolbox dla `blackmanharris`, wkład własny bez Radar Toolboxa, `tab:toolboxes_vs_custom`).
+- [ ] 2. Podrozdział 3.2: Ogólna architektura oprogramowania i przepływ danych (schemat blokowy zależności TikZ **Rys. 3.1**, `src/` vs `lib/`, zasada DRY, tabela `tab:software_modules`, układ współlokowany z dwiema odizolowanymi antenami Tx/Rx).
+- [ ] 3. Podrozdział 3.3: Implementacja nadajnika sygnału IEEE 802.11 (`step1_transmitter.m`, `get_wifi_params.m` — zwięźle, akcent na konfigurację i skalowanie czasu ramki).
+- [ ] 4. Podrozdział 3.4: Implementacja modelu kanału propagacyjnego i celów ruchomych (`step2_channel.m`, `configure_targets.m`, `get_carrier_frequency.m`, TGax A/B/C/E, opóźnienia ułamkowe, zakotwiczenie szumu `awgn` do `clutter_signal` oraz **jawne doprecyzowanie braku ray-tracingu 3D i modelu SIC jako świadomego uproszczenia**).
+- [ ] 5. Podrozdział 3.5: Implementacja odbiornika radarowego (podrozdziały `3.5.1` synchronizacja *leading-edge* + `demodulate.m`; `3.5.2` `estimate_channel.m` + `interpolate_dc_nulls.m` z **Rys. 3.2**; `3.5.3` `compute_range_doppler_map.m` + `calculate_physical_axes.m` z **Rys. 3.3–3.4**; `3.5.4` `step4_interpreter.m`, `get_detection_algorithm.m`, Binary/Coherent STC, `compute_pnfr.m`, testy `verify_regression.m` oraz odesłanie do Dodatku A), z odniesieniami do Rozdziałów 1 i 2.
 
 ---
 
 ### Krok 11: Redakcja Rozdziału 4 w LaTeX (`thesis/tex/40_simulation_results.tex`)
-- [ ] 1. Podrozdział 4.1: Scenariusze testowe (parametryzacja, stała moc AP 100 mW EIRP, degradacja szumowa 9 dB dla 160 MHz).
+- [ ] 1. Podrozdział 4.1: Scenariusze testowe (**założenia geometrii monostatycznej z dwiema odizolowanymi antenami Tx/Rx, brak modelu ray-tracingu 3D jako świadome uproszczenie modelu tła, synchronizacja czasowa WLAN Toolbox z detekcją pierwszego czoła**, parametryzacja, stała moc AP 100 mW EIRP, degradacja szumowa 9 dB dla 160 MHz).
 - [ ] 2. Podrozdział 4.2: Eksperyment E1 — Wpływ pasma na rozdzielczość odległościową (Rysunek 4.1).
 - [ ] 3. Podrozdział 4.3: Eksperyment E2 — Porównanie standardów 802.11a i ax, aliasing Dopplera (Rysunek 4.2).
 - [ ] 4. Podrozdział 4.4: Eksperyment E3 — Wpływ rzędu modulacji MCS i wzmocnienie szumu ZF (Rysunek 4.3).
 - [ ] 5. Podrozdział 4.5: Eksperyment E4 — Tłumienie clutteru wielodrogowego TGax i MTI (Rysunek 4.4).
-- [ ] 6. Podrozdział 4.6: Eksperyment E5 — Skuteczność Binary STC i Coherent STC z progiem CFAR $\eta$ (Rysunek 4.5) oraz analiza Monte Carlo (Rysunek 4.6).
+- [ ] 6. Podrozdział 4.6: Eksperyment E5 — Skuteczność Binary STC i Coherent STC z progiem CFAR $\eta$ (Rysunek 4.5) oraz analiza Monte Carlo $P_D(R)$: scenariusz wewnętrzny Model-B 80 MHz (Rysunek 4.6) i zewnętrzny Model-E 40 MHz (Rysunek 4.7).
 
 ---
 
-### Krok 12: Redakcja Rozdziału 2 w LaTeX (`thesis/tex/20_passive_radar.tex`)
-- [ ] 1. Podrozdział 2.1–2.2: Sygnał Wi-Fi 802.11 oraz modulacja OFDM (ortogonalność, prefiks cykliczny, ramki Non-HT i HE-SU).
-- [ ] 2. Podrozdział 2.3: Podstawy radaru pasywnego (geometria bistatyczna, bilans mocy, DPI, clutter).
-- [ ] 3. Podrozdział 2.4: Estymacja kanału (paradygmat CIR vs funkcja wzajemnej niejednoznaczności CAF, estymator Zero-Forcing).
-- [ ] 4. Podrozdział 2.5: Filtracja ech stałych (filtr MTI w czasie wolnym, kompensacja luki nośnych DC).
-- [ ] 5. Podrozdział 2.6: Wyznaczanie mapy Range–Doppler (okno 2D Blackmana–Harrisa, IFFT/FFT).
-- [ ] 6. Podrozdział 2.7: Detekcja i ekstrakcja celów (estymacja szumu ML, próg CFAR $\eta$, algorytmy Binary STC oraz Coherent STC).
+### Krok 12: Redakcja Rozdziału 2 w LaTeX (`thesis/tex/20_passive_radar.tex`) wg `docs/plan_chapter_2.md`
+- [ ] 1. Podrozdział 2.1 (dawny 2.3): Geometria pomiarowa i parametry radaru: konfiguracja współlokowana (geometria monostatyczna z dwiema odizolowanymi antenami Tx/Rx w trybie Full-Duplex, bilans mocy, DPI, clutter).
+- [ ] 2. Podrozdział 2.2 (dawny 2.4): Estymacja częstotliwościowej odpowiedzi kanału (paradygmat CFR vs funkcja CAF, estymatory ZF i MF, zjawisko *noise enhancement*).
+- [ ] 3. Podrozdział 2.3 (dawny 2.5): Tłumienie ech stałych i kompensacja luki DC (filtr MTI w czasie wolnym, interpolacja wielopunktowa nośnych DC).
+- [ ] 4. Podrozdział 2.4 (dawny 2.6): Wyznaczanie mapy odległość–prędkość (okno 2D Blackmana–Harrisa, IFFT/FFT, zero-padding 4x).
+- [ ] 5. Podrozdział 2.5 (dawny 2.7): Detekcja progowa CFAR i iteracyjna ekstrakcja celów (estymacja szumu ML, próg CFAR $\eta$, algorytmy Binary STC oraz Coherent STC, metryka PNFR).
 
 ---
 
 ### Krok 13: Domknięcie i weryfikacja końcowa
-- [ ] 1. Wstęp (Rozdział 1, `10_introduction.tex`) i Wnioski (Rozdział 5, `50_conclusion.tex`).
-- [ ] 2. Program pracy (`03_MasterThesisOutline.tex`).
-- [ ] 3. Synchronizacja bibliografii Zotero -> `thesis/bibliography.bib`.
-- [ ] 4. Pełna kompilacja `pdflatex` + `bibtex` (`thesis/main.pdf`) bez ostrzeżeń.
+- [ ] 1. Wstęp (`05_introduction.tex`, nienumerowany) i Wnioski końcowe (`50_conclusion.tex`, nienumerowane — w tym ograniczenia uproszczenia braku ray-tracingu 3D i fizycznego toru SIC).
+- [ ] 2. Dodatki (`60_appendices.tex` — wybrane listingi kodu MATLAB i instrukcja uruchomienia).
+- [ ] 3. Program pracy (`03_MasterThesisOutline.tex`).
+- [ ] 4. Synchronizacja bibliografii Zotero -> `thesis/bibliography.bib` i usunięcie `\nocite{*}`.
+- [ ] 5. Pełna kompilacja `pdflatex` + `bibtex` (`thesis/main.pdf`) bez ostrzeżeń.

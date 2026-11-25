@@ -39,7 +39,7 @@ Uruchomienie bezpośrednio z katalogu głównego projektu (po `init_paths` lub p
 - **Modele kanału**:
   - **TGax (`wlanTGaxChannel`)**: profile wewnątrzbudynkowe `Model-A` (brak wielodrogi, $\tau_{\text{rms}} = 0\ \text{ns}$), `Model-B` ($\tau_{\text{rms}} = 15\ \text{ns}$), `Model-C` ($\tau_{\text{rms}} = 30\ \text{ns}$), `Model-E` ($\tau_{\text{rms}} = 100\ \text{ns}$) z realistycznym przesłuchem bezpośrednim (DPI), opóźnieniem filtru i szumem AWGN.
 - **Moduły DSP**:
-  - Synchronizacja pakietu (`wlanPacketDetect`, `wlanSymbolTimingEstimate`).
+  - Synchronizacja pakietu z WLAN Toolbox (`wlanPacketDetect` + detekcja pierwszego czoła *leading-edge* na metryce korelacyjnej L-LTF z `wlanSymbolTimingEstimate`).
   - Ręczna demodulacja OFDM i estymacja odpowiedzi częstotliwościowej kanału przez dzielenie element po elemencie podnośnych odebranych przez podnośne wzorcowe ($H = Y / X$).
   - Usuwanie echa stałego w dziedzinie czasu wolnego przez odejmowanie średniej czasowej (eliminacja DPI i obiektów stacjonarnych).
   - Adaptacyjna interpolacja luki podnośnych stałoprądowych (DC).
