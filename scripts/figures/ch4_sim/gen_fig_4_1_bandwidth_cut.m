@@ -59,9 +59,7 @@ for i = 1:numel(cbw_list)
     radar_data = step3_receiver(rx_signal, waveform, fs, fc, params);
     [~, ~, ~, ~, pnfr] = step4_interpreter(radar_data, fs, fc, wifi_standard);
 
-    [~, ~, ~, ~, P_map] = compute_range_doppler_map( ...
-        radar_data.H_shifted, radar_data.Nfft, radar_data.n_symbols, ...
-        radar_data.params.active_mask, [], false);
+    P_map = radar_data.Per_F;
     [~, max_idx] = max(P_map(:));
     [~, dop_col] = ind2sub(size(P_map), max_idx);
 
@@ -119,7 +117,7 @@ hold off;
 xlim([0, 45]);
 ylim([-55, 3]);
 
-title('Wpływ szerokości pasma na rozdzielczość odległościową (okno prostokątne)', ...
+title('Wpływ szerokości pasma na rozdzielczość odległościową', ...
     'FontSize', 12, 'FontWeight', 'bold', 'Interpreter', 'none');
 xlabel('Odległość bistatyczna [m]', 'FontSize', 11, 'Interpreter', 'none');
 ylabel('Moc znormalizowana [dB]', 'FontSize', 11, 'Interpreter', 'none');

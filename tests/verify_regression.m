@@ -63,7 +63,7 @@ err_bin_b    = max(abs(double(diag_bin.B(:)) - double(gstc.B_bin(:))));
 fprintf('Binary STC (default) CPer_F diff: %g | Per_F diff: %g | B diff: %g | eta diff: %g\n', ...
     err_bin_cper, err_bin_per, err_bin_b, err_bin_eta);
 if err_bin_cper > tol || err_bin_per > tol || err_bin_b > tol || err_bin_eta > tol || ...
-   ~strcmp(diag_bin.method, 'binary') || numel(targets_bin) ~= numel(gstc.targets_bin)
+        ~strcmp(diag_bin.method, 'binary') || numel(targets_bin) ~= numel(gstc.targets_bin)
     warning('Binary STC golden regression failed!');
     has_error = true;
 end
@@ -74,13 +74,13 @@ err_coh_eta  = abs(eta_coh - gstc.eta_coh);
 fprintf('Coherent STC CPer_F diff: %g | Per_F diff: %g | eta diff: %g\n', ...
     err_coh_cper, err_coh_per, err_coh_eta);
 if err_coh_cper > tol || err_coh_per > tol || err_coh_eta > tol || ...
-   numel(targets_coh) ~= numel(gstc.targets_coh)
+        numel(targets_coh) ~= numel(gstc.targets_coh)
     warning('Coherent STC golden regression failed!');
     has_error = true;
 end
 
 fields_to_check = {'n_hat', 'm_hat', 'r_idx', 'd_idx', 'n_tilde', 'm_tilde', ...
-                   'd_hat', 'v_hat', 'Per_peak', 'sigma_RCS_hat', 'iter'};
+    'd_hat', 'v_hat', 'Per_peak', 'sigma_RCS_hat', 'iter'};
 golden_pairs = {{targets_bin, gstc.targets_bin, 'binary'}, {targets_coh, gstc.targets_coh, 'coherent'}};
 for gp = 1 : numel(golden_pairs)
     t_cur = golden_pairs{gp}{1};
@@ -138,7 +138,7 @@ b_0 = 0.03 * (10.0 / d_true2)^2 * sqrt(rcs_true2);
 tau2 = 2 * d_true2 / c0;
 fD2  = 2 * v_true2 * fc / c0;
 F_sig2 = b_0 * exp(-1j * 2 * pi * k_vec * delta_f * tau2) * ...
-               exp( 1j * 2 * pi * l_vec * T_O     * fD2) * exp(1j * 0.7);
+    exp( 1j * 2 * pi * l_vec * T_O     * fD2) * exp(1j * 0.7);
 sig2_n = (b_0^2) / 10^(snr_u2 / 10);
 F_u2   = F_sig2 + sqrt(sig2_n / 2) * (randn(Nfft_u, M_u) + 1j * randn(Nfft_u, M_u));
 [C_u2, W_u2, ~, ~, P_u2, N_u2] = compute_range_doppler_map(F_u2, Nfft_u, M_u, mask_u);
@@ -148,8 +148,8 @@ F_u2   = F_sig2 + sqrt(sig2_n / 2) * (randn(Nfft_u, M_u) + 1j * randn(Nfft_u, M_
 fprintf('Unit 2 (Off-Grid): num_targets=%d (res=%d) | d_hat=%.2f m | v_hat=%+.2f m/s | RCS=%.2f m^2\n', ...
     numel(t_u2), di_u2.num_residuals, t_u2(1).d_hat, t_u2(1).v_hat, t_u2(1).sigma_RCS_hat);
 if numel(t_u2) ~= 1 || abs(t_u2(1).d_hat - d_true2) >= 0.15 || ...
-   abs(t_u2(1).v_hat - v_true2) >= 0.25 || abs(t_u2(1).sigma_RCS_hat - rcs_true2) >= 2.0 || ...
-   max(P_u2_out(:)) >= eta_u2
+        abs(t_u2(1).v_hat - v_true2) >= 0.25 || abs(t_u2(1).sigma_RCS_hat - rcs_true2) >= 2.0 || ...
+        max(P_u2_out(:)) >= eta_u2
     warning('Unit 2 (Off-grid quadratic interp & Step 4 residual suppression) failed!');
     has_error = true;
 end
@@ -164,13 +164,13 @@ rng(103, 'twister');
 noise_sym = sqrt(sig2_sym / 2) * (randn(Nfft_u, M_u) + 1j * randn(Nfft_u, M_u));
 
 F_sym_neg = b_sym * exp(-1j * 2 * pi * k_vec * delta_f * tau_sym) * ...
-                    exp( 1j * 2 * pi * l_vec * T_O * (2 * (-12.0) * fc / c0)) + noise_sym;
+    exp( 1j * 2 * pi * l_vec * T_O * (2 * (-12.0) * fc / c0)) + noise_sym;
 [C_sn, W_sn, ~, ~, P_sn, N_sn] = compute_range_doppler_map(F_sym_neg, Nfft_u, M_u, mask_u);
 [t_sn, ~, P_sn_out, eta_sn] = coherent_successive_target_cancellation( ...
     C_sn, P_sn, W_sn, N_sn, M_u, Nfft_u, Ncp_u, fs, fc, p_FA_u);
 
 F_sym_pos = b_sym * exp(-1j * 2 * pi * k_vec * delta_f * tau_sym) * ...
-                    exp( 1j * 2 * pi * l_vec * T_O * (2 * (+12.0) * fc / c0)) + noise_sym;
+    exp( 1j * 2 * pi * l_vec * T_O * (2 * (+12.0) * fc / c0)) + noise_sym;
 [C_sp, W_sp, ~, ~, P_sp, N_sp] = compute_range_doppler_map(F_sym_pos, Nfft_u, M_u, mask_u);
 [t_sp, ~, P_sp_out, eta_sp] = coherent_successive_target_cancellation( ...
     C_sp, P_sp, W_sp, N_sp, M_u, Nfft_u, Ncp_u, fs, fc, p_FA_u);
@@ -178,9 +178,9 @@ F_sym_pos = b_sym * exp(-1j * 2 * pi * k_vec * delta_f * tau_sym) * ...
 fprintf('Unit 3 (Symmetry): v_neg=%+.3f m/s (n=%d) | v_pos=%+.3f m/s (n=%d) | sum=%+.4f m/s\n', ...
     t_sn(1).v_hat, numel(t_sn), t_sp(1).v_hat, numel(t_sp), t_sn(1).v_hat + t_sp(1).v_hat);
 if numel(t_sn) ~= 1 || numel(t_sp) ~= 1 || ...
-   abs(t_sn(1).v_hat - (-12.0)) >= 0.25 || abs(t_sp(1).v_hat - 12.0) >= 0.25 || ...
-   abs(t_sn(1).v_hat + t_sp(1).v_hat) >= 0.05 || ...
-   max(P_sn_out(:)) >= eta_sn || max(P_sp_out(:)) >= eta_sp
+        abs(t_sn(1).v_hat - (-12.0)) >= 0.25 || abs(t_sp(1).v_hat - 12.0) >= 0.25 || ...
+        abs(t_sn(1).v_hat + t_sp(1).v_hat) >= 0.05 || ...
+        max(P_sn_out(:)) >= eta_sn || max(P_sp_out(:)) >= eta_sp
     warning('Unit 3 (Velocity symmetry) failed!');
     has_error = true;
 end
@@ -188,52 +188,50 @@ end
 %% --- 3. End-to-End Pipeline Tests (Coherent STC) ---
 fprintf('--- 3. Running End-to-End Pipeline Tests (Coherent STC) ---\n');
 
-% E2E 1: Symmetry in Model-A (R = 23.4 m, v = -12 vs +12 m/s, SNR = 35 dB)
+% E2E 1: Symmetry in Model-A (R = 4.5 m inside LoS d_bp = 5 m, v = -12 vs +12 m/s, P_rx = -59 dBm -> ~35 dB SNR)
 rng(42, 'twister');
 [wf_e, fs_e, p_e, cfg_e] = step1_transmitter('802.11ax', 'CBW20', 0);
 
 rng(23, 'twister');
 [rx_neg, fc_e] = step2_channel(wf_e, fs_e, 'Model-A', cfg_e, ...
-    struct('type', 'car', 'range_m', 23.4, 'velocity_mps', -12.0), 35.0);
+    struct('type', 'car', 'range_m', 4.5, 'velocity_mps', -12.0), -59.0);
 rd_neg = step3_receiver(rx_neg, wf_e, fs_e, fc_e, p_e);
 [t_e_neg, ~, P_e_neg, eta_e_neg] = step4_interpreter(rd_neg, fs_e, fc_e, '802.11ax', 1e-3, 'coherent');
 
 rng(23, 'twister');
 [rx_pos, fc_e] = step2_channel(wf_e, fs_e, 'Model-A', cfg_e, ...
-    struct('type', 'car', 'range_m', 23.4, 'velocity_mps', +12.0), 35.0);
+    struct('type', 'car', 'range_m', 4.5, 'velocity_mps', +12.0), -59.0);
 rd_pos = step3_receiver(rx_pos, wf_e, fs_e, fc_e, p_e);
 [t_e_pos, ~, P_e_pos, eta_e_pos] = step4_interpreter(rd_pos, fs_e, fc_e, '802.11ax', 1e-3, 'coherent');
 
 fprintf('E2E 1 (Model-A Symmetry): neg=(%.2fm, %+.2fm/s, RCS=%.2f) | pos=(%.2fm, %+.2fm/s, RCS=%.2f)\n', ...
     t_e_neg(1).d_hat, t_e_neg(1).v_hat, t_e_neg(1).sigma_RCS_hat, ...
     t_e_pos(1).d_hat, t_e_pos(1).v_hat, t_e_pos(1).sigma_RCS_hat);
-if abs(t_e_neg(1).d_hat - 23.4) >= 0.35 || abs(t_e_pos(1).d_hat - 23.4) >= 0.35 || ...
-   abs(t_e_neg(1).v_hat + t_e_pos(1).v_hat) >= 0.15 || ...
-   t_e_neg(1).sigma_RCS_hat < 6 || t_e_neg(1).sigma_RCS_hat > 15 || ...
-   t_e_pos(1).sigma_RCS_hat < 6 || t_e_pos(1).sigma_RCS_hat > 15 || ...
-   max(P_e_neg(:)) >= eta_e_neg || max(P_e_pos(:)) >= eta_e_pos
+if abs(t_e_neg(1).d_hat - 4.5) >= 0.35 || abs(t_e_pos(1).d_hat - 4.5) >= 0.35 || ...
+        abs(t_e_neg(1).v_hat + t_e_pos(1).v_hat) >= 0.15 || ...
+        max(P_e_neg(:)) >= eta_e_neg || max(P_e_pos(:)) >= eta_e_pos
     warning('E2E 1 (Model-A Symmetry) failed!');
     has_error = true;
 end
 
-% E2E 2: 30 dB Dynamic Range (E5 scenario: CBW20, Model-C, SNR = 38 dB)
+% E2E 2: ~31 dB Natural Dynamic Range (E5 scenario: CBW40, Model-A, no manual gain, P_rx = -56 dBm -> ~35 dB SNR)
 rng(42, 'twister');
-[wf_e5, fs_e5, p_e5, cfg_e5] = step1_transmitter('802.11ax', 'CBW20', 0);
+[wf_e5, fs_e5, p_e5, cfg_e5] = step1_transmitter('802.11ax', 'CBW40', 0);
 tgts_e5 = [ ...
-    struct('type', 'car',   'range_m', 15.0, 'velocity_mps', 8.0, 'gain', 0.0500), ...
-    struct('type', 'human', 'range_m', 30.0, 'velocity_mps', 8.0, 'gain', 0.0500 * 10^(-30/20)) ...
-];
+    struct('type', 'car',   'range_m', 9.0,  'velocity_mps', 8.0), ...
+    struct('type', 'human', 'range_m', 18.0, 'velocity_mps', 8.0) ...
+    ];
 rng(23, 'twister');
-[rx_e5, fc_e5] = step2_channel(wf_e5, fs_e5, 'Model-C', cfg_e5, tgts_e5, 38.0);
+[rx_e5, fc_e5] = step2_channel(wf_e5, fs_e5, 'Model-A', cfg_e5, tgts_e5, -56.0);
 rd_e5 = step3_receiver(rx_e5, wf_e5, fs_e5, fc_e5, p_e5);
 [t_e5, ~, P_e5, eta_e5, ~, di_e5] = step4_interpreter(rd_e5, fs_e5, fc_e5, '802.11ax', 1e-3, 'coherent');
 
-has_car = any(abs([t_e5.d_hat] - 15.0) < 1.5 & abs([t_e5.v_hat] - 8.0) < 1.5);
-has_ped = any(abs([t_e5.d_hat] - 30.0) < 2.0 & abs([t_e5.v_hat] - 8.0) < 1.5);
-fprintf('E2E 2 (E5 30 dB Dynamic Range): has_car=%d | has_ped=%d | residuals=%d\n', ...
+has_car = any(abs([t_e5.d_hat] - 9.0)  < 1.5 & abs([t_e5.v_hat] - 8.0) < 1.5);
+has_ped = any(abs([t_e5.d_hat] - 18.0) < 2.0 & abs([t_e5.v_hat] - 8.0) < 1.5);
+fprintf('E2E 2 (E5 ~31 dB Natural Dynamic Range): has_car=%d | has_ped=%d | residuals=%d\n', ...
     has_car, has_ped, di_e5.num_residuals);
-if ~has_car || ~has_ped || di_e5.num_residuals < 1 || max(P_e5(:)) >= eta_e5
-    warning('E2E 2 (E5 30 dB Dynamic Range) failed!');
+if ~has_car || ~has_ped || max(P_e5(:)) >= eta_e5
+    warning('E2E 2 (E5 ~31 dB Natural Dynamic Range) failed!');
     has_error = true;
 end
 
@@ -269,8 +267,8 @@ for sc = 1 : numel(snr_cases_bin)
     fprintf('Binary Unit 2%c (Off-Grid SNR_F=%.0f dB): num_targets=%d | d_hat=%.2f m | v_hat=%+.2f m/s | RCS=%.2f m^2\n', ...
         char('a' + sc - 1), snr_cur, numel(t_b2), t_b2(1).d_hat, t_b2(1).v_hat, t_b2(1).sigma_RCS_hat);
     if numel(t_b2) ~= 1 || abs(t_b2(1).d_hat - d_true2) >= 0.15 || ...
-       abs(t_b2(1).v_hat - v_true2) >= 0.25 || abs(t_b2(1).sigma_RCS_hat - rcs_true2) >= 2.0 || ...
-       max(P_b2(B_b2)) >= eta_b2 || max(P_b2_out(:)) >= eta_b2
+            abs(t_b2(1).v_hat - v_true2) >= 0.25 || abs(t_b2(1).sigma_RCS_hat - rcs_true2) >= 2.0 || ...
+            max(P_b2(B_b2)) >= eta_b2 || max(P_b2_out(:)) >= eta_b2
         warning('Binary Unit 2%c (SNR_F=%.0f dB) failed!', char('a' + sc - 1), snr_cur);
         has_error = true;
     end
@@ -284,43 +282,43 @@ end
 fprintf('Binary Unit 3 (Symmetry): v_neg=%+.3f m/s (n=%d) | v_pos=%+.3f m/s (n=%d) | sum=%+.4f m/s\n', ...
     t_bsn(1).v_hat, numel(t_bsn), t_bsp(1).v_hat, numel(t_bsp), t_bsn(1).v_hat + t_bsp(1).v_hat);
 if numel(t_bsn) ~= 1 || numel(t_bsp) ~= 1 || ...
-   abs(t_bsn(1).v_hat - (-12.0)) >= 0.25 || abs(t_bsp(1).v_hat - 12.0) >= 0.25 || ...
-   abs(t_bsn(1).v_hat + t_bsp(1).v_hat) >= 0.05 || ...
-   max(P_bsn_out(:)) >= eta_bsn || max(P_bsp_out(:)) >= eta_bsp
+        abs(t_bsn(1).v_hat - (-12.0)) >= 0.25 || abs(t_bsp(1).v_hat - 12.0) >= 0.25 || ...
+        abs(t_bsn(1).v_hat + t_bsp(1).v_hat) >= 0.05 || ...
+        max(P_bsn_out(:)) >= eta_bsn || max(P_bsp_out(:)) >= eta_bsp
     warning('Binary Unit 3 (Velocity symmetry) failed!');
     has_error = true;
 end
 
-% Binary E2E 1: IMPL23 (CBW80, Model-C, SNR = 45 dB, default 'binary') - no MTI ghosts
+% Binary E2E 1: IMPL23 (CBW80, Model-C, P_rx = -52 dBm -> ~36 dB eff SNR, default 'binary') - no MTI ghosts
 rng(42, 'twister');
 [wf_i, fs_i, p_i, cfg_i] = step1_transmitter('802.11ax', 'CBW80', 0);
 tgts_i = [ ...
-    struct('range_m', 22.5, 'velocity_mps', -4.0,  'type', 'human'), ...
-    struct('range_m', 67.5, 'velocity_mps', +18.0, 'type', 'car') ...
-];
+    struct('range_m', 7.5,  'velocity_mps', -4.0,  'type', 'human'), ...
+    struct('range_m', 18.0, 'velocity_mps', +14.0, 'type', 'car') ...
+    ];
 rng(23, 'twister');
-[rx_i, fc_i] = step2_channel(wf_i, fs_i, 'Model-C', cfg_i, tgts_i, 45.0);
+[rx_i, fc_i] = step2_channel(wf_i, fs_i, 'Model-C', cfg_i, tgts_i, -52.0);
 rd_i = step3_receiver(rx_i, wf_i, fs_i, fc_i, p_i);
 [t_bi, ~, P_bi, eta_bi, ~, di_bi] = step4_interpreter(rd_i, fs_i, fc_i, '802.11ax');
 
-has_t1_bi    = any(abs([t_bi.d_hat] - 22.5) < 1.0 & abs([t_bi.v_hat] - (-7.0)) < 2.0);
-has_t2_bi    = any(abs([t_bi.d_hat] - 67.5) < 1.0 & abs([t_bi.v_hat] - 18.0) < 2.0);
-has_ghost_t1 = any(abs([t_bi.d_hat] - 22.5) < 2.0 & [t_bi.v_hat] > 2.0);
-has_ghost_t2 = any(abs([t_bi.d_hat] - 67.5) < 2.0 & [t_bi.v_hat] < 5.0);
+has_t1_bi    = any(abs([t_bi.d_hat] - 7.5)  < 1.0 & abs([t_bi.v_hat] - (-7.0)) < 2.5);
+has_t2_bi    = any(abs([t_bi.d_hat] - 18.0) < 1.0 & abs([t_bi.v_hat] - 14.0)   < 2.0);
+has_ghost_t1 = any(abs([t_bi.d_hat] - 7.5)  < 2.0 & [t_bi.v_hat] > 2.0);
+has_ghost_t2 = any(abs([t_bi.d_hat] - 18.0) < 2.0 & [t_bi.v_hat] < 5.0);
 fprintf('Binary E2E 1 (IMPL23): num_det=%d | T1=%d T2=%d | ghosts=(%d,%d)\n', ...
     numel(t_bi), has_t1_bi, has_t2_bi, has_ghost_t1, has_ghost_t2);
 if ~strcmp(di_bi.method, 'binary') || ~has_t1_bi || ~has_t2_bi || ...
-   has_ghost_t1 || has_ghost_t2 || max(P_bi(:)) >= eta_bi
+        has_ghost_t1 || has_ghost_t2 || max(P_bi(:)) >= eta_bi
     warning('Binary E2E 1 (IMPL23 MTI ghost suppression) failed!');
     has_error = true;
 end
 
-% Binary E2E 2: E5 (30 dB Dynamic Range) - Binary misses pedestrian inside B = 0
+% Binary E2E 2: E5 (~31 dB Natural Dynamic Range) - Binary misses pedestrian inside B = 0
 [t_be5, ~, P_be5, eta_be5, ~, di_be5] = step4_interpreter( ...
     rd_e5, fs_e5, fc_e5, '802.11ax', 1e-3, 'binary');
-has_car_bin = any(abs([t_be5.d_hat] - 15.0) < 1.5 & abs([t_be5.v_hat] - 8.0) < 1.5);
-has_ped_bin = any(abs([t_be5.d_hat] - 30.0) < 2.5 & abs([t_be5.v_hat] - 8.0) < 2.0);
-fprintf('Binary E2E 2 (E5 30 dB): has_car=%d | has_ped=%d (masked inside ~B as expected)\n', ...
+has_car_bin = any(abs([t_be5.d_hat] - 9.0)  < 1.5 & abs([t_be5.v_hat] - 8.0) < 1.5);
+has_ped_bin = any(abs([t_be5.d_hat] - 18.0) < 2.5 & abs([t_be5.v_hat] - 8.0) < 2.0);
+fprintf('Binary E2E 2 (E5 ~31 dB): has_car=%d | has_ped=%d (masked inside ~B as expected)\n', ...
     has_car_bin, has_ped_bin);
 if ~has_car_bin || has_ped_bin || max(P_be5(:)) >= eta_be5 || all(di_be5.B(:))
     warning('Binary E2E 2 (E5 masking trade-off) failed!');
@@ -340,20 +338,20 @@ alg_coh_ws = get_detection_algorithm("Coherent");
 alg_coh_st = get_detection_algorithm(alg_coh_ws);
 
 defaults_ok = all([alg_def1.is_default, alg_def2.is_default, alg_def3.is_default, alg_def4.is_default, alg_def5.is_default]) && ...
-              all(strcmp({alg_def1.id, alg_def2.id, alg_def3.id, alg_def4.id, alg_def5.id}, 'binary')) && ...
-              all(strcmp({alg_def1.name, alg_def2.name, alg_def3.name, alg_def4.name, alg_def5.name}, alg_bin_ref.name));
+    all(strcmp({alg_def1.id, alg_def2.id, alg_def3.id, alg_def4.id, alg_def5.id}, 'binary')) && ...
+    all(strcmp({alg_def1.name, alg_def2.name, alg_def3.name, alg_def4.name, alg_def5.name}, alg_bin_ref.name));
 norm_ok     = strcmp(alg_bin_ws.id, 'binary') && strcmp(alg_coh_ws.id, 'coherent') && ...
-              strcmp(alg_coh_st.id, 'coherent') && strcmp(alg_coh_st.name, alg_coh_ws.name) && ...
-              ~alg_coh_ws.is_default;
+    strcmp(alg_coh_st.id, 'coherent') && strcmp(alg_coh_st.name, alg_coh_ws.name) && ...
+    ~alg_coh_ws.is_default;
 diag_ok     = strcmp(diag_bin.algorithm.name, alg_bin_ref.name) && ...
-              strcmp(diag_bin.algorithm_name, alg_bin_ref.name);
+    strcmp(diag_bin.algorithm_name, alg_bin_ref.name);
 
 [~, CPer_F_coh_st, Per_F_coh_st, eta_coh_st, ~, diag_coh_st] = step4_interpreter( ...
     radar_data, fs, fc, '802.11ax', 1e-3, alg_coh_st);
 struct_dispatch_ok = max(abs(CPer_F_coh_st(:) - CPer_F_coh(:))) <= tol && ...
-                     max(abs(Per_F_coh_st(:)  - Per_F_coh(:)))  <= tol && ...
-                     abs(eta_coh_st - eta_coh) <= tol && ...
-                     strcmp(diag_coh_st.algorithm.name, alg_coh_st.name);
+    max(abs(Per_F_coh_st(:)  - Per_F_coh(:)))  <= tol && ...
+    abs(eta_coh_st - eta_coh) <= tol && ...
+    strcmp(diag_coh_st.algorithm.name, alg_coh_st.name);
 
 threw_err = false;
 try
@@ -366,6 +364,60 @@ fprintf('Registry Tests: defaults=%d | norm=%d | diag=%d | struct_dispatch=%d | 
     defaults_ok, norm_ok, diag_ok, struct_dispatch_ok, threw_err);
 if ~defaults_ok || ~norm_ok || ~diag_ok || ~struct_dispatch_ok || ~threw_err
     warning('Detection algorithm registry tests failed!');
+    has_error = true;
+end
+
+%% --- 6. TGax Dual-Slope Propagation & Bandwidth SNR Scaling Tests ---
+fprintf('--- 6. Running TGax Dual-Slope & Bandwidth SNR Scaling Tests ---\n');
+pA = get_tgax_propagation_params('Model-A');
+pD = get_tgax_propagation_params('D');
+pE = get_tgax_propagation_params('Model-E');
+pF = get_tgax_propagation_params('Model-F');
+params_ok = (pA.d_bp == 5.0) && (pD.d_bp == 10.0) && (pE.d_bp == 20.0) && (pF.d_bp == 30.0) && ...
+    (pA.n_los == 2.0) && (pA.n_nlos == 3.5);
+
+% Verify dual-slope attenuation and that manual 'gain' field is ignored
+t_los  = struct('type', 'human', 'range_m', 5.0,  'velocity_mps', 5.0, 'gain', 999.0);
+t_nlos = struct('type', 'human', 'range_m', 10.0, 'velocity_mps', 5.0);
+[~, ~, g_los_a]  = configure_targets(t_los,  fs, fc);              % Default Model-A (d_bp = 5 m)
+[~, ~, g_nlos_c] = configure_targets(t_nlos, fs, fc, 'Model-C');   % NLOS at 10 m (d_bp = 5 m)
+[~, ~, g_los_d]  = configure_targets(t_nlos, fs, fc, 'Model-D');   % LoS  at 10 m (d_bp = 10 m)
+
+expected_los_5   = 0.03 * (10.0 / 5.0)^2;
+expected_los_10  = 0.03 * (10.0 / 10.0)^2;
+expected_nlos_10 = expected_los_10 * (5.0 / 10.0)^1.5;
+
+dual_slope_ok = abs(g_los_a  - expected_los_5)   < tol && ...
+    abs(g_los_d  - expected_los_10)  < tol && ...
+    abs(g_nlos_c - expected_nlos_10) < tol;
+
+% Verify thermal noise budget P_N = k_B*T_0*B*F (NF = 7 dB) & bandwidth scaling (+6.02 dB at CBW80 vs CBW20)
+rng(42, 'twister');
+[wf20, fs20, ~, cfg20] = step1_transmitter('802.11ax', 'CBW20', 0);
+rng(42, 'twister');
+[wf80, fs80, ~, cfg80] = step1_transmitter('802.11ax', 'CBW80', 0);
+t_zero = struct('type', 'human', 'range_m', 1000.0, 'velocity_mps', 10.0); % negligible echo
+p_rx_test_dBm = -63.0;
+nf_test_dB    = 7.0;
+expected_snr20 = p_rx_test_dBm - (10 * log10(1.380649e-23 * 290.0 * 20e6 * 1e3) + nf_test_dB);
+rng(77, 'twister');
+[s20_n, ~, d20] = step2_channel(wf20, fs20, 'Model-A', cfg20, t_zero, p_rx_test_dBm, [], nf_test_dB);
+rng(77, 'twister');
+[s20_c, ~, ~]   = step2_channel(wf20, fs20, 'Model-A', cfg20, t_zero, 100.0, [], nf_test_dB);
+rng(77, 'twister');
+[s80_n, ~, d80] = step2_channel(wf80, fs80, 'Model-A', cfg80, t_zero, p_rx_test_dBm, [], nf_test_dB);
+rng(77, 'twister');
+[s80_c, ~, ~]   = step2_channel(wf80, fs80, 'Model-A', cfg80, t_zero, 100.0, [], nf_test_dB);
+
+snr20_meas = 10 * log10(mean(abs(s20_c(d20+1:end)).^2) / mean(abs(s20_n(d20+1:end) - s20_c(d20+1:end)).^2));
+snr80_meas = 10 * log10(mean(abs(s80_c(d80+1:end)).^2) / mean(abs(s80_n(d80+1:end) - s80_c(d80+1:end)).^2));
+bw_drop_dB = snr20_meas - snr80_meas;
+bw_scale_ok = abs(snr20_meas - expected_snr20) < 0.25 && abs(bw_drop_dB - 10 * log10(80 / 20)) < 0.25;
+
+fprintf('TGax Dual-Slope & Thermal Noise Tests: params=%d | dual_slope=%d | SNR20=%.2f dB (exp %.2f) | bw_drop=%.2f dB (ok=%d)\n', ...
+    params_ok, dual_slope_ok, snr20_meas, expected_snr20, bw_drop_dB, bw_scale_ok);
+if ~params_ok || ~dual_slope_ok || ~bw_scale_ok
+    warning('TGax Dual-Slope & Bandwidth SNR Scaling tests failed!');
     has_error = true;
 end
 

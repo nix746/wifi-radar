@@ -1,4 +1,4 @@
-function [signal, fc, intrinsic_delay] = step2_channel(waveform, fs, model, cfg, targets, snr_dB, fc_input)
+function [signal, fc, intrinsic_delay] = step2_channel(waveform, fs, model, cfg, targets, p_rx_dBm, fc_input, nf_dB)
 % STEP2_CHANNEL Simulates a multipath radar channel with delay, Doppler shifts, and AWGN noise.
 %
 % Inputs:
@@ -15,21 +15,25 @@ function [signal, fc, intrinsic_delay] = step2_channel(waveform, fs, model, cfg,
 %                * range_m: Target range in meters
 %                * velocity_mps / doppler_hz: Motion parameter
 %                * rcs: (Optional) RCS in m^2
-%                * gain: (Optional) Manual echo amplitude override
-%   snr_dB   - (Optional) AWGN SNR in dB referenced to direct path & clutter power (default: 25)
+%   p_rx_dBm - (Optional) Received direct-path + clutter power (RSSI) [dBm] (default: -63.0 dBm,
+%              typical indoor Wi-Fi level for 100 mW AP EIRP)
 %   fc_input - (Optional) Carrier frequency in Hz or band string ('2.4GHz', '5GHz', '6GHz', default: 5.5e9)
+%   nf_dB    - (Optional) Receiver noise figure [dB] (default: 7.0 dB)
 % Output:
 %   signal   - Received baseband signal containing direct path, clutter, and target reflections
 %   fc       - Carrier frequency [Hz]
 %   intrinsic_delay - TGax channel filter delay [samples] (ideal packet sync index)
 
-    if nargin < 6 || isempty(snr_dB)
-        snr_dB = 25;
+    if nargin < 6 || isempty(p_rx_dBm)
+        p_rx_dBm = -63.0;
     end
     if nargin < 7 || isempty(fc_input)
         fc = 5.5e9;
     else
         [fc, ~] = get_carrier_frequency(fc_input);
+    end
+    if nargin < 8 || isempty(nf_dB)
+        nf_dB = 7.0;
     end
 
     % Normalize model format (support both 'Model-A' and 'A')
@@ -40,7 +44,15 @@ function [signal, fc, intrinsic_delay] = step2_channel(waveform, fs, model, cfg,
         end
     end
 
-    fprintf('>> Running Channel Simulation (Model: %s, fc: %.3f GHz, SNR: %.1f dB)...\n', model, fc / 1e9, snr_dB);
+    % Thermal noise power P_N = k_B * T_0 * B * F (T_0 = 290 K)
+    k_B              = 1.380649e-23; % Boltzmann constant [J/K]
+    T_0              = 290.0;        % Reference noise temperature [K]
+    bw_hz            = str2double(regexprep(cfg.ChannelBandwidth, '\D', '')) * 1e6;
+    p_n_dBm          = 10 * log10(k_B * T_0 * bw_hz * 1e3) + nf_dB;
+    effective_snr_dB = p_rx_dBm - p_n_dBm;
+
+    fprintf('>> Running Channel Simulation (Model: %s, fc: %.3f GHz, P_rx: %.1f dBm, P_N(%s): %.1f dBm, SNR: %.2f dB)...\n', ...
+        model, fc / 1e9, p_rx_dBm, cfg.ChannelBandwidth, p_n_dBm, effective_snr_dB);
 
     N = length(waveform);
     t = (0 : N-1).' / fs;
@@ -57,7 +69,7 @@ function [signal, fc, intrinsic_delay] = step2_channel(waveform, fs, model, cfg,
         dopplers = [-50, 2];
         target_info = [];
     else
-        [delays, dopplers, taps, target_info] = configure_targets(targets, fs, fc);
+        [delays, dopplers, taps, target_info] = configure_targets(targets, fs, fc, model);
     end
 
     fprintf('  Configured %d radar targets:\n', length(taps));
@@ -110,8 +122,9 @@ function [signal, fc, intrinsic_delay] = step2_channel(waveform, fs, model, cfg,
 
     signal = clutter_signal + target_signal;
 
-    % 4. Anchor AWGN noise power to direct path + clutter so target RCS does not alter noise floor
+    % 4. Anchor AWGN noise power to direct path + clutter using thermal noise budget P_N = k_B*T_0*B*F
     ref_power_dBW = 10 * log10(max(mean(abs(clutter_signal).^2), eps));
-    signal = awgn(signal, snr_dB, ref_power_dBW);
-    fprintf('  Channel simulation complete (SNR = %.1f dB).\n', snr_dB);
+    signal        = awgn(signal, effective_snr_dB, ref_power_dBW);
+    fprintf('  Channel simulation complete (P_rx = %.1f dBm, P_N(%s, NF=%.1f dB) = %.2f dBm, SNR_eff = %.2f dB).\n', ...
+        p_rx_dBm, cfg.ChannelBandwidth, nf_dB, p_n_dBm, effective_snr_dB);
 end
