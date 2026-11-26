@@ -2,52 +2,50 @@
 % Schemat blokowy architektury oprogramowania i przeplywu danych (Rys. 3.1)
 \begin{figure}[H]
 \centering
+\linespread{1.05}\selectfont
 \resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
     font=\sffamily\footnotesize,
     >=Stealth,
-    node distance=5mm and 6mm,
     % Style warstw (ramki zewnetrzne)
     ctrlframe/.style={
         draw=black!55, fill=black!4, rounded corners=3pt,
-        line width=0.8pt, inner sep=6pt
+        line width=0.85pt
     },
     stageframe/.style={
         draw=blue!55!black, fill=blue!3, rounded corners=3pt,
-        line width=0.9pt, inner sep=7pt
+        line width=0.95pt
     },
     % Style blokow wewnetrznych
     ctrlbox/.style={
         draw=black!50, fill=white, rounded corners=2pt,
         line width=0.6pt, align=center, inner sep=4pt,
-        minimum height=10.5mm
+        minimum height=13.5mm
     },
     libbox/.style={
         draw=blue!50!black, fill=white, rounded corners=2pt,
-        line width=0.65pt, align=center, inner sep=4.5pt,
-        minimum height=10mm
+        line width=0.65pt, align=center, inner sep=4.5pt
     },
     tbbox/.style={
         draw=orange!75!black, fill=orange!10, rounded corners=2pt,
-        line width=0.75pt, dashed, align=center, inner sep=4.5pt,
-        minimum height=10mm
+        line width=0.8pt, dashed, align=center, inner sep=4.5pt
     },
     stagehdr/.style={
         font=\sffamily\footnotesize\bfseries, text=blue!55!black,
-        anchor=west, inner sep=1pt
+        anchor=north west, inner sep=0pt
     },
     ctrlhdr/.style={
         font=\sffamily\footnotesize\bfseries, text=black!75,
-        anchor=west, inner sep=1pt
+        anchor=north west, inner sep=0pt
     },
     dataflow/.style={
-        ->, line width=0.95pt, draw=blue!55!black
+        ->, line width=1.0pt, draw=blue!55!black
     },
     internalflow/.style={
-        ->, line width=0.7pt, draw=black!70
+        ->, line width=0.75pt, draw=black!70
     },
     ctrlflow/.style={
-        ->, line width=0.7pt, draw=black!55, densely dashed
+        ->, line width=0.75pt, draw=black!55, densely dashed
     },
     edgelbl/.style={
         font=\sffamily\scriptsize, fill=white, inner sep=1.5pt,
@@ -56,219 +54,199 @@
 ]
 
 % =========================================================================
-% WARSTWA 0: STEROWANIE, EKSPERYMENTY I TESTY (DRY)
+% WARSTWA 0: STEROWANIE, EKSPERYMENTY I TESTY  [x: 0..18.0, y: 0..-2.25]
 % =========================================================================
-\node[ctrlbox, text width=2.45cm] (init) at (0, 0) {%
-    \texttt{init\_paths.m}\\[1pt]
+\draw[ctrlframe] (0, 0) rectangle (18.0, -2.25);
+\node[ctrlhdr] at (0.3, -0.20)
+    {Warstwa inicjalizacji, eksperymentów i~testów};
+
+\node[ctrlbox, text width=2.7cm, anchor=north west] (init) at (0.3, -0.68) {%
+    {\ttfamily\scriptsize init\_paths.m}\\[1pt]
     {\scriptsize konfiguracja ścieżek}
 };
-\node[ctrlbox, text width=4.0cm, right=5mm of init] (scripts) {%
-    \texttt{scripts/run\_random\_demo.m}\\
-    \texttt{scripts/figures/*}\\[1pt]
+\node[ctrlbox, text width=4.4cm, anchor=north west] (scripts) at (3.65, -0.68) {%
+    {\ttfamily\scriptsize scripts/run\_random\_demo.m}\\
+    {\ttfamily\scriptsize scripts/figures/*}\\[1pt]
     {\scriptsize generacja rysunków pracy}
 };
-\node[ctrlbox, text width=4.1cm, right=5mm of scripts] (mc) {%
-    \texttt{scripts/experiments/*}\\
-    {\scriptsize \texttt{run\_detection\_monte\_carlo.m}}\\
-    {\scriptsize \texttt{run\_range\_limit\_sweep.m}}
+\node[ctrlbox, text width=4.5cm, anchor=north west] (mc) at (8.6, -0.68) {%
+    {\ttfamily\scriptsize scripts/experiments/*}\\
+    {\ttfamily\tiny run\_detection\_monte\_carlo.m}\\
+    {\ttfamily\tiny run\_range\_limit\_sweep.m}
 };
-\node[ctrlbox, text width=3.55cm, right=5mm of mc] (tests) {%
-    \texttt{tests/verify\_regression.m}\\[1pt]
+\node[ctrlbox, text width=3.85cm, anchor=north west] (tests) at (13.65, -0.68) {%
+    {\ttfamily\scriptsize tests/verify\_regression.m}\\[1pt]
     {\scriptsize \textit{Golden Master} i~testy E2E}
 };
 
-\draw[ctrlflow] (init) -- (scripts);
-
-\path (init.north) ++(0, 5.2mm) coordinate (ctrl_top_pad);
-\begin{scope}[on background layer]
-    \node[ctrlframe, fit=(init)(scripts)(mc)(tests)(ctrl_top_pad),
-          inner ysep=5pt, inner xsep=7pt] (ctrl_frame) {};
-    \node[ctrlhdr] at ([xshift=5pt, yshift=-3.5mm]ctrl_frame.north west)
-        {Warstwa inicjalizacji, eksperymentów i~testów (DRY -- bez duplikacji logiki DSP)};
-\end{scope}
+\draw[ctrlflow] (init.east) -- (scripts.west);
 
 % =========================================================================
-% ETAP 1: NADAJNIK (LEWA KOLUMNA)
+% ETAP 1: NADAJNIK (LEWA KOLUMNA)  [x: 0..7.0, y: -3.15..-9.55]
 % =========================================================================
-\node[libbox, text width=6.1cm, anchor=north west] (gwp)
-    at ([xshift=7pt, yshift=-14mm]ctrl_frame.south west) {%
-    \texttt{lib/get\_wifi\_params.m}\\[1pt]
-    {\scriptsize parametry PHY 802.11a/ax, auto-skalowanie ramki, maska aktywna, luki DC}
+\draw[stageframe] (0, -3.15) rectangle (7.0, -9.55);
+\node[stagehdr] at (0.3, -3.37)
+    {1. Nadajnik: {\ttfamily\footnotesize src/step1\_transmitter.m}};
+
+\node[libbox, text width=6.1cm, minimum height=16.5mm, anchor=north] (gwp) at (3.50, -3.85) {%
+    {\ttfamily\scriptsize lib/get\_wifi\_params.m}\\[2pt]
+    {\scriptsize parametry PHY 802.11a/ax, auto-skalowanie ramki,}\\
+    {\scriptsize maska aktywnych podnośnych, indeksy luk DC}
 };
-\node[tbbox, text width=6.1cm, below=5.5mm of gwp] (wtx) {%
-    \textbf{[WLAN Toolbox]}\\[1pt]
-    {\scriptsize \texttt{wlanNonHTConfig} / \texttt{wlanHESUConfig}, \texttt{wlanHEOFDMInfo},}\\
-    {\scriptsize \texttt{wlanFieldIndices}, \texttt{wlanSampleRate}, \texttt{transmitTime}, \texttt{wlanWaveformGenerator}}
+\node[tbbox, text width=6.1cm, minimum height=20.5mm, anchor=north] (wtx) at (3.50, -6.50) {%
+    \textbf{[WLAN Toolbox]}\\[2pt]
+    {\ttfamily\scriptsize wlanNonHTConfig} / {\ttfamily\scriptsize wlanHESUConfig}, {\ttfamily\scriptsize wlanHEOFDMInfo},\\
+    {\ttfamily\scriptsize wlanFieldIndices}, {\ttfamily\scriptsize wlanSampleRate}, {\ttfamily\scriptsize transmitTime},\\
+    {\ttfamily\scriptsize wlanWaveformGenerator}
 };
 
-\draw[internalflow] (gwp) -- (wtx);
-
-\path (gwp.north) ++(0, 5.2mm) coordinate (s1_hdr_pad);
-\begin{scope}[on background layer]
-    \node[stageframe, fit=(gwp)(wtx)(s1_hdr_pad), inner xsep=6pt, inner ysep=5pt] (s1_frame) {};
-    \node[stagehdr] at ([xshift=5pt, yshift=-3.6mm]s1_frame.north west)
-        {1. Nadajnik: \texttt{src/step1\_transmitter.m}};
-\end{scope}
+\draw[internalflow] (gwp.south) -- (wtx.north);
 
 % =========================================================================
-% ETAP 2: KANAL PROPAGACYJNY (PRAWA KOLUMNA)
+% ETAP 2: KANAL PROPAGACYJNY (PRAWA KOLUMNA)  [x: 9.45..18.0, y: -3.15..-9.55]
 % =========================================================================
-\node[libbox, text width=3.25cm, anchor=north east] (ct)
-    at ([xshift=-7pt, yshift=-14mm]ctrl_frame.south east) {%
-    \texttt{lib/configure\_targets.m}\\[1pt]
-    {\scriptsize opóźnienia, Doppler, RCS}\\
-    {\scriptsize (\texttt{get\_tgax\_propagation\_params})}
-};
-\node[libbox, text width=2.85cm, left=3.5mm of ct] (gcf) {%
-    \texttt{lib/get\_carrier\_frequency.m}\\[1pt]
+\draw[stageframe] (9.45, -3.15) rectangle (18.0, -9.55);
+\node[stagehdr] at (9.75, -3.37)
+    {2. Kanał: {\ttfamily\footnotesize src/step2\_channel.m}};
+
+\node[libbox, text width=3.85cm, minimum height=14mm, anchor=north west] (gcf) at (9.65, -3.85) {%
+    {\ttfamily\scriptsize lib/get\_carrier\_frequency.m}\\[1pt]
     {\scriptsize mapowanie pasma na $f_c$}
 };
-\node[tbbox, text width=6.75cm, below=5mm of ct.south east, anchor=north east] (wch) {%
-    \textbf{[WLAN Toolbox]} \texttt{wlanTGaxChannel} {\scriptsize (Model-A/B/C/E: DPI + clutter)}\\[1pt]
+\node[libbox, text width=3.45cm, minimum height=14mm, anchor=north east] (ct) at (17.80, -3.85) {%
+    {\ttfamily\scriptsize lib/configure\_targets.m}\\[1pt]
+    {\scriptsize opóźnienia, Doppler, RCS}\\
+    {\tiny ({\ttfamily get\_tgax\_propagation\_params})}
+};
+\node[tbbox, text width=7.85cm, minimum height=13.5mm, anchor=north] (wch) at (13.725, -5.60) {%
+    \textbf{[WLAN Toolbox]} {\ttfamily\scriptsize wlanTGaxChannel} {\scriptsize (Model-A/B/C/E: DPI + clutter)}\\[1pt]
     {\scriptsize + autorska synteza celów ruchomych (opóźnienie ułamkowe FFT + Doppler)}
 };
-\node[tbbox, text width=6.75cm, below=4.5mm of wch] (ctb) {%
-    \textbf{[Communications Toolbox]} \texttt{awgn()}\\[1pt]
+\node[tbbox, text width=7.85cm, minimum height=11mm, anchor=north] (ctb) at (13.725, -7.70) {%
+    \textbf{[Communications Toolbox]} {\ttfamily\scriptsize awgn()}\\[1pt]
     {\scriptsize szum termiczny zakotwiczony względem mocy nominalnej}
 };
 
 \draw[internalflow] (gcf.south) -- (gcf.south |- wch.north);
 \draw[internalflow] (ct.south) -- (ct.south |- wch.north);
-\draw[internalflow] (wch) -- (ctb);
-
-\path (ct.north) ++(0, 5.2mm) coordinate (s2_hdr_pad);
-\begin{scope}[on background layer]
-    \node[stageframe, fit=(gcf)(ct)(wch)(ctb)(s2_hdr_pad), inner xsep=6pt, inner ysep=5pt] (s2_frame) {};
-    \node[stagehdr] at ([xshift=5pt, yshift=-3.6mm]s2_frame.north west)
-        {2. Kanał: \texttt{src/step2\_channel.m}};
-\end{scope}
+\draw[internalflow] (wch.south) -- (ctb.north);
 
 % =========================================================================
-% ETAP 3: ODBIORNIK - PRZETWARZANIE SYGNALU (PELNA SZEROKOSC)
+% ETAP 3: ODBIORNIK - PRZETWARZANIE SYGNALU  [x: 0..18.0, y: -10.55..-15.55]
 % =========================================================================
-\node[tbbox, text width=4.8cm, anchor=north west] (wsync)
-    at ([xshift=7pt, yshift=-14.5mm]s2_frame.south -| ctrl_frame.west) {%
-    \textbf{[WLAN Toolbox]} \texttt{wlanPacketDetect}\\
-    + \texttt{wlanSymbolTimingEstimate}\\[1pt]
-    {\scriptsize + autorski \textit{leading-edge} (L-LTF) / wyzwalacz sprzętowy}
+\draw[stageframe] (0, -10.55) rectangle (18.0, -15.55);
+\node[stagehdr] at (0.3, -10.77)
+    {3. Odbiornik -- przetwarzanie sygnału: {\ttfamily\footnotesize src/step3\_receiver.m}};
+
+\node[tbbox, text width=5.45cm, minimum height=18.5mm, anchor=north west] (wsync) at (0.3, -11.28) {%
+    \textbf{[WLAN Toolbox]} {\ttfamily\scriptsize wlanPacketDetect}\\
+    + {\ttfamily\scriptsize wlanSymbolTimingEstimate}\\[1pt]
+    {\scriptsize + autorski \textit{leading-edge} (L-LTF)}\\
+    {\scriptsize lub wyzwalacz sprzętowy}
 };
-\node[libbox, text width=3.4cm, right=5.5mm of wsync] (demod) {%
-    \texttt{lib/demodulate.m}\\[1pt]
+\node[libbox, text width=3.95cm, minimum height=18.5mm, anchor=north west] (demod) at (6.38, -11.28) {%
+    {\ttfamily\scriptsize lib/demodulate.m}\\[2pt]
     {\scriptsize usunięcie CP + kolumnowe FFT}\\
-    {\scriptsize (tor Rx i~tor odniesienia Tx)}
+    {\scriptsize (tor Rx i~odniesienia Tx)}
 };
-\node[libbox, text width=5.6cm, right=5.5mm of demod] (est) {%
-    \texttt{lib/estimate\_channel.m}\\[1pt]
+\node[libbox, text width=6.4cm, minimum height=18.5mm, anchor=north east] (est) at (17.7, -11.28) {%
+    {\ttfamily\scriptsize lib/estimate\_channel.m}\\[2pt]
     {\scriptsize estymacja ZF, filtr MTI ($-\mathrm{mean}$), $\zeta_{\mathrm{ZF}}$}\\
-    {\scriptsize wywołuje: \texttt{lib/interpolate\_dc\_nulls.m}}
+    {\scriptsize wywołuje: {\ttfamily lib/interpolate\_dc\_nulls.m}}
 };
 
-% Drugi rzad Etapu 3 (przeplyw w lewo: est -> rdm -> ax)
-\node[libbox, text width=7.5cm, below=6mm of est.south east, anchor=north east] (rdm) {%
-    \texttt{lib/compute\_range\_doppler\_map.m}\\[1pt]
-    {\scriptsize \textcolor{orange!75!black}{\textbf{[Signal Processing Toolbox]}} \texttt{blackmanharris} (okno 2D)}\\
+% Drugi rzad Etapu 3 (jednakowa wysokosc -> 100% pozioma strzalka w lewo)
+\node[libbox, text width=7.7cm, minimum height=16.5mm, anchor=north east] (rdm) at (17.7, -13.62) {%
+    {\ttfamily\scriptsize lib/compute\_range\_doppler\_map.m}\\[1pt]
+    {\scriptsize \textcolor{orange!75!black}{\textbf{[Signal Processing Toolbox]}} {\ttfamily blackmanharris} (okno 2D)}\\
     {\scriptsize + 2D IFFT/FFT z~dopełnianiem zerami ($4\times$ ZP)}
 };
-\node[libbox, text width=6.4cm, anchor=west] (ax)
-    at (wsync.west |- rdm.center) {%
-    \texttt{lib/calculate\_physical\_axes.m}\\[1pt]
-    {\scriptsize kalibracja osi fizycznych $(R, v)$ i~złożenie \texttt{radar\_data}}
+\node[libbox, text width=6.6cm, minimum height=16.5mm, anchor=north west] (ax) at (0.3, -13.62) {%
+    {\ttfamily\scriptsize lib/calculate\_physical\_axes.m}\\[2pt]
+    {\scriptsize kalibracja osi fizycznych $(R, v)$}\\
+    {\scriptsize i~złożenie struktury wyjściowej {\ttfamily radar\_data}}
 };
 
-\draw[internalflow] (wsync) -- (demod);
-\draw[internalflow] (demod) -- (est);
+\draw[internalflow] (wsync.east) -- (demod.west);
+\draw[internalflow] (demod.east) -- (est.west);
 \draw[internalflow] (est.south) -- (est.south |- rdm.north);
-\draw[internalflow] (rdm) -- (ax);
-
-\path (wsync.north) ++(0, 5.2mm) coordinate (s3_hdr_pad);
-\begin{scope}[on background layer]
-    \node[stageframe, fit=(wsync)(demod)(est)(rdm)(ax)(s3_hdr_pad), inner xsep=6pt, inner ysep=5pt] (s3_frame) {};
-    \node[stagehdr] at ([xshift=5pt, yshift=-3.6mm]s3_frame.north west)
-        {3. Odbiornik -- przetwarzanie sygnału: \texttt{src/step3\_receiver.m}};
-\end{scope}
+\draw[internalflow] (rdm.west) -- (ax.east);
 
 % =========================================================================
-% ETAP 4: ODBIORNIK - DETEKCJA I EKSTRAKCJA (PELNA SZEROKOSC)
+% ETAP 4: ODBIORNIK - DETEKCJA I EKSTRAKCJA  [x: 0..18.0, y: -16.45..-20.65]
 % =========================================================================
-\node[libbox, text width=3.7cm, anchor=north west] (reg)
-    at ([xshift=7pt, yshift=-17mm]s3_frame.south west) {%
-    \texttt{lib/get\_detection\_algorithm.m}\\[1pt]
+\draw[stageframe] (0, -16.45) rectangle (18.0, -20.65);
+\node[stagehdr] at (0.3, -16.67)
+    {4. Odbiornik -- detekcja i~ekstrakcja celów: {\ttfamily\footnotesize src/step4\_interpreter.m}};
+
+\node[libbox, text width=4.35cm, minimum height=19.5mm, anchor=west] (reg) at (0.3, -18.80) {%
+    {\ttfamily\scriptsize lib/get\_detection\_algorithm.m}\\[2pt]
     {\scriptsize centralny rejestr detektorów}\\
-    {\scriptsize (\texttt{'binary'} / \texttt{'coherent'})}
+    {\scriptsize ({\ttfamily 'binary'} / {\ttfamily 'coherent'})}
 };
-\node[libbox, text width=6.5cm, anchor=north west] (bstc)
-    at ([xshift=10mm, yshift=-11mm]s3_frame.south -| reg.east) {%
-    \texttt{lib/binary\_successive\_target\_cancellation.m}\\[1pt]
+\node[libbox, text width=6.5cm, minimum height=13.2mm, anchor=north west] (bstc) at (6.35, -17.18) {%
+    {\ttfamily\scriptsize lib/binary\_successive\_target\_cancellation.m}\\[1pt]
     {\scriptsize próg CFAR + maskowanie elipsą \textit{null-to-null}}
 };
-\node[libbox, text width=6.5cm, below=4.5mm of bstc] (cstc) {%
-    \texttt{lib/coherent\_successive\_target\_cancellation.m}\\[1pt]
+\node[libbox, text width=6.5cm, minimum height=13.2mm, anchor=south west] (cstc) at (6.35, -20.42) {%
+    {\ttfamily\scriptsize lib/coherent\_successive\_target\_cancellation.m}\\[1pt]
     {\scriptsize próg CFAR + Krok 4 (rezydua) + replika 2D-FFT}
 };
-\node[libbox, text width=3.1cm, anchor=east] (pnfr)
-    at ([xshift=-7pt]s3_frame.east |- reg.center) {%
-    \texttt{lib/compute\_pnfr.m}\\[1pt]
+\node[libbox, text width=3.15cm, minimum height=19.5mm, anchor=east] (pnfr) at (17.7, -18.80) {%
+    {\ttfamily\scriptsize lib/compute\_pnfr.m}\\[2pt]
     {\scriptsize wyznaczenie kontrastu}\\
     {\scriptsize PNFR wykrytych celów}
 };
 
-\draw[internalflow] (reg.east) -- ++(2.5mm, 0) |- (bstc.west)
-    node[edgelbl, pos=0.72, above=1pt] {\texttt{'binary'}};
-\draw[internalflow] (reg.east) -- ++(2.5mm, 0) |- (cstc.west)
-    node[edgelbl, pos=0.72, below=1pt] {\texttt{'coherent'}};
-\draw[internalflow] (bstc.east) -- ++(2.5mm, 0) |- (pnfr.west);
-\draw[internalflow] (cstc.east) -- ++(2.5mm, 0) |- (pnfr.west);
-
-\path (bstc.north) ++(0, 5.2mm) coordinate (s4_hdr_pad);
-\begin{scope}[on background layer]
-    \node[stageframe, fit=(reg)(bstc)(cstc)(pnfr)(s4_hdr_pad), inner xsep=6pt, inner ysep=5pt] (s4_frame) {};
-    \node[stagehdr] at ([xshift=5pt, yshift=-3.6mm]s4_frame.north west)
-        {4. Odbiornik -- detekcja i~ekstrakcja celów: \texttt{src/step4\_interpreter.m}};
-\end{scope}
+\draw[internalflow] (reg.east) -- ++(0.32, 0) |- (bstc.west)
+    node[edgelbl, pos=0.73, above=2.5pt, fill=blue!3] {{\ttfamily\scriptsize 'binary'}};
+\draw[internalflow] (reg.east) -- ++(0.32, 0) |- (cstc.west)
+    node[edgelbl, pos=0.73, below=2.5pt, fill=blue!3] {{\ttfamily\scriptsize 'coherent'}};
+\draw[internalflow] (bstc.east) -- ++(0.45, 0) |- ([yshift=2.2mm]pnfr.west);
+\draw[internalflow] (cstc.east) -- ++(0.45, 0) |- ([yshift=-2.2mm]pnfr.west);
 
 % =========================================================================
 % POLACZENIA MIEDZYETAPOWE (PRZEPLYW DANYCH)
 % =========================================================================
 % Warstwa sterujaca -> Etap 1
-\draw[dataflow] ([xshift=1.8cm]ctrl_frame.south west) -- ([xshift=1.8cm]s1_frame.north west)
-    node[edgelbl, midway, right=2pt] {parametry scenariusza (\texttt{standard}, \texttt{cbw}, \texttt{mcs}, \texttt{targets})};
+\draw[dataflow] (3.50, -2.25) -- (3.50, -3.15)
+    node[edgelbl, midway, right=3pt] {parametry scenariusza ({\ttfamily standard}, {\ttfamily cbw}, {\ttfamily mcs}, {\ttfamily targets})};
 
 % Etap 1 -> Etap 2
-\draw[dataflow] (s1_frame.east |- gwp.south) -- (s2_frame.west |- gwp.south)
-    node[edgelbl, midway, above=2pt] {\texttt{waveform}, \texttt{fs},\\ \texttt{params}, \texttt{cfg}};
+\draw[dataflow] (7.0, -6.30) -- (9.45, -6.30)
+    node[edgelbl, midway, above=2.5pt] {{\ttfamily waveform}, {\ttfamily fs},\\ {\ttfamily params}, {\ttfamily cfg}};
 
 % Etap 1 -> Etap 3 (tor odniesienia Tx w ukladzie wspollokowanym)
-\draw[dataflow] (s1_frame.south) -- (s1_frame.south |- s3_frame.north)
-    node[edgelbl, midway] {\texttt{waveform}, \texttt{fs}, \texttt{params} (sygnał odniesienia Tx)};
+\draw[dataflow] (3.50, -9.55) -- (3.50, -10.55)
+    node[edgelbl, midway, right=3pt] {{\ttfamily waveform}, {\ttfamily fs}, {\ttfamily params} (sygnał odniesienia Tx)};
 
 % Etap 2 -> Etap 3 (tor odbiorczy Rx)
-\draw[dataflow] (s2_frame.south) -- (s2_frame.south |- s3_frame.north)
-    node[edgelbl, midway] {\texttt{signal}, \texttt{fc}, (\texttt{intrinsic\_delay})};
+\draw[dataflow] (13.725, -9.55) -- (13.725, -10.55)
+    node[edgelbl, midway, right=3pt] {{\ttfamily signal}, {\ttfamily fc}, ({\ttfamily intrinsic\_delay})};
 
 % Etap 3 -> Etap 4
-\draw[dataflow] (s3_frame.south) -- (s4_frame.north)
-    node[edgelbl, midway] {\texttt{radar\_data} (\texttt{CPer\_F}, \texttt{Per\_F}, \texttt{W}, \texttt{H\_*}, osie $R, v$)};
+\draw[dataflow] (9.0, -15.55) -- (9.0, -16.45)
+    node[edgelbl, midway, right=3pt] {{\ttfamily radar\_data} ({\ttfamily CPer\_F}, {\ttfamily Per\_F}, {\ttfamily W}, {\ttfamily H\_*}, osie $R, v$)};
 
-% Etap 4 -> Warstwa sterujaca / wizualizacyjna (petla powrotna po prawej krawedzi)
-\draw[dataflow] (s4_frame.east) -- ++(5.5mm, 0) |- (ctrl_frame.east)
-    node[edgelbl, pos=0.26, rotate=90, anchor=south]
-        {\texttt{targets}, \texttt{CPer\_F}, \texttt{Per\_F}, \texttt{eta}, \texttt{pnfr}, \texttt{diag\_info}};
+% Etap 4 -> Warstwa sterujaca (petla powrotna po prawej krawedzi)
+\draw[dataflow] (18.0, -18.80) -- (18.65, -18.80) -- (18.65, -1.125) -- (18.0, -1.125);
+\node[edgelbl, rotate=90, anchor=south] at (18.65, -9.96)
+    {{\ttfamily targets}, {\ttfamily CPer\_F}, {\ttfamily Per\_F}, {\ttfamily eta}, {\ttfamily pnfr}, {\ttfamily diag\_info}};
 
 % =========================================================================
 % LEGENDA
 % =========================================================================
-\node[anchor=north, yshift=-4.5mm] (legend) at (s4_frame.south) {%
-    \begin{tikzpicture}[baseline=-0.5ex, font=\sffamily\scriptsize]
-        \node[ctrlframe, minimum width=6.5mm, minimum height=3.5mm, inner sep=0pt] (l1) at (0,0) {};
-        \node[right=1.5mm of l1] (t1) {Warstwa sterująca i~testowa (DRY)};
-        \node[stageframe, minimum width=6.5mm, minimum height=3.5mm, inner sep=0pt, right=5mm of t1] (l2) {};
-        \node[right=1.5mm of l2] (t2) {Fasada potoku (\texttt{src/})};
-        \node[libbox, minimum width=6.5mm, minimum height=3.5mm, inner sep=0pt, right=5mm of t2] (l3) {};
-        \node[right=1.5mm of l3] (t3) {Kod autorski DSP (\texttt{lib/})};
-        \node[tbbox, minimum width=6.5mm, minimum height=3.5mm, inner sep=0pt, right=5mm of t3] (l4) {};
-        \node[right=1.5mm of l4] (t4) {Pakiet narzędziowy MATLAB (Toolbox)};
-    \end{tikzpicture}
-};
+\draw[ctrlframe]  (0.35, -21.35) rectangle (0.95, -21.00);
+\node[anchor=west, font=\sffamily\scriptsize] at (1.08, -21.175) {Warstwa sterująca i~testowa};
+
+\draw[stageframe] (6.10, -21.35) rectangle (6.70, -21.00);
+\node[anchor=west, font=\sffamily\scriptsize] at (6.83, -21.175) {Fasada potoku ({\ttfamily src/})};
+
+\draw[libbox, minimum height=0pt, inner sep=0pt] (10.25, -21.35) rectangle (10.85, -21.00);
+\node[anchor=west, font=\sffamily\scriptsize] at (10.98, -21.175) {Kod autorski DSP ({\ttfamily lib/})};
+
+\draw[tbbox, minimum height=0pt, inner sep=0pt] (14.80, -21.35) rectangle (15.40, -21.00);
+\node[anchor=west, font=\sffamily\scriptsize] at (15.53, -21.175) {Pakiet MATLAB (Toolbox)};
 
 \end{tikzpicture}%
 }

@@ -303,3 +303,11 @@ Aby Rozdział 3 pozostał czytelny i wolny od wielostronicowych bloków kodu, w 
 - [ ] **Uproszczenie kanału:** Brak *ray-tracingu* 3D i modelu SIC wyraźnie opisany i uzasadniony w podrozdziale 3.4.
 - [ ] **Rysunki i tabele:** Schemat blokowy (Rys. 3.1) + 3 wykresy z `thesis/img/ch3_impl/` (Rys. 3.2–3.4) oraz tabele przywołane i zinterpretowane w tekście.
 - [ ] **Kompilacja PDF:** `pdflatex` + `bibtex` przechodzą bez błędów i niezdefiniowanych odwołań `??`.
+
+### 6.3. Zasady kompilacji PDF i ochrony spisu treści
+> [!CAUTION]
+> **Zapobieganie znikaniu spisu treści (`.toc` / `.lof` / `.lot`):**
+> - W konfiguracji VS Code ([`thesis/master_thesis_vscode_workspace.code-workspace`](../thesis/master_thesis_vscode_workspace.code-workspace)) ustawiono `"latex-workshop.latex.autoClean.run": "onFailed"`. Każde niepowodzenie kompilacji (np. błąd `bibtex` w `latexmk` z `-outdir=build`, który nie znajduje `bibliography.bib` w katalogu nadrzędnym) powoduje automatyczne usunięcie plików pomocniczych `.aux`, `.toc`, `.lof`, `.lot` z `thesis/build/`.
+> - **Wymagany sposób kompilacji:** zawsze stosować przepis **`pdflatex ➞ bibtex ➞ pdflatex × 2`** (domyślny w workspace) zamiast `latexmk`, lub z terminala w katalogu `thesis/` uruchamiać pełną sekwencję:
+>   `pdflatex -shell-escape -synctex=1 -interaction=nonstopmode -output-directory=build main.tex` → `bibtex build/main` → dwa kolejne przebiegi `pdflatex`.
+> - Pojedynczy przebieg `pdflatex` po czyszczeniu katalogu `thesis/build/` wygeneruje PDF **bez spisu treści** — drugi przebieg jest obowiązkowy.
