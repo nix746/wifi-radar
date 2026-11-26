@@ -12,7 +12,7 @@ Dokument stanowi kompletny, śledzony plan pisania **Rozdziału 3** pracy dyplom
 | Podrozdział | Tytuł docelowy | Limit stron | Rysunki / Tabele | Status redakcji | Status weryfikacji |
 | :---: | :--- | :---: | :---: | :---: | :---: |
 | **3.1** | Środowisko symulacyjne MATLAB i wykorzystane pakiety narzędziowe | 1,2–1,5 str. | 1 tab. (`tab:toolboxes_vs_custom`) | [x] Napisano | [ ] Do weryfikacji |
-| **3.2** | Ogólna architektura oprogramowania i przepływ danych | 1,5 str. | 1 rys. (nowy **Rys. 3.1**: schemat blokowy zależności), 1 tab. (`tab:software_modules`) | [ ] Do napisania | [ ] Do weryfikacji |
+| **3.2** | Ogólna architektura oprogramowania i przepływ danych | 1,5 str. | 1 rys. (nowy **Rys. 3.1**: schemat blokowy zależności), 1 tab. (`tab:software_modules`) | [x] Napisano | [ ] Do weryfikacji |
 | **3.3** | Implementacja nadajnika sygnału IEEE 802.11 | 0,8–1,0 str. | 0 rys. | [ ] Do napisania | [ ] Do weryfikacji |
 | **3.4** | Implementacja modelu kanału propagacyjnego i celów ruchomych | 2,0 str. | 0 rys. | [ ] Do napisania | [ ] Do weryfikacji |
 | **3.5** | Implementacja odbiornika radarowego *(wprowadzenie + 3.5.1–3.5.4)* | **5,0–6,0 str.** | **3 rys.** (istniejące PNG) | [ ] Do napisania | [ ] Do weryfikacji |

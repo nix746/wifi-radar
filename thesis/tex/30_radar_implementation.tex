@@ -57,7 +57,74 @@ W~projekcie świadomie zrezygnowano z~wyspecjalizowanych pakietów radiolokacyjn
 \subsection{Ogólna architektura oprogramowania i~przepływ danych}
 \label{subsec:software_architecture}
 
+Oprogramowanie symulatora zorganizowano w~architekturze dwupoziomowej. Poziom nadrzędny stanowią cztery funkcje orkiestrujące z~katalogu \texttt{src/}, odwzorowujące fizyczny podział systemu radarowego na nadajnik (\texttt{step1\_\allowbreak transmitter}), kanał propagacyjny (\texttt{step2\_\allowbreak channel}) oraz odbiornik, przy czym odbiornik rozdzielono na część przetwarzania sygnału (\texttt{step3\_\allowbreak receiver}) i~część detekcji celów (\texttt{step4\_\allowbreak interpreter}). Funkcje te pełnią rolę fasad (ang.~\textit{facade}): odpowiadają za rozwiązanie argumentów opcjonalnych i~wartości domyślnych, kolejność wywołań oraz złożenie struktur wyjściowych, nie zawierając jednak samych obliczeń numerycznych. Poziom podrzędny tworzy biblioteka \texttt{lib/}, w~której każdą elementarną operację -- parametryzację ramki, demodulację OFDM, estymację transmitancji kanału, interpolację luki DC, wyznaczenie periodogramu, kalibrację osi czy detekcję celów -- wydzielono do osobnej funkcji o~jawnie zdefiniowanych wejściach i~wyjściach, bez zmiennych globalnych i~bez efektów ubocznych poza komunikatami diagnostycznymi. Taki podział umożliwił niezależne testowanie poszczególnych bloków oraz ich wielokrotne wykorzystanie w~różnych konfiguracjach eksperymentów.
+
+Nad potokiem głównym znajduje się warstwa sterująca, obejmująca skrypt konfiguracji ścieżek \texttt{init\_paths.m}, skrypt demonstracyjny \texttt{scripts/\allowbreak run\_random\_demo.m}, generatory rysunków pracy (\texttt{scripts/\allowbreak figures/}), skrypty badań statystycznych (\texttt{scripts/\allowbreak experiments/\allowbreak run\_\allowbreak detection\_\allowbreak monte\_\allowbreak carlo.m} oraz \texttt{run\_\allowbreak range\_\allowbreak limit\_\allowbreak sweep.m}) i~zestaw testów regresyjnych \texttt{tests/\allowbreak verify\_\allowbreak regression.m}. Przy jej projektowaniu konsekwentnie stosowano zasadę DRY (ang.~\textit{Don't Repeat Yourself}): wszystkie wymienione skrypty wywołują bezpośrednio produkcyjne funkcje z~\texttt{src/} i~\texttt{lib/}, a~żaden z~nich nie zawiera własnej kopii kodu przetwarzania sygnałów. Gwarantuje to, że wykresy diagnostyczne z~niniejszego rozdziału, wyniki badań z~rozdziału~\ref{sec:simulation_results} oraz testy regresyjne powstają przy użyciu dokładnie tego samego kodu. Aby było to możliwe również dla wizualizacji etapów pośrednich, struktura \texttt{radar\_data} zwracana przez \texttt{step3\_receiver} udostępnia, oprócz periodogramów wynikowych, macierze pośrednie: surową transmitancję \texttt{H\_raw}, transmitancję po usunięciu ech stałych \texttt{H\_no\_static}, transmitancję po interpolacji luki DC \texttt{H\_shifted}, dwuwymiarowe okno wagowe \texttt{W} oraz współczynnik wzmocnienia szumu \texttt{zeta\_dB}.
+
+Zależności pomiędzy modułami oraz przepływ danych w~potoku przedstawiono na rysunku~\ref{fig:software_architecture}. Na schemacie wyróżniono trzy rodzaje bloków: fasady potoku z~katalogu \texttt{src/} (ramki niebieskie), autorskie funkcje biblioteczne z~katalogu \texttt{lib/} (bloki z~ciągłym obrysem) oraz funkcje pochodzące z~pakietów narzędziowych MATLAB-a (bloki pomarańczowe z~obrysem przerywanym), co pozwala jednoznacznie oddzielić gotowe komponenty środowiska od kodu własnego zestawionego w~tabeli~\ref{tab:toolboxes_vs_custom}.
+
 \input{tex/fig_software_architecture}
+
+Przetwarzanie przebiega sekwencyjnie w~czterech etapach. Nadajnik na podstawie parametrów scenariusza (standard, szerokość kanału, indeks MCS) generuje zespolony przebieg pasma podstawowego \texttt{waveform} wraz z~częstotliwością próbkowania \texttt{fs}, strukturą parametrów warstwy fizycznej \texttt{params} i~obiektem konfiguracyjnym WLAN Toolbox \texttt{cfg}. Moduł kanału przyjmuje przebieg, profil kanału TGax oraz opis celów, a~zwraca sygnał odebrany \texttt{signal}, częstotliwość nośną \texttt{fc} oraz opóźnienie własne filtru kanału \texttt{intrinsic\_delay}. Część przetwarzająca odbiornika przekształca sygnał odebrany w~strukturę \texttt{radar\_data}, zawierającą zespolony periodogram \texttt{CPer\_F}, periodogram mocy \texttt{Per\_F}, okno \texttt{W}, macierze pośrednie oraz skalibrowane osie odległości i~prędkości. Ostatni etap zwraca do warstwy sterującej listę wykrytych celów \texttt{targets} wraz z~estymatami odległości, prędkości i~skutecznej powierzchni odbicia, periodogramy rezydualne po ekstrakcji celów, próg detekcji \texttt{eta}, metryki kontrastu \texttt{pnfr} oraz strukturę diagnostyczną \texttt{diag\_info}. Struktura \texttt{params} jest przekazywana z~nadajnika bezpośrednio do odbiornika, dzięki czemu odbiornik korzysta z~identycznej maski aktywnych podnośnych, indeksów luk DC i~położenia pola danych, jakie wyznaczono przy generacji ramki. Dla zachowania możliwości samodzielnego użycia funkcja \texttt{step3\_receiver} akceptuje alternatywnie samą nazwę standardu i~odtwarza wówczas parametry za pomocą \texttt{get\_wifi\_params}.
+
+Układ połączeń na rysunku~\ref{fig:software_architecture} wynika bezpośrednio z~geometrii systemu opisanej w~podrozdziale~\ref{subsec:pbr_fundamentals}. W~rozważanym układzie współlokowanym, z~dwiema odizolowanymi antenami nadawczą i~odbiorczą, odbiornik znajduje się przy nadajniku i~ma dostęp do transmitowanego przebiegu. Z~tego względu \texttt{step3\_receiver} otrzymuje dwa niezależne wejścia: bezszumowy sygnał odniesienia \texttt{waveform} bezpośrednio z~\texttt{step1\_transmitter} oraz sygnał odebrany \texttt{signal} z~\texttt{step2\_channel}. Oba tory są demodulowane tą samą funkcją \texttt{demodulate}, a~ich ilorazem jest estymowana transmitancja kanału. Wspólne źródło zegara nadajnika i~odbiornika pozwala ponadto wyznaczyć początek ramki w~sygnale odebranym na podstawie znanego przesunięcia toru (argument \texttt{sync\_idx}, w~symulacji równy \texttt{intrinsic\_delay}), co odpowiada wyzwalaczowi sprzętowemu w~rzeczywistym urządzeniu współlokowanym.
+
+Nawigacyjne zestawienie wszystkich plików potoku wraz z~ich odpowiedzialnością, głównymi argumentami oraz odniesieniami do teorii przedstawiono w~tabeli~\ref{tab:software_modules}. Szczegółowy opis implementacji poszczególnych bloków zawierają podrozdziały~\ref{subsec:transmitter_implementation}--\ref{subsec:receiver_implementation}.
+
+\begin{table}[H]
+    \centering
+    \linespread{1.05}\selectfont
+    \caption{Moduły programowe symulatora wraz z~ich odpowiedzialnością, interfejsem i~odniesieniem do teorii}
+    \label{tab:software_modules}
+    \scriptsize
+    \begin{tabular}{|p{3.3cm}|p{4.5cm}|p{4.3cm}|p{2.2cm}|}
+        \hline
+        \textbf{Plik} & \textbf{Główna odpowiedzialność} & \textbf{Kluczowe wejścia $\rightarrow$ wyjścia} & \textbf{Teoria} \\
+        \hline
+        \multicolumn{4}{|l|}{\textit{Fasady potoku (\texttt{src/})}} \\
+        \hline
+        \texttt{step1\_\allowbreak transmitter.m} & Synteza ramki PPDU IEEE~802.11a/ax z~losowym polem danych & \texttt{WIFI\_STANDARD}, \texttt{cbw}, \texttt{mcs}, \texttt{psdu\_length} $\rightarrow$ \texttt{waveform}, \texttt{fs}, \texttt{params}, \texttt{cfg} & \ref{subsec:wifi_signal}, tab.~\ref{tab:wifi_params} \\
+        \hline
+        \texttt{step2\_\allowbreak channel.m} & Kanał TGax (DPI i~echa stałe), synteza ech celów ruchomych, szum termiczny wg budżetu mocy & \texttt{waveform}, \texttt{fs}, \texttt{model}, \texttt{cfg}, \texttt{targets}, \texttt{p\_rx\_dBm}, \texttt{nf\_dB} $\rightarrow$ \texttt{signal}, \texttt{fc}, \texttt{intrinsic\_delay} & \ref{subsec:pbr_fundamentals} \\
+        \hline
+        \texttt{step3\_\allowbreak receiver.m} & Synchronizacja ramki, demodulacja, estymacja i~kondycjonowanie transmitancji, mapa odległość--prędkość & \texttt{signal}, \texttt{waveform}, \texttt{fs}, \texttt{fc}, \texttt{params}, \texttt{sync\_idx} $\rightarrow$ \texttt{radar\_data} & \ref{subsec:ofdm_modulation}, \ref{subsec:channel_estimation}--\ref{subsec:range_doppler_map} \\
+        \hline
+        \texttt{step4\_\allowbreak interpreter.m} & Wybór detektora, progowanie CFAR, ekstrakcja celów, metryka PNFR & \texttt{radar\_data}, \texttt{p\_FA}, \texttt{stc\_method} $\rightarrow$ \texttt{targets}, \texttt{CPer\_F}, \texttt{Per\_F}, \texttt{eta}, \texttt{pnfr}, \texttt{diag\_info} & \ref{subsec:target_detection_extraction} \\
+        \hline
+        \multicolumn{4}{|l|}{\textit{Parametryzacja nadajnika i~kanału (\texttt{lib/})}} \\
+        \hline
+        \texttt{get\_wifi\_\allowbreak params.m} & Obiekt \texttt{cfg}, $N_{\mathrm{FFT}}$, $N_{\mathrm{CP}}$, automatyczne skalowanie długości ładunku, maska aktywnych podnośnych, indeksy luk DC & \texttt{standard}, \texttt{psdu\_length}, \texttt{cbw}, \texttt{mcs} $\rightarrow$ \texttt{params} & \ref{subsec:wifi_signal}, tab.~\ref{tab:wifi_params} \\
+        \hline
+        \texttt{get\_carrier\_\allowbreak frequency.m} & Odwzorowanie nazwy pasma na częstotliwość nośną & \texttt{band\_input} $\rightarrow$ \texttt{fc}, \texttt{band\_str} & \ref{subsec:pbr_fundamentals} \\
+        \hline
+        \texttt{configure\_\allowbreak targets.m} & Przeliczenie opisu fizycznego celu na opóźnienie, przesunięcie Dopplera i~amplitudę echa & \texttt{targets}, \texttt{fs}, \texttt{fc}, \texttt{channel\_model}, \texttt{p\_rx\_dBm} $\rightarrow$ \texttt{delays}, \texttt{dopplers}, \texttt{taps} & \ref{subsec:pbr_fundamentals} \\
+        \hline
+        \texttt{get\_tgax\_\allowbreak propagation\_\allowbreak params.m} & Parametry dwuodcinkowego modelu tłumienia TGn/TGax (odległość przełamania, wykładniki LOS/NLOS) & \texttt{model} $\rightarrow$ \texttt{p} (\texttt{d\_bp}, \texttt{n\_los}, \texttt{n\_nlos}) & \ref{subsec:channel_implementation} \\
+        \hline
+        \multicolumn{4}{|l|}{\textit{Przetwarzanie sygnału w~odbiorniku (\texttt{lib/})}} \\
+        \hline
+        \texttt{demodulate.m} & Usunięcie prefiksu cyklicznego i~kolumnowa transformata FFT & \texttt{signal}, \texttt{n\_fft}, \texttt{n\_cp} $\rightarrow$ \texttt{F\_matrix}, \texttt{n\_syms} & \ref{subsec:ofdm_modulation} \\
+        \hline
+        \texttt{estimate\_\allowbreak channel.m} & Estymacja ZF, współczynnik $\zeta_{\mathrm{ZF}}$, filtr MTI w~czasie wolnym, wywołanie interpolacji luki DC & \texttt{F\_rx}, \texttt{F\_tx}, \texttt{params} $\rightarrow$ \texttt{H\_shifted}, \texttt{H\_raw}, \texttt{zeta\_dB}, \texttt{H\_no\_static} & \ref{subsec:channel_estimation}, \ref{subsec:clutter_filtering} \\
+        \hline
+        \texttt{interpolate\_\allowbreak dc\_nulls.m} & Liniowa interpolacja spójnych luk zerowych podnośnych wewnętrznych & \texttt{H}, \texttt{dc\_indices} $\rightarrow$ \texttt{H} & \ref{subsec:clutter_filtering} \\
+        \hline
+        \texttt{compute\_range\_\allowbreak doppler\_map.m} & Okno 2D Blackmana--Harrisa, dopełnianie zerami, periodogram zespolony i~periodogram mocy & \texttt{H\_shifted}, \texttt{Nfft}, \texttt{n\_symbols}, \texttt{active\_mask} $\rightarrow$ \texttt{CPer\_F}, \texttt{W}, \texttt{Per\_F}, \texttt{N\_per}, \texttt{M\_per} & \ref{subsec:range_doppler_map} \\
+        \hline
+        \texttt{calculate\_\allowbreak physical\_axes.m} & Odwzorowanie indeksów DFT/IDFT na osie odległości i~prędkości & \texttt{fs}, \texttt{fc}, \texttt{Nfft}, \texttt{Ncp}, \texttt{N\_per}, \texttt{M\_per} $\rightarrow$ \texttt{axis\_range}, \texttt{axis\_velocity} & \ref{subsec:pbr_fundamentals}, \ref{subsec:range_doppler_map} \\
+        \hline
+        \multicolumn{4}{|l|}{\textit{Detekcja i~ocena wyników (\texttt{lib/})}} \\
+        \hline
+        \texttt{get\_detection\_\allowbreak algorithm.m} & Centralny rejestr detektorów (identyfikator, nazwa, uchwyt wykonawczy) & \texttt{method} $\rightarrow$ \texttt{alg} & \ref{subsec:target_detection_extraction} \\
+        \hline
+        \texttt{binary\_\allowbreak successive\_\allowbreak target\_\allowbreak cancellation.m} & Próg CFAR, iteracyjna detekcja z~maskowaniem binarnym listka głównego & \texttt{Per\_F}, \texttt{W}, \texttt{p\_FA} $\rightarrow$ \texttt{targets}, \texttt{B}, \texttt{eta}, \texttt{diag\_info} & \ref{subsec:target_detection_extraction} \\
+        \hline
+        \texttt{coherent\_\allowbreak successive\_\allowbreak target\_\allowbreak cancellation.m} & Próg CFAR, iteracyjna detekcja z~koherentnym odejmowaniem repliki celu & \texttt{CPer\_F}, \texttt{Per\_F}, \texttt{W}, \texttt{p\_FA} $\rightarrow$ \texttt{targets}, \texttt{CPer\_F}, \texttt{eta}, \texttt{diag\_info} & \ref{subsec:target_detection_extraction} \\
+        \hline
+        \texttt{compute\_pnfr.m} & Kontrast szczytu celu względem tła szumowo-zakłóceniowego (PNFR) & \texttt{CPer}, \texttt{target\_idx}, \texttt{guard} $\rightarrow$ \texttt{metrics} & \ref{subsec:target_detection_extraction} \\
+        \hline
+    \end{tabular}
+\end{table}
 
 \subsection{Implementacja nadajnika sygnału IEEE 802.11}
 \label{subsec:transmitter_implementation}
