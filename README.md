@@ -12,7 +12,7 @@ Wymagania: **MATLAB** (R2021a+) wraz z **WLAN Toolbox** oraz **Communications To
 
 Uruchomienie bezpośrednio z katalogu głównego projektu (po `init_paths` lub przez `run(...)`) albo z podfolderów `scripts/`:
 
-- **Wygenerowanie i wyświetlenie wszystkich rysunków z pracy dyplomowej** (9 osobnych okien + eksport PNG 300 DPI do `thesis/img/`):
+- **Wygenerowanie i wyświetlenie wszystkich rysunków z pracy dyplomowej** (11 osobnych okien; eksport PNG 300 DPI do `thesis/img/` przy `run_all_figures(true, true)`):
   ```matlab
   run('scripts/figures/run_all_figures.m')
   % lub po init_paths():
@@ -78,9 +78,10 @@ Uruchomienie bezpośrednio z katalogu głównego projektu (po `init_paths` lub p
 WiFi-Radar/
 ├── init_paths.m          # Konfiguracja ścieżek MATLAB-a
 ├── src/                  # 4 etapy przetwarzania (transmitter -> channel -> receiver -> interpreter)
-├── lib/                  # Biblioteki DSP (demodulacja, estymacja kanału, usuwanie echa stałego, Binary/Coherent STC, PNFR)
+├── lib/                  # Czyste moduły DSP, modele fizyczne i konfiguracje (demodulacja, estymacja kanału, STC, PNFR, TGax)
 ├── scripts/              # Skrypty uruchomieniowe (run_random_demo.m)
-│   └── figures/          # Skrypty generujące rysunki (run_all_figures.m oraz ch2–ch4)
+│   ├── experiments/      # Silniki eksperymentów (Monte Carlo, przemiatanie zasięgu)
+│   └── figures/          # Skrypty generujące rysunki (run_all_figures.m, ch2–ch4, helpers/)
 ├── tests/                # Testy regresyjne i jednostkowe (verify_regression.m)
 ├── docs/                 # Notatki merytoryczne i plany eksperymentów
 └── thesis/               # Pliki pracy dyplomowej (LaTeX) i wyeksportowane rysunki (thesis/img/)

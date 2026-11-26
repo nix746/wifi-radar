@@ -3,21 +3,67 @@
 \label{sec:radar_implementation}
 
 % ------------------------------------------------------------------------
-% Rozdział 3: Implementacja poszczególnych bloków radaru w środowisku MATLAB
-% 3.1 Środowisko symulacyjne MATLAB i toolboxy (WLAN Toolbox, Communications Toolbox, wkład własny)
-% 3.2 Implementacja kanału (step2_channel.m, kanały TGax A/C/E, symulacja celów ruchomych i opóźnień)
-% 3.3 Implementacja odbiornika (step3_receiver.m, demodulacja OFDM, estymacja kanału przez dzielenie podnośnych, usuwanie echa stałego przez odejmowanie średniej czasowej, interpolacja DC)
-% 3.4 Implementacja interpretera (step4_interpreter.m, okno Blackmana--Harrisa, periodogram 2D, Coherent STC, osie fizyczne)
+% Rozdział 3: Opis oprogramowania
+% 3.1 Środowisko symulacyjne MATLAB i wykorzystane pakiety narzędziowe
+% 3.2 Ogólna architektura oprogramowania i przepływ danych
+% 3.3 Implementacja nadajnika sygnału IEEE 802.11
+% 3.4 Implementacja modelu kanału propagacyjnego i celów ruchomych
+% 3.5 Implementacja odbiornika radarowego (3.5.1-3.5.4)
 % ------------------------------------------------------------------------
 
-\subsection{Środowisko symulacyjne MATLAB i toolboxy}
+\subsection{Środowisko symulacyjne MATLAB i~wykorzystane pakiety narzędziowe}
 \label{subsec:matlab_environment_toolboxes}
 
-\subsection{Implementacja kanału}
+Symulator pasywnego radaru wykorzystującego sygnały IEEE~802.11 zaimplementowano w~środowisku obliczeniowym MATLAB (weryfikowanym w~wydaniach R2024b oraz R2025b). Wybór tego środowiska podyktowano jego natywną optymalizacją pod kątem operacji wektorowych i~macierzowych na liczbach zespolonych podwójnej precyzji, co bezpośrednio odpowiada strukturze danych w~przetwarzaniu sygnałów OFDM. Podstawowymi obiektami obliczeniowymi w~torze odbiorczym są dwuwymiarowe macierze podnośnych o~wymiarach $N_{\mathrm{FFT}} \times M$ oraz macierze periodogramów o~wymiarach $N_{\mathrm{per}} \times M_{\mathrm{per}}$, na których wykonywane są szybkie transformaty Fouriera (\texttt{fft}, \texttt{ifft}) z~dopełnianiem zerami, operacje przesunięcia widma (\texttt{fftshift}, \texttt{ifftshift}) oraz indeksowanie logiczne. Takie podejście pozwoliło na zwięzłą, wektoryzowaną implementację bez konieczności ręcznego zarządzania pamięcią czy pisania zagnieżdżonych pętli w~językach niższego poziomu.
+
+Konfigurację ścieżek uruchomieniowych zautomatyzowano w~skrypcie \texttt{init\_paths.m}, umieszczonym w~katalogu głównym repozytorium. Skrypt ten dynamicznie wyznacza bezwzględną ścieżkę bazową projektu (wykorzystując funkcję \texttt{mfilename}) i~dodaje do ścieżki wyszukiwania MATLAB-a katalogi modułów potoku (\texttt{src/}), biblioteki funkcji numerycznych (\texttt{lib/}) oraz rekurencyjnie podkatalogi skryptów eksperymentalnych i~wizualizacyjnych (\texttt{scripts/}). W~celu zagwarantowania pełnej powtarzalności eksperymentów symulacyjnych, wykresów oraz automatycznych testów regresyjnych wprowadzono deterministyczną inicjalizację generatora liczb pseudolosowych za pomocą polecenia \texttt{rng(seed, 'twister')} (algorytm Mersenne Twister). Pozwoliło to na wierne odtwarzanie losowych ciągów bitów pola danych, realizacji statystycznego kanału wielodrogowego oraz próbek szumu termicznego między kolejnymi uruchomieniami.
+
+Istotnym założeniem projektowym był ścisły rozdział między wykorzystaniem gotowych bibliotek firmy MathWorks a~autorską implementacją algorytmów cyfrowego przetwarzania sygnałów. Z~pakietów narzędziowych (ang.~\textit{Toolboxes}) skorzystano wyłącznie w~zakresie, w~jakim dostarczają one zweryfikowanych modeli standardów telekomunikacyjnych lub podstawowych prymitywów sygnałowych:
+\begin{itemize}
+    \item \textbf{WLAN Toolbox} -- użyty do zgodnej ze standardami IEEE 802.11a i~802.11ax syntezy przebiegów w~paśmie podstawowym (obiekty konfiguracyjne \texttt{wlanNonHTConfig} oraz \texttt{wlanHESUConfig}, funkcje metadanych \texttt{wlanHEOFDMInfo}, \texttt{wlanFieldIndices}, \texttt{wlanSampleRate} i~\texttt{transmitTime}, a~także generator \texttt{wlanWaveform\-Generator}), standaryzowanego modelowania wielodrogowego kanału wewnątrzbudynkowego (\texttt{wlanTGaxChannel}) oraz wstępnej synchronizacji czasowej pakietu w~odbiorniku (\texttt{wlanPacketDetect}, \texttt{wlanSymbol\-TimingEstimate}).
+    \item \textbf{Communications Toolbox} -- wykorzystany w~module kanałowym (\texttt{src/\allowbreak step2\_channel.m}) do kontrolowanego dodawania zespolonego addytywnego szumu białego Gaussa funkcją \texttt{awgn}, z~jawnym zakotwiczeniem poziomu szumu względem mocy nominalnej sygnału nadawczego.
+    \item \textbf{Signal Processing Toolbox} -- zastosowany wyłącznie do wygenerowania jednowymiarowych wektorów wag czterowyrazowego okna Blackmana--Harrisa za pomocą funkcji \texttt{blackmanharris} w~pliku \texttt{lib/\allowbreak compute\_\allowbreak range\_\allowbreak doppler\_\allowbreak map.m}. Normalizacja energetyczna wag oraz złożenie separowalnego okna dwuwymiarowego ograniczonego do pasma aktywnych podnośnych zostały zrealizowane jako kod własny.
+\end{itemize}
+
+W~projekcie świadomie zrezygnowano z~wyspecjalizowanych pakietów radiolokacyjnych, takich jak \textit{Radar Toolbox} czy \textit{Phased Array System Toolbox}. Cały tor przetwarzania radarowego -- obejmujący rafinację synchronizacji metodą detekcji pierwszego czoła, demodulację OFDM po usunięciu prefiksu cyklicznego, estymację częstotliwościowej odpowiedzi kanału metodą wymuszania zera, filtrację ech stałych w~czasie wolnym, adaptacyjną interpolację luki DC, wyznaczanie mapy odległość--prędkość wraz z~kalibracją osi fizycznych, progowanie CFAR oraz iteracyjną ekstrakcję celów algorytmami Binary~STC i~Coherent~STC -- został napisany od podstaw w~czystym języku MATLAB. Uniknięcie gotowych bloków typu ,,czarna skrzynka'' zapewniło pełną przejrzystość matematyczną implementacji, bezpośrednią zgodność z~modelem teoretycznym opisanym w~rozdziale~\ref{sec:passive_radar} oraz dostęp do wszystkich macierzy pośrednich na potrzeby analizy diagnostycznej i~eksperymentów z~rozdziału~\ref{sec:simulation_results}. Zestawienie podziału kompetencji pomiędzy pakiety narzędziowe a~moduły własne przedstawiono w~tabeli~\ref{tab:toolboxes_vs_custom}.
+
+\begin{table}[H]
+    \centering
+    \linespread{1.05}\selectfont
+    \caption{Podział funkcjonalności symulatora pomiędzy pakiety narzędziowe środowiska MATLAB a~autorską implementację DSP}
+    \label{tab:toolboxes_vs_custom}
+    \footnotesize
+    \begin{tabular}{|p{2.6cm}|p{4.8cm}|p{2.1cm}|p{4.9cm}|}
+        \hline
+        \textbf{Warstwa / Pakiet} & \textbf{Wykorzystane funkcje / Moduły} & \textbf{Etap potoku} & \textbf{Rola w~symulatorze} \\
+        \hline
+        MATLAB (rdzeń) & \texttt{fft}, \texttt{ifft}, \texttt{fftshift}, \texttt{ifftshift}, \texttt{rng}, \texttt{init\_paths.m} & Cały potok & Operacje macierzowe na liczbach zespolonych, transformaty 1D/2D, zarządzanie ścieżkami i~determinizm obliczeń \\
+        \hline
+        WLAN Toolbox & \texttt{wlanNonHTConfig}, \texttt{wlanHESUConfig}, \texttt{wlanHEOFDMInfo}, \texttt{wlanFieldIndices}, \texttt{wlanSampleRate}, \texttt{transmitTime}, \texttt{wlanWaveform\-Generator} & Nadajnik (\texttt{step1}) & Zgodna ze standardami IEEE~802.11a/ax parametryzacja i~generacja ramek PPDU w~paśmie podstawowym \\
+        \hline
+        WLAN Toolbox & \texttt{wlanTGaxChannel} & Kanał (\texttt{step2}) & Symulacja wielodrogowego kanału wewnątrzbudynkowego (profile Model-A/B/C/E) jako źródła DPI i~ech stałych \\
+        \hline
+        WLAN Toolbox & \texttt{wlanPacketDetect}, \texttt{wlanSymbol\-TimingEstimate} & Odbiornik (\texttt{step3}) & Zgrubne wykrycie pakietu (L-STF) oraz wyznaczenie metryki korelacyjnej dla preambuły (L-LTF) \\
+        \hline
+        Communications Toolbox & \texttt{awgn} & Kanał (\texttt{step2}) & Dodawanie zespolonego szumu termicznego AWGN o~zadanym stosunku SNR względem mocy odniesienia \\
+        \hline
+        Signal Processing Toolbox & \texttt{blackmanharris} & Odbiornik (\texttt{step3}) & Wyznaczenie jednowymiarowych wag okna Blackmana--Harrisa przed autorską normalizacją i~złożeniem okna 2D \\
+        \hline
+        Implementacja własna (\texttt{src/}, \texttt{lib/}) & \texttt{get\_wifi\_params}, \texttt{configure\_targets}, \texttt{demodulate}, \texttt{estimate\_channel}, \texttt{interpolate\_\allowbreak dc\_nulls}, \texttt{compute\_\allowbreak range\_\allowbreak doppler\_map}, \texttt{calculate\_\allowbreak physical\_axes}, \texttt{binary\_*}, \texttt{coherent\_*}, \texttt{compute\_pnfr} & Cały tor radarowy (\texttt{step1}--\texttt{step4}) & Skalowanie ramek, synteza celów ruchomych z~opóźnieniem ułamkowym, synchronizacja \textit{leading-edge}, demodulacja, ZF, MTI, interpolacja DC, periodogram 2D, CFAR, Binary/Coherent~STC i~metryka PNFR \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsection{Ogólna architektura oprogramowania i~przepływ danych}
+\label{subsec:software_architecture}
+
+\input{tex/fig_software_architecture}
+
+\subsection{Implementacja nadajnika sygnału IEEE 802.11}
+\label{subsec:transmitter_implementation}
+
+\subsection{Implementacja modelu kanału propagacyjnego i~celów ruchomych}
 \label{subsec:channel_implementation}
 
-\subsection{Implementacja odbiornika}
+\subsection{Implementacja odbiornika radarowego}
 \label{subsec:receiver_implementation}
-
-\subsection{Implementacja interpretera}
-\label{subsec:interpreter_implementation}

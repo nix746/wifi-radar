@@ -3,7 +3,7 @@ function fig = gen_fig_4_5_stc_comparison(show_figure, save_png)
 % Experiment SIM-5 (E5): Dynamic range limit - Binary STC vs Coherent STC (Braun 2014).
 % Figure 4.5 for Chapter 4 of the thesis:
 %   1D range cuts at the main target Doppler column in TGax Model-A (CBW40, 40 MHz)
-%   for a ~30 dB power asymmetry (pedestrian at 3.5 m, car at 15.0 m inside BH main lobe).
+%   for a pedestrian at 10.0 m and a car at 22.0 m inside the Blackman-Harris main lobe.
 %
 % Output file: thesis/img/ch4_sim/rys_4_5_porownanie_stc.png
 
@@ -19,7 +19,7 @@ alg_bin = get_detection_algorithm('binary');
 alg_coh = get_detection_algorithm('coherent');
 
 fprintf('=================================================================\n');
-fprintf('  Generating Fig. 4.5: %s vs %s (CBW20, Exp. E5)\n', alg_bin.name, alg_coh.name);
+fprintf('  Generating Fig. 4.5: %s vs %s (CBW40, Model-A, Exp. E5)\n', alg_bin.name, alg_coh.name);
 fprintf('=================================================================\n');
 
 wifi_standard = '802.11ax';
@@ -28,7 +28,7 @@ mcs           = 0;
 channel_model = 'Model-A';
 
 
-% Natural ~14.0 dB dynamic range from dual-slope radar equation (pedestrian at 10.0 m, car at 22.0 m)
+% Physical monostatic radar equation (pedestrian at 10.0 m, car at 22.0 m)
 r1_m = 10.0;  v1_ms = 8.0;
 r2_m = 22.0;  v2_ms = 8.0;
 
@@ -41,15 +41,15 @@ rng(42);
 [waveform, fs, params, cfg] = step1_transmitter(wifi_standard, cbw, mcs);
 
 rng(23); % Deterministic TGax channel realization
-[rx_signal, fc] = step2_channel(waveform, fs, channel_model, cfg, targets);
+[rx_signal, fc, intrinsic_delay] = step2_channel(waveform, fs, channel_model, cfg, targets);
 
-radar_data = step3_receiver(rx_signal, waveform, fs, fc, params);
+radar_data = step3_receiver(rx_signal, waveform, fs, fc, params, [], [], intrinsic_delay);
 
 p_FA = 1e-3;
 [targets_bin, ~, Per_after_bin, eta_bin, ~, diag_bin] = step4_interpreter( ...
-    radar_data, fs, fc, wifi_standard, p_FA, alg_bin);
+    radar_data, fs, fc, p_FA, alg_bin);
 [targets_coh, ~, Per_after_coh, eta_coh, ~, diag_coh] = step4_interpreter( ...
-    radar_data, fs, fc, wifi_standard, p_FA, alg_coh);
+    radar_data, fs, fc, p_FA, alg_coh);
 
 car_bin = any(abs([targets_bin.d_hat] - r2_m) < 2.5 & abs([targets_bin.v_hat] - v2_ms) < 2.0);
 car_coh = any(abs([targets_coh.d_hat] - r2_m) < 2.5 & abs([targets_coh.v_hat] - v2_ms) < 2.0);
@@ -81,9 +81,9 @@ eta_coh_dB      = 10 * log10(eta_coh / max_pwr + 1e-12);
 
 fprintf('  CFAR threshold eta: %s = %.2f dB | %s = %.2f dB\n', alg_bin.name, eta_bin_dB, alg_coh.name, eta_coh_dB);
 
-fig = figure('Name', 'Figure 4.5 - Binary STC vs Coherent STC (30 dB Dynamic Range)', ...
+fig = figure('Name', 'Figure 4.5 - Binary STC vs Coherent STC (CBW40, Model-A)', ...
     'Color', 'w', 'Position', [80, 100, 1280, 500], 'Visible', 'off');
-sgtitle(sprintf('Porównanie algorytmów %s i %s (Braun) w scenariuszu dynamiki 30 dB', alg_bin.name, alg_coh.name), ...
+sgtitle(sprintf('Porównanie algorytmów %s i %s (Braun, CBW40, Model-A)', alg_bin.name, alg_coh.name), ...
     'FontSize', 13.5, 'FontWeight', 'bold', 'Interpreter', 'none');
 
 y_lims = [-60, 5];

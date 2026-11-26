@@ -2,14 +2,14 @@ function figs = run_all_figures(show_figures, save_png, chapter_filter)
 % RUN_ALL_FIGURES Generates and displays all thesis figures (Chapters 2-4).
 %
 % Usage:
-%   run_all_figures()                  % Generate, save PNGs, and open 11 separate windows
+%   run_all_figures()                  % Generate and open 11 separate windows (save_png = false)
 %   run_all_figures(true, false)       % Display figures only without overwriting PNGs
 %   run_all_figures(false, true)       % Headless batch export to thesis/img/
 %   run_all_figures(true, true, 'ch4') % Run only Chapter 4 figures
 %
 % Inputs:
 %   show_figures   - (Optional) Open each figure in its own window (default: true)
-%   save_png       - (Optional) Save 300 DPI PNGs to thesis/img/ (default: true)
+%   save_png       - (Optional) Save 300 DPI PNGs to thesis/img/ (default: false)
 %   chapter_filter - (Optional) 'all' (default), 'ch2'/2, 'ch3'/3, or 'ch4'/4
 %
 % Output:
@@ -45,8 +45,8 @@ jobs = [ ...
     struct('id', '4.3', 'chapter', 'ch4', 'label', 'MCS order vs subcarrier-division noise enhancement & PNFR',         'fn', @gen_fig_4_3_noise_enhancement), ...
     struct('id', '4.4', 'chapter', 'ch4', 'label', 'TGax multipath clutter & slow-time mean subtraction',               'fn', @gen_fig_4_4_tgax_static_removal), ...
     struct('id', '4.5', 'chapter', 'ch4', 'label', 'Binary STC vs Coherent STC (30 dB dynamic range)',                 'fn', @gen_fig_4_5_stc_comparison), ...
-    struct('id', '4.6', 'chapter', 'ch4', 'label', 'Indoor Monte Carlo P_D(R): Binary vs Coherent STC (Model-B, 80 MHz)', 'fn', @gen_fig_4_6_stat_indoor), ...
-    struct('id', '4.7', 'chapter', 'ch4', 'label', 'Outdoor Monte Carlo P_D(R): Binary vs Coherent STC (Model-E, 40 MHz)', 'fn', @gen_fig_4_7_stat_outdoor) ...
+    struct('id', '4.6', 'chapter', 'ch4', 'label', 'Range limits PNFR(R) by target class (802.11ax, CBW40, MCS 5, Model-C)', 'fn', @gen_fig_4_6_range_limits), ...
+    struct('id', '4.7', 'chapter', 'ch4', 'label', 'Environment Monte Carlo P_D(R): Binary vs Coherent STC (Model-C, random CBW & MCS)', 'fn', @gen_fig_4_7_stat_environment) ...
     ];
 
 if ~strcmp(filter_key, 'all')

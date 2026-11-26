@@ -3,7 +3,7 @@ function fig = gen_fig_4_2_doppler_aliasing(show_figure, save_png)
 % Experiment SIM-2 (E2): Unambiguous velocity limit comparison (802.11a vs 802.11ax).
 % Figure 4.2 for Chapter 4 of the thesis:
 %   Integrated 1D Doppler velocity profile cut on a single plot for a fast moving vehicle target
-%   (v = +20.0 m/s = 72 km/h, R = 30.0 m) in a flat-fading channel (Model-A),
+%   (v = +20.0 m/s = 72 km/h, R = 12.0 m) in a flat-fading channel (Model-A),
 %   comparing IEEE 802.11a (T_sym = 4.0 us, v_unamb = +/-56.8 m/s) against
 %   IEEE 802.11ax (T_sym = 13.6 us, v_unamb = +/-16.7 m/s) across the 802.11a
 %   unambiguous Doppler window (+/-56.8 m/s). Shows Doppler aliasing in 802.11ax
@@ -29,15 +29,13 @@ cbw           = 'CBW20';
 mcs           = 0;
 channel_model = 'Model-A';
 
-% Physical carrier frequency and effective slow-time CPI subsampling factor k_pri
+% Physical carrier frequency and slow-time CPI subsampling factor k_pri (T_PRI = k_pri * T_sym)
 fc_base = 5.5e9;
 k_pri   = 60;
-fc_eff  = k_pri * fc_base;
 
 r_true_m  = 12.0;
 v_true_ms = 20.0;
-targets   = struct('type', 'car', 'range_m', r_true_m, ...
-    'velocity_mps', k_pri * v_true_ms);
+targets   = struct('type', 'car', 'range_m', r_true_m, 'velocity_mps', v_true_ms);
 
 standards = {'802.11a', '802.11ax'};
 cuts_dB   = cell(1, 2);
@@ -52,9 +50,9 @@ for i = 1:numel(standards)
     std_name = standards{i};
     rng(42);
     [waveform, fs, params, cfg] = step1_transmitter(std_name, cbw, mcs);
-    [rx_signal, ~]              = step2_channel(waveform, fs, channel_model, cfg, targets, [], fc_base);
-    radar_data                  = step3_receiver(rx_signal, waveform, fs, fc_eff, params);
-    [targets_det, ~, ~, ~, pnfr] = step4_interpreter(radar_data, fs, fc_eff, std_name);
+    [rx_signal, fc, intrinsic_delay] = step2_channel(waveform, fs, channel_model, cfg, targets, [], fc_base, [], k_pri);
+    radar_data                       = step3_receiver(rx_signal, waveform, fs, fc, params, [], k_pri, intrinsic_delay);
+    [targets_det, ~, ~, ~, pnfr] = step4_interpreter(radar_data, fs, fc);
 
     r_idx   = targets_det(1).r_idx;
     v_idx   = targets_det(1).d_idx;
@@ -68,8 +66,8 @@ for i = 1:numel(standards)
     pnfr_dB(i)   = pnfr.pnfr_dB(1);
     nf_cut_dB(i) = 10 * log10(median(P_slice) + 1e-12);
 
-    fprintf('  [%s] T_sym = %.1f us | v_unamb = +/-%.2f m/s | Detected: R = %.2f m, v = %+.2f m/s | NF_cut = %.1f dB, PNFR = %.1f dB\n', ...
-        std_name, (params.Nfft + params.Ncp) / fs * 1e6, v_unamb(i), ...
+    fprintf('  [%s] T_sym = %.1f us (k_PRI=%d) | v_unamb = +/-%.2f m/s | Detected: R = %.2f m, v = %+.2f m/s | NF_cut = %.1f dB, PNFR = %.1f dB\n', ...
+        std_name, (params.Nfft + params.Ncp) / fs * 1e6, k_pri, v_unamb(i), ...
         r_det(i), v_det(i), nf_cut_dB(i), pnfr_dB(i));
 end
 

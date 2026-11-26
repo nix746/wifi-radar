@@ -47,8 +47,8 @@ axis_v     = [];
 for m = 1:numel(models)
     ch_name = models{m};
     rng(23); % Deterministic TGax channel realization
-    [rx_signal, fc] = step2_channel(waveform, fs, ch_name, cfg, target);
-    radar_data      = step3_receiver(rx_signal, waveform, fs, fc, params);
+    [rx_signal, fc, intrinsic_delay] = step2_channel(waveform, fs, ch_name, cfg, target);
+    radar_data                       = step3_receiver(rx_signal, waveform, fs, fc, params, [], [], intrinsic_delay);
 
     if isempty(axis_r)
         axis_r = radar_data.axis_range;

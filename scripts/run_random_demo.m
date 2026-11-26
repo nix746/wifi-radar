@@ -58,16 +58,16 @@ fprintf('  Standard: %s | %s | %s | Seed = %u\n', ...
 fprintf('=================================================================\n\n');
 
 [waveform, fs, params, cfg] = step1_transmitter(wifi_standard, cbw, mcs);
-[rx_signal, fc]             = step2_channel(waveform, fs, channel_model, cfg, targets_true);
-radar_data                  = step3_receiver(rx_signal, waveform, fs, fc, params);
+[rx_signal, fc, intrinsic_delay] = step2_channel(waveform, fs, channel_model, cfg, targets_true);
+radar_data                       = step3_receiver(rx_signal, waveform, fs, fc, params, [], [], intrinsic_delay);
 
 alg_bin = get_detection_algorithm('binary');
 alg_coh = get_detection_algorithm('coherent');
 
 [targets_bin, ~, Per_after_bin, eta_bin, pnfr_bin, diag_bin] = step4_interpreter( ...
-    radar_data, fs, fc, wifi_standard, p_FA, alg_bin);
+    radar_data, fs, fc, p_FA, alg_bin);
 [targets_coh, ~, Per_after_coh, eta_coh, pnfr_coh, diag_coh] = step4_interpreter( ...
-    radar_data, fs, fc, wifi_standard, p_FA, alg_coh);
+    radar_data, fs, fc, p_FA, alg_coh);
 
 print_demo_summary(used_seed, targets_true, targets_bin, pnfr_bin, eta_bin, diag_bin, ...
     targets_coh, pnfr_coh, eta_coh, diag_coh);
@@ -115,8 +115,8 @@ for k = 1:num_targets
             v_mag  = 10.0 + 18.0 * rand(); % [10, 28] m/s
         else
             t_type = 'human';
-            r_m    = 12.0 + 30.0 * rand(); % [12, 42] m (bounded by 1/R^4 attenuation)
-            v_mag  = 8.0 + 8.0 * rand();   % [8, 16] m/s (outside MTI notch)
+            r_m    = 12.0 + 30.0 * rand(); % [12, 42] m
+            v_mag  = 1.8 + 3.2 * rand();   % [1.8, 5.0] m/s (brisk walk / jog)
         end
 
         v_sign = 2 * (rand() >= 0.5) - 1;

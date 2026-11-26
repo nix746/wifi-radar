@@ -3,8 +3,8 @@ function fig = gen_fig_4_1_bandwidth_cut(show_figure, save_png)
 % Experiment SIM-1 (E1): Range resolution limit vs. channel bandwidth.
 % Figure 4.1 for Chapter 4 of the thesis:
 %   1D range periodogram cuts for bandwidths B = 20, 40, 80, 160 MHz
-%   (IEEE 802.11ax, MCS 0, TGax Model-C) for two close targets separated
-%   by Delta_R = 3.75 m (R_1 = 15.0 m, R_2 = 18.75 m) under constant AP
+%   (IEEE 802.11ax, MCS 0, TGax Model-A) for two close targets separated
+%   by Delta_R = 3.75 m (R_1 = 7.50 m, R_2 = 11.25 m) under constant AP
 %   transmit power (P_tx = 100 mW EIRP, P_N = k_B * T * B * F).
 %
 % Output file: thesis/img/ch4_sim/rys_4_1_przekroj_odleglosci_pasma.png
@@ -54,10 +54,10 @@ for i = 1:numel(cbw_list)
     [waveform, fs, params, cfg] = step1_transmitter(wifi_standard, cbw, mcs);
 
     rng(23);
-    [rx_signal, fc] = step2_channel(waveform, fs, channel_model, cfg, targets, [], [], nf_dB);
+    [rx_signal, fc, intrinsic_delay] = step2_channel(waveform, fs, channel_model, cfg, targets, [], [], nf_dB);
 
-    radar_data = step3_receiver(rx_signal, waveform, fs, fc, params);
-    [~, ~, ~, ~, pnfr] = step4_interpreter(radar_data, fs, fc, wifi_standard);
+    radar_data = step3_receiver(rx_signal, waveform, fs, fc, params, [], [], intrinsic_delay);
+    [~, ~, ~, ~, pnfr] = step4_interpreter(radar_data, fs, fc);
 
     P_map = radar_data.Per_F;
     [~, max_idx] = max(P_map(:));
@@ -80,7 +80,7 @@ for i = 1:numel(cbw_list)
         idx2 = find(axes_r{i} >= locs(2), 1);
         dip_val = min(cuts_dB{i}(idx1:idx2)) - min(pks(1:2));
     end
-        fprintf('  [%s] Delta_R_th = %.2f m | Peaks in ROI: %d at %s m (dip = %.2f dB) | NF_2D = %.1f dB, NF_cut = %.1f dB (PNFR1 = %.1f dB)\n', ...
+    fprintf('  [%s] Delta_R_th = %.2f m | Peaks in ROI (rect): %d at %s m (dip = %.2f dB) | NF_2D = %.1f dB, NF_cut = %.1f dB (PNFR1 BH-STC = %.1f dB)\n', ...
         cbw, delta_r_th(i), numel(pks), mat2str(round(locs, 2)), ...
         dip_val, nf_2d_dB(i), nf_cut_dB(i), pnfr.pnfr_dB(1));
 end

@@ -17,8 +17,8 @@ function metrics = compute_pnfr(CPer, target_idx, guard)
 %   CPer       - Complex (or power) Range-Doppler periodogram [N_per x M_per]
 %   target_idx - Target positions [K x 2] as [range_idx, doppler_idx]
 %   guard      - (Optional) Half-size of the guard box [g_range, g_doppler]
-%                in bins (default: [16, 16], i.e. the Blackman-Harris main lobe
-%                with 4x range and 4x Doppler zero-padding)
+%                in bins (default: [16, 16]; step4_interpreter passes dynamic
+%                null-to-null mainlobe half-widths derived from window W)
 %
 % Output (struct):
 %   metrics.pnfr_dB     - PNFR per target [K x 1]
@@ -27,38 +27,38 @@ function metrics = compute_pnfr(CPer, target_idx, guard)
 %   metrics.peak_idx    - Refined peak positions [K x 2]
 %   metrics.noise_mask  - Logical mask of bins used for the floor estimate
 
-    if nargin < 3 || isempty(guard)
-        guard = [16, 16];
-    end
+if nargin < 3 || isempty(guard)
+    guard = [16, 16];
+end
 
-    P = abs(CPer).^2;
-    [N_per, M_per] = size(P);
-    K = size(target_idx, 1);
+P = abs(CPer).^2;
+[N_per, M_per] = size(P);
+K = size(target_idx, 1);
 
-    noise_mask = true(N_per, M_per);
-    peak_lin = zeros(K, 1);
-    peak_idx = zeros(K, 2);
+noise_mask = true(N_per, M_per);
+peak_lin = zeros(K, 1);
+peak_idx = zeros(K, 2);
 
-    for k = 1 : K
-        % Guard box with circular wrap (both FFT axes are periodic)
-        r_box = mod(target_idx(k, 1) - 1 + (-guard(1) : guard(1)), N_per) + 1;
-        d_box = mod(target_idx(k, 2) - 1 + (-guard(2) : guard(2)), M_per) + 1;
-        noise_mask(r_box, d_box) = false;
+for k = 1 : K
+    % Guard box with circular wrap (both FFT axes are periodic)
+    r_box = mod(target_idx(k, 1) - 1 + (-guard(1) : guard(1)), N_per) + 1;
+    d_box = mod(target_idx(k, 2) - 1 + (-guard(2) : guard(2)), M_per) + 1;
+    noise_mask(r_box, d_box) = false;
 
-        % Peak search restricted to +-1 bin around the given position
-        r_loc = mod(target_idx(k, 1) - 1 + (-1 : 1), N_per) + 1;
-        d_loc = mod(target_idx(k, 2) - 1 + (-1 : 1), M_per) + 1;
-        P_loc = P(r_loc, d_loc);
-        [peak_lin(k), i_max] = max(P_loc(:));
-        [ir, id] = ind2sub(size(P_loc), i_max);
-        peak_idx(k, :) = [r_loc(ir), d_loc(id)];
-    end
+    % Peak search restricted to +-1 bin around the given position
+    r_loc = mod(target_idx(k, 1) - 1 + (-1 : 1), N_per) + 1;
+    d_loc = mod(target_idx(k, 2) - 1 + (-1 : 1), M_per) + 1;
+    P_loc = P(r_loc, d_loc);
+    [peak_lin(k), i_max] = max(P_loc(:));
+    [ir, id] = ind2sub(size(P_loc), i_max);
+    peak_idx(k, :) = [r_loc(ir), d_loc(id)];
+end
 
-    floor_lin = mean(P(noise_mask));
+floor_lin = mean(P(noise_mask));
 
-    metrics.pnfr_dB    = 10 * log10(peak_lin / floor_lin);
-    metrics.peak_dB    = 10 * log10(peak_lin);
-    metrics.floor_dB   = 10 * log10(floor_lin);
-    metrics.peak_idx   = peak_idx;
-    metrics.noise_mask = noise_mask;
+metrics.pnfr_dB    = 10 * log10(peak_lin / floor_lin);
+metrics.peak_dB    = 10 * log10(peak_lin);
+metrics.floor_dB   = 10 * log10(floor_lin);
+metrics.peak_idx   = peak_idx;
+metrics.noise_mask = noise_mask;
 end

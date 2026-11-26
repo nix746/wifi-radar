@@ -37,11 +37,11 @@ rng(42);
 [waveform, fs, params, cfg] = step1_transmitter(wifi_standard, cbw, 0);
 
 rng(23); % Deterministic seed where Model-C LOS locks at intrinsic delay (0 m bias)
-[rx_signal, fc] = step2_channel(waveform, fs, channel_model, cfg, targets);
+[rx_signal, fc, intrinsic_delay] = step2_channel(waveform, fs, channel_model, cfg, targets);
 
-radar_data = step3_receiver(rx_signal, waveform, fs, fc, params);
+radar_data = step3_receiver(rx_signal, waveform, fs, fc, params, [], [], intrinsic_delay);
 [targets_det, ~, ~, ~, pnfr, diag_info] = step4_interpreter( ...
-    radar_data, fs, fc, wifi_standard, 1e-3, 'coherent');
+    radar_data, fs, fc, 1e-3, 'coherent');
 
 axis_range    = radar_data.axis_range;
 axis_velocity = radar_data.axis_velocity;

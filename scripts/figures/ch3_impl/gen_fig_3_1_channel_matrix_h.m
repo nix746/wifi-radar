@@ -32,28 +32,29 @@ targets = [ ...
     struct('range_m', 7.5,  'velocity_mps', -4.0,  'type', 'human'), ...
     struct('range_m', 18.0, 'velocity_mps', +14.0, 'type', 'car') ...
     ];
-[rx_signal, fc] = step2_channel(waveform, fs, channel_model, cfg, targets);
+[rx_signal, fc, intrinsic_delay] = step2_channel(waveform, fs, channel_model, cfg, targets);
 
-radar_data = step3_receiver(rx_signal, waveform, fs, fc, params);
+radar_data = step3_receiver(rx_signal, waveform, fs, fc, params, [], [], intrinsic_delay);
 H_raw     = radar_data.H_raw;
 H_proc    = radar_data.H_shifted;
 n_symbols = radar_data.n_symbols;
 Nfft      = radar_data.Nfft;
 
-% 3. Validate DPI suppression
-static_component_raw  = mean(H_raw, 2);
-static_component_proc = mean(H_proc, 2);
-p_static_raw  = mean(abs(static_component_raw(params.active_mask > 0)).^2);
-p_static_proc = mean(abs(static_component_proc(params.active_mask > 0)).^2);
+% 3. Validate DPI and static clutter suppression at v = 0 m/s on the Range-Doppler map
+C_raw_rdm  = compute_range_doppler_map(interpolate_dc_nulls(H_raw, params.dc_indices), Nfft, n_symbols, params.active_mask, 4, true);
+C_proc_rdm = radar_data.CPer_F;
+[~, v0_idx] = min(abs(radar_data.axis_velocity));
+p_v0_raw  = mean(abs(C_raw_rdm(:, v0_idx)).^2);
+p_v0_proc = mean(abs(C_proc_rdm(:, v0_idx)).^2);
 
-suppression_dpi_dB  = 10 * log10(p_static_raw / max(p_static_proc, 1e-15));
+suppression_dpi_dB  = 10 * log10(p_v0_raw / max(p_v0_proc, 1e-15));
 total_power_raw_dB  = 10 * log10(mean(abs(H_raw(:)).^2));
 total_power_proc_dB = 10 * log10(mean(abs(H_proc(:)).^2));
 total_drop_dB       = total_power_raw_dB - total_power_proc_dB;
 
 fprintf('  Total power before static removal: %+.2f dB\n', total_power_raw_dB);
 fprintf('  Total power after static removal:  %+.2f dB (drop of %.2f dB)\n', total_power_proc_dB, total_drop_dB);
-fprintf('  Static component suppress:         > %.1f dB (slow-time mean subtraction eliminates DPI)\n', min(suppression_dpi_dB, 120));
+fprintf('  Static clutter suppress (v = 0):   %.1f dB on Range-Doppler map\n', suppression_dpi_dB);
 
 % 4. Centered subcarrier axis and magnitude in dB
 k_range   = (-Nfft/2) : (Nfft/2 - 1);

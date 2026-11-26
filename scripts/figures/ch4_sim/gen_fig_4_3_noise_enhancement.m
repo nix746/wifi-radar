@@ -5,8 +5,8 @@ function fig = gen_fig_4_3_noise_enhancement(show_figure, save_png)
 %   Dual Y-axis comparison of the subcarrier-division noise enhancement factor
 %   zeta = E[|X|^2]*E[1/|X|^2] [dB] and target detection contrast PNFR [dB]
 %   across all available MCS 0-11 (BPSK to 1024-QAM) for IEEE 802.11ax
-%   (CBW40, TGax Model-C) with dynamic payload scaling maintaining a constant
-%   frame duration (~3.87 ms, M = 280 OFDM symbols).
+%   (CBW40, TGax Model-A) with dynamic payload scaling maintaining a constant
+%   frame duration (~3.87 ms, M = 280 OFDM symbols), averaged over 10 Monte Carlo runs.
 %
 % Output file: thesis/img/ch4_sim/rys_4_3_wzmocnienie_szumu_mcs.png
 
@@ -31,31 +31,35 @@ targets = struct('type', 'car', 'range_m', 12.0, 'velocity_mps', 14.0);
 
 mcs_list  = 0:11;
 n_mcs     = numel(mcs_list);
+n_avg     = 10;
 zeta_dB   = zeros(1, n_mcs);
 pnfr_dB   = zeros(1, n_mcs);
 n_sym_vec = zeros(1, n_mcs);
 psdu_vec  = zeros(1, n_mcs);
 
 for i = 1:n_mcs
-    mcs = mcs_list(i);
+    mcs       = mcs_list(i);
+    zeta_runs = zeros(1, n_avg);
+    pnfr_runs = zeros(1, n_avg);
 
-    rng(42);
-    [waveform, fs, params, cfg] = step1_transmitter(wifi_standard, cbw, mcs);
-    rng(42);
-    [rx_signal, fc]             = step2_channel(waveform, fs, channel_model, cfg, targets);
-    radar_data                  = step3_receiver(rx_signal, waveform, fs, fc, params);
-    [targets_det, ~, ~, ~, pnfr] = step4_interpreter(radar_data, fs, fc, wifi_standard);
+    for k_run = 1:n_avg
+        rng(100 * i + k_run, 'twister');
+        [waveform, fs, params, cfg] = step1_transmitter(wifi_standard, cbw, mcs);
+        [rx_signal, fc, intrinsic_delay] = step2_channel(waveform, fs, channel_model, cfg, targets);
+        radar_data                       = step3_receiver(rx_signal, waveform, fs, fc, params, [], [], intrinsic_delay);
+        [~, ~, ~, ~, pnfr]          = step4_interpreter(radar_data, fs, fc);
 
-    zeta_dB(i)   = radar_data.zeta_dB;
-    pnfr_dB(i)   = pnfr.pnfr_dB(1);
+        zeta_runs(k_run) = radar_data.zeta_dB;
+        pnfr_runs(k_run) = pnfr.pnfr_dB(1);
+    end
+
+    zeta_dB(i)   = mean(zeta_runs);
+    pnfr_dB(i)   = mean(pnfr_runs);
     n_sym_vec(i) = radar_data.n_symbols;
     psdu_vec(i)  = params.psdu_length;
 
-    r_det = targets_det(1).d_hat;
-    v_det = targets_det(1).v_hat;
-
-    fprintf('  [MCS %2d] PSDU = %6d B (M = %d) | zeta = %.2f dB | PNFR = %.2f dB | Det: R = %.2f m, v = %+.2f m/s\n', ...
-        mcs, psdu_vec(i), n_sym_vec(i), zeta_dB(i), pnfr_dB(i), r_det, v_det);
+    fprintf('  [MCS %2d] PSDU = %6d B (M = %d) | mean zeta = %.2f dB | mean PNFR = %.2f dB (N=%d)\n', ...
+        mcs, psdu_vec(i), n_sym_vec(i), zeta_dB(i), pnfr_dB(i), n_avg);
 end
 
 fprintf('  Subcarrier-division noise enhancement rise (MCS 0 -> MCS 11): %+.2f dB\n', zeta_dB(end) - zeta_dB(1));
