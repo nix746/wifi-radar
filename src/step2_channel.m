@@ -97,7 +97,8 @@ tgax.CarrierFrequency        = fc;
 tgax.DelayProfile            = model;
 tgax.LargeScaleFadingEffect  = 'None';
 tgax.NormalizeChannelOutputs = false;
-
+tgax.EnvironmentalSpeed      = 0.001;
+tgax.FluorescentEffect       = false;
 clutter_signal = tgax(waveform);
 intrinsic_delay = info(tgax).ChannelFilterDelay;
 

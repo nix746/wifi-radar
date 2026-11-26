@@ -300,8 +300,8 @@ tgts_i = [ ...
     struct('range_m', 18.0, 'velocity_mps', +14.0, 'type', 'car') ...
     ];
 rng(23, 'twister');
-[rx_i, fc_i] = step2_channel(wf_i, fs_i, 'Model-C', cfg_i, tgts_i, -52.0);
-rd_i = step3_receiver(rx_i, wf_i, fs_i, fc_i, p_i);
+[rx_i, fc_i, id_i] = step2_channel(wf_i, fs_i, 'Model-C', cfg_i, tgts_i, -52.0);
+rd_i = step3_receiver(rx_i, wf_i, fs_i, fc_i, p_i, [], [], id_i);
 [t_bi, ~, P_bi, eta_bi, ~, di_bi] = step4_interpreter(rd_i, fs_i, fc_i);
 
 has_t1_bi    = any(abs([t_bi.d_hat] - 7.5)  < 1.0 & abs([t_bi.v_hat] - (-7.0)) < 2.5);
