@@ -103,19 +103,19 @@ end
 
 function targets = generate_random_targets(num_targets)
 % GENERATE_RANDOM_TARGETS Draws physically valid moving targets well separated
-% from the R = 0 clutter ridge, v = 0 MTI notch, and the 120 m CP limit.
+% from the R = 0 clutter ridge, v = 0 MTI notch, and within the ~30 m detection range.
 targets = repmat(struct('type', '', 'range_m', 0, 'velocity_mps', 0), num_targets, 1);
 
 for k = 1:num_targets
     placed = false;
-    for attempt = 1:100
+    for attempt = 1:200
         if rand() < 0.5
             t_type = 'car';
-            r_m    = 18.0 + 64.0 * rand(); % [18, 82] m
-            v_mag  = 10.0 + 18.0 * rand(); % [10, 28] m/s
+            r_m    = 6.0 + 22.0 * rand();  % [6, 28] m
+            v_mag  = 6.0 + 12.0 * rand();  % [6, 18] m/s
         else
             t_type = 'human';
-            r_m    = 12.0 + 30.0 * rand(); % [12, 42] m
+            r_m    = 3.0 + 15.0 * rand();  % [3, 18] m
             v_mag  = 1.8 + 3.2 * rand();   % [1.8, 5.0] m/s (brisk walk / jog)
         end
 
@@ -128,7 +128,7 @@ for k = 1:num_targets
         else
             prev_r    = [targets(1:k-1).range_m];
             prev_v    = [targets(1:k-1).velocity_mps];
-            separated = all(abs(r_m - prev_r) >= 8.0 | abs(v_ms - prev_v) >= 6.0);
+            separated = all(abs(r_m - prev_r) >= 4.0 | abs(v_ms - prev_v) >= 6.0);
         end
 
         if separated
@@ -139,7 +139,7 @@ for k = 1:num_targets
     end
 
     if ~placed
-        error('Could not place %d separated targets after 100 attempts.', num_targets);
+        error('Could not place %d separated targets after 200 attempts.', num_targets);
     end
 end
 end
@@ -201,8 +201,8 @@ function fig = plot_binary_stc_demo(Per_F_base, B, axis_velocity, axis_range, ..
 
 Per_dB_base = 10 * log10(Per_F_base + 1e-12);
 c_lims      = [max(Per_dB_base(:)) - 60, max(Per_dB_base(:))];
-v_lims      = [max(-35, axis_velocity(1)), min(35, axis_velocity(end))];
-r_lims      = [0, min(100, axis_range(end))];
+v_lims      = [max(-25, axis_velocity(1)), min(25, axis_velocity(end))];
+r_lims      = [0, min(30, axis_range(end))];
 
 fig_title = sprintf('Demo losowych celów - %s (%s, %s, %s)', ...
     alg.name, meta.standard, meta.cbw, meta.channel);
@@ -274,8 +274,8 @@ function fig = plot_coherent_stc_demo(Per_F_base, Per_F_after, axis_velocity, ax
 Per_dB_base  = 10 * log10(Per_F_base + 1e-12);
 Per_dB_after = 10 * log10(Per_F_after + 1e-12);
 c_lims       = [max(Per_dB_base(:)) - 60, max(Per_dB_base(:))];
-v_lims       = [max(-35, axis_velocity(1)), min(35, axis_velocity(end))];
-r_lims       = [0, min(100, axis_range(end))];
+v_lims       = [max(-25, axis_velocity(1)), min(25, axis_velocity(end))];
+r_lims       = [0, min(30, axis_range(end))];
 
 fig_title = sprintf('Demo losowych celów - %s (%s, %s, %s)', ...
     alg.name, meta.standard, meta.cbw, meta.channel);
