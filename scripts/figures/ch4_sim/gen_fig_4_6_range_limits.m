@@ -18,22 +18,13 @@ fprintf('=================================================================\n');
 fprintf('  Generating Fig. 4.6: Range Limits PNFR(R) (Exp. SIM-6)\n');
 fprintf('=================================================================\n');
 
-p_rx_dBm = -50.0;
-nf_dB    = 7.0;
-k_B      = 1.380649e-23;
-T_0      = 290.0;
-bw_mhz   = 40;
-p_n_dBm  = 10 * log10(k_B * T_0 * (bw_mhz * 1e6) * 1e3) + nf_dB;
-snr_eff  = p_rx_dBm - p_n_dBm;
-snr_str  = strrep(sprintf('%.1f', snr_eff), '.', ',');
-
 panel = struct( ...
-    'title',         sprintf('IEEE 802.11ax, CBW40 (%d MHz), MCS 5 (64-QAM, r = 2/3), TGax Model-C, SNR = %s dB', bw_mhz, snr_str), ...
+    'title',         'IEEE 802.11ax, CBW40 (40 MHz), MCS 5 (64-QAM, r = 2/3), TGax Model-C, P_rx = -50 dBm', ...
     'standard',      '802.11ax', ...
     'cbw',           'CBW40', ...
     'mcs',           5, ...
     'channel_model', 'Model-C', ...
-    'p_rx_dBm',      p_rx_dBm);
+    'p_rx_dBm',      -50.0);
 
 ranges_m   = 1 : 0.5 : 42;
 cache_file = fullfile(project_root, 'results', 'exp6_range_limits.mat');

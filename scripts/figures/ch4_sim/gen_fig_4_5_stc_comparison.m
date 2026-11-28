@@ -2,8 +2,9 @@ function fig = gen_fig_4_5_stc_comparison(show_figure, save_png)
 % GEN_FIG_4_5_STC_COMPARISON
 % Experiment SIM-5 (E5): Dynamic range limit - Binary STC vs Coherent STC (Braun 2014).
 % Figure 4.5 for Chapter 4 of the thesis:
-%   1D range cuts at the main target Doppler column in TGax Model-A (CBW40, 40 MHz)
-%   for a pedestrian at 10.0 m and a car at 22.0 m inside the Blackman-Harris main lobe.
+%   Unnormalized 1D range cuts Per_F [dB] at the main target Doppler column in TGax Model-A
+%   (CBW40, 40 MHz) for a pedestrian at 10.0 m and a car at 22.0 m inside the main lobe,
+%   plotted alongside the actual CFAR detection threshold eta [dB].
 %
 % Output file: thesis/img/ch4_sim/rys_4_5_porownanie_stc.png
 
@@ -27,7 +28,6 @@ cbw           = 'CBW40';
 mcs           = 0;
 channel_model = 'Model-A';
 
-
 % Physical monostatic radar equation (pedestrian at 10.0 m, car at 22.0 m)
 r1_m = 10.0;  v1_ms = 8.0;
 r2_m = 22.0;  v2_ms = 8.0;
@@ -47,9 +47,9 @@ radar_data = step3_receiver(rx_signal, waveform, fs, fc, params, [], [], intrins
 
 p_FA = 1e-3;
 [targets_bin, ~, Per_after_bin, eta_bin, ~, diag_bin] = step4_interpreter( ...
-    radar_data, fs, fc, p_FA, alg_bin);
+    radar_data, fs, fc, p_FA, alg_bin, [], false);
 [targets_coh, ~, Per_after_coh, eta_coh, ~, diag_coh] = step4_interpreter( ...
-    radar_data, fs, fc, p_FA, alg_coh);
+    radar_data, fs, fc, p_FA, alg_coh, [], true);
 
 car_bin = any(abs([targets_bin.d_hat] - r2_m) < 2.5 & abs([targets_bin.v_hat] - v2_ms) < 2.0);
 car_coh = any(abs([targets_coh.d_hat] - r2_m) < 2.5 & abs([targets_coh.v_hat] - v2_ms) < 2.0);
@@ -57,37 +57,27 @@ fprintf('  [E5 Comparison] %s: %d detections (car detected = %d)\n', alg_bin.nam
 fprintf('  [E5 Comparison] %s: %d detections, %d residuals rejected (car detected = %d)\n', ...
     alg_coh.name, numel(targets_coh), diag_coh.num_residuals, car_coh);
 
-% Extract 1D range cuts at the main target Doppler column
+% Extract real unnormalized 1D range cuts Per_F [dB] at the main target Doppler column
 dop_col = targets_coh(1).d_idx;
 r_axis  = radar_data.axis_range;
 
-cand_idx = find([targets_coh.d_hat] > 14.0 & [targets_coh.d_hat] < 35.0);
-if isempty(cand_idx)
-    error('Car target in R in (14, 35) m zone was not detected by %s in E5.', alg_coh.name);
-end
-[~, best_rel] = min(hypot([targets_coh(cand_idx).d_hat] - r2_m, [targets_coh(cand_idx).v_hat] - v2_ms));
-idx_car = cand_idx(best_rel);
-k_car   = targets_coh(idx_car).iter;
+cut_raw_dB      = 10 * log10(radar_data.Per_F(:, dop_col) + 1e-12);
+cut_after_bin   = 10 * log10(Per_after_bin(:, dop_col) + 1e-12);
+cut_after_t1_dB = 10 * log10(diag_coh.Per_history{2}(:, dop_col) + 1e-12);
+cut_final_coh   = 10 * log10(Per_after_coh(:, dop_col) + 1e-12);
+eta_bin_dB      = 10 * log10(eta_bin);
+eta_coh_dB      = 10 * log10(eta_coh);
 
-cut_raw = radar_data.Per_F(:, dop_col);
-max_pwr = max(cut_raw); % Normalize relative to strong target peak (0 dB)
-
-cut_raw_dB      = 10 * log10(cut_raw / max_pwr + 1e-12);
-cut_after_bin   = 10 * log10(Per_after_bin(:, dop_col) / max_pwr + 1e-12);
-cut_after_t1_dB = 10 * log10(diag_coh.Per_history{k_car + 1}(:, dop_col) / max_pwr + 1e-12);
-cut_final_coh   = 10 * log10(Per_after_coh(:, dop_col) / max_pwr + 1e-12);
-eta_bin_dB      = 10 * log10(eta_bin / max_pwr + 1e-12);
-eta_coh_dB      = 10 * log10(eta_coh / max_pwr + 1e-12);
-
-fprintf('  CFAR threshold eta: %s = %.2f dB | %s = %.2f dB\n', alg_bin.name, eta_bin_dB, alg_coh.name, eta_coh_dB);
+fprintf('  Peak Per_F = %+.2f dB | CFAR threshold eta: %s = %.2f dB | %s = %.2f dB\n', ...
+    max(cut_raw_dB), alg_bin.name, eta_bin_dB, alg_coh.name, eta_coh_dB);
 
 fig = figure('Name', 'Figure 4.5 - Binary STC vs Coherent STC (CBW40, Model-A)', ...
     'Color', 'w', 'Position', [80, 100, 1280, 500], 'Visible', 'off');
 sgtitle(sprintf('Porównanie algorytmów %s i %s (Braun, CBW40, Model-A)', alg_bin.name, alg_coh.name), ...
     'FontSize', 13.5, 'FontWeight', 'bold', 'Interpreter', 'none');
 
-y_lims = [-60, 5];
-x_lims = [0, 35];
+y_lims = [-50, 22];
+x_lims = [0, 50];
 
 % Panel (a): Binary STC
 subplot(1, 2, 1);
@@ -128,7 +118,7 @@ xlim(x_lims);
 ylim(y_lims);
 title(sprintf('a) %s (%s)', alg_bin.name, alg_bin.description_pl), 'FontSize', 11, 'FontWeight', 'bold', 'Interpreter', 'none');
 xlabel('Odległość bistatyczna [m]', 'FontSize', 11, 'FontWeight', 'bold');
-ylabel('Moc znormalizowana [dB]', 'FontSize', 11, 'FontWeight', 'bold');
+ylabel('Moc periodogramu [dB]', 'FontSize', 11, 'FontWeight', 'bold');
 grid on;
 set(gca, 'GridAlpha', 0.25, 'MinorGridAlpha', 0.15, 'Layer', 'top');
 box on;
@@ -154,7 +144,7 @@ xlim(x_lims);
 ylim(y_lims);
 title(sprintf('b) %s (%s)', alg_coh.name, alg_coh.description_pl), 'FontSize', 11, 'FontWeight', 'bold', 'Interpreter', 'none');
 xlabel('Odległość bistatyczna [m]', 'FontSize', 11, 'FontWeight', 'bold');
-ylabel('Moc znormalizowana [dB]', 'FontSize', 11, 'FontWeight', 'bold');
+ylabel('Moc periodogramu [dB]', 'FontSize', 11, 'FontWeight', 'bold');
 grid on;
 set(gca, 'GridAlpha', 0.25, 'MinorGridAlpha', 0.15, 'Layer', 'top');
 box on;

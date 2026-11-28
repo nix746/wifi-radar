@@ -78,10 +78,12 @@ if show_figures
 end
 
 meta = struct('standard', wifi_standard, 'cbw', cbw, 'channel', channel_model);
-fig_bin = plot_binary_stc_demo(radar_data.Per_F, diag_bin.B, ...
-    radar_data.axis_velocity, radar_data.axis_range, targets_true, targets_bin, alg_bin, meta, show_figures);
-fig_coh = plot_coherent_stc_demo(radar_data.Per_F, Per_after_coh, ...
-    radar_data.axis_velocity, radar_data.axis_range, targets_true, targets_coh, alg_coh, meta, show_figures);
+fig_bin = plot_stc_demo(radar_data.Per_F, Per_after_bin, diag_bin.B, ...
+    radar_data.axis_velocity, radar_data.axis_range, targets_true, targets_bin, alg_bin, meta, ...
+    sprintf('2. Periodogram zamaskowany (po %s)', alg_bin.name), [80, 140, 1220, 520], show_figures);
+fig_coh = plot_stc_demo(radar_data.Per_F, Per_after_coh, [], ...
+    radar_data.axis_velocity, radar_data.axis_range, targets_true, targets_coh, alg_coh, meta, ...
+    sprintf('2. Periodogram rezydualny (po %s)', alg_coh.name), [130, 90, 1220, 520], show_figures);
 
 if show_figures
     figs = [fig_bin, fig_coh];
@@ -103,7 +105,8 @@ end
 
 function targets = generate_random_targets(num_targets)
 % GENERATE_RANDOM_TARGETS Draws physically valid moving targets well separated
-% from the R = 0 clutter ridge, v = 0 MTI notch, and within the ~30 m detection range.
+% from the R = 0 clutter ridge and v = 0 MTI notch, spanning up to ~50 m
+% (including beyond the detection range limit for weaker targets).
 targets = repmat(struct('type', '', 'range_m', 0, 'velocity_mps', 0), num_targets, 1);
 
 for k = 1:num_targets
@@ -111,11 +114,11 @@ for k = 1:num_targets
     for attempt = 1:200
         if rand() < 0.5
             t_type = 'car';
-            r_m    = 6.0 + 22.0 * rand();  % [6, 28] m
+            r_m    = 6.0 + 42.0 * rand();  % [6, 48] m
             v_mag  = 6.0 + 12.0 * rand();  % [6, 18] m/s
         else
             t_type = 'human';
-            r_m    = 3.0 + 15.0 * rand();  % [3, 18] m
+            r_m    = 3.0 + 32.0 * rand();  % [3, 35] m
             v_mag  = 1.8 + 3.2 * rand();   % [1.8, 5.0] m/s (brisk walk / jog)
         end
 
@@ -195,139 +198,28 @@ for k = 1:numel(targets_det)
 end
 end
 
-function fig = plot_binary_stc_demo(Per_F_base, B, axis_velocity, axis_range, ...
-    targets_true, targets_det, alg, meta, show_figures)
-% PLOT_BINARY_STC_DEMO Range-Doppler map and binary cancellation mask B after Binary STC.
-
-Per_dB_base = 10 * log10(Per_F_base + 1e-12);
-c_lims      = [max(Per_dB_base(:)) - 60, max(Per_dB_base(:))];
-v_lims      = [max(-25, axis_velocity(1)), min(25, axis_velocity(end))];
-r_lims      = [0, min(30, axis_range(end))];
-
-fig_title = sprintf('Demo losowych celów - %s (%s, %s, %s)', ...
-    alg.name, meta.standard, meta.cbw, meta.channel);
-fig = figure('Name', fig_title, 'Color', 'white', ...
-    'Position', [80, 140, 1220, 520], 'WindowStyle', 'normal', 'Visible', 'off');
-
-% Panel 1: Range-Doppler periodogram with ground truth and detections
-ax1 = subplot(1, 2, 1);
-imagesc(ax1, axis_velocity, axis_range, Per_dB_base);
-axis(ax1, 'xy');
-colormap(ax1, 'jet');
-clim(ax1, c_lims);
-xlim(ax1, v_lims);
-ylim(ax1, r_lims);
-hold(ax1, 'on');
-plot(ax1, [targets_true.velocity_mps], [targets_true.range_m], ...
-    'wo', 'MarkerSize', 10, 'LineWidth', 1.8, 'DisplayName', 'Cele rzeczywiste');
-if ~isempty(targets_det)
-    plot(ax1, [targets_det.v_hat], [targets_det.d_hat], ...
-        'kx', 'MarkerSize', 11, 'LineWidth', 2.0, 'DisplayName', ['Wykrycia ' alg.name]);
-end
-hold(ax1, 'off');
-legend(ax1, 'Location', 'northeast', 'FontSize', 9, 'Interpreter', 'none');
-cbar = colorbar(ax1);
-cbar.Label.String = 'Moc [dB]';
-cbar.Label.Interpreter = 'none';
-title(ax1, sprintf('1. Periodogram Range-Doppler (przed %s)', alg.name), ...
-    'FontSize', 11, 'FontWeight', 'bold', 'Interpreter', 'none');
-xlabel(ax1, 'Prędkość radialna [m/s]', 'Interpreter', 'none');
-ylabel(ax1, 'Odległość bistatyczna [m]', 'Interpreter', 'none');
-grid(ax1, 'on');
-box(ax1, 'on');
-
-% Panel 2: Binary cancellation mask B (1 = unmasked, 0 = cancelled main lobe)
-ax2 = subplot(1, 2, 2);
-imagesc(ax2, axis_velocity, axis_range, double(B));
-axis(ax2, 'xy');
-colormap(ax2, gray(2));
-clim(ax2, [0, 1]);
-xlim(ax2, v_lims);
-ylim(ax2, r_lims);
-hold(ax2, 'on');
-plot(ax2, [targets_true.velocity_mps], [targets_true.range_m], ...
-    'ro', 'MarkerSize', 10, 'LineWidth', 1.8, 'DisplayName', 'Cele rzeczywiste');
-hold(ax2, 'off');
-legend(ax2, 'Location', 'northeast', 'FontSize', 9, 'Interpreter', 'none');
-title(ax2, sprintf('2. Maska binarna B (po %s)', alg.name), ...
-    'FontSize', 11, 'FontWeight', 'bold', 'Interpreter', 'none');
-xlabel(ax2, 'Prędkość radialna [m/s]', 'Interpreter', 'none');
-ylabel(ax2, 'Odległość bistatyczna [m]', 'Interpreter', 'none');
-grid(ax2, 'on');
-box(ax2, 'on');
-
-sgtitle(fig_title, 'FontSize', 13, 'FontWeight', 'bold', 'Interpreter', 'none');
-
-if show_figures
-    set(fig, 'Visible', 'on');
-    drawnow;
-else
-    close(fig);
-    fig = [];
-end
-end
-
-function fig = plot_coherent_stc_demo(Per_F_base, Per_F_after, axis_velocity, axis_range, ...
-    targets_true, targets_det, alg, meta, show_figures)
-% PLOT_COHERENT_STC_DEMO Range-Doppler periodograms before and after Coherent STC.
+function fig = plot_stc_demo(Per_F_base, Per_F_after, mask_B, axis_velocity, axis_range, ...
+    targets_true, targets_det, alg, meta, panel2_title, fig_pos, show_figures)
+% PLOT_STC_DEMO Range-Doppler periodograms before and after STC (Binary or Coherent).
 
 Per_dB_base  = 10 * log10(Per_F_base + 1e-12);
 Per_dB_after = 10 * log10(Per_F_after + 1e-12);
 c_lims       = [max(Per_dB_base(:)) - 60, max(Per_dB_base(:))];
 v_lims       = [max(-25, axis_velocity(1)), min(25, axis_velocity(end))];
-r_lims       = [0, min(30, axis_range(end))];
+r_lims       = [0, min(50, axis_range(end))];
 
 fig_title = sprintf('Demo losowych celów - %s (%s, %s, %s)', ...
     alg.name, meta.standard, meta.cbw, meta.channel);
 fig = figure('Name', fig_title, 'Color', 'white', ...
-    'Position', [130, 90, 1220, 520], 'WindowStyle', 'normal', 'Visible', 'off');
+    'Position', fig_pos, 'WindowStyle', 'normal', 'Visible', 'off');
 
-% Panel 1: Original Range-Doppler periodogram with ground truth and detections
 ax1 = subplot(1, 2, 1);
-imagesc(ax1, axis_velocity, axis_range, Per_dB_base);
-axis(ax1, 'xy');
-colormap(ax1, 'jet');
-clim(ax1, c_lims);
-xlim(ax1, v_lims);
-ylim(ax1, r_lims);
-hold(ax1, 'on');
-plot(ax1, [targets_true.velocity_mps], [targets_true.range_m], ...
-    'wo', 'MarkerSize', 10, 'LineWidth', 1.8, 'DisplayName', 'Cele rzeczywiste');
-if ~isempty(targets_det)
-    plot(ax1, [targets_det.v_hat], [targets_det.d_hat], ...
-        'kx', 'MarkerSize', 11, 'LineWidth', 2.0, 'DisplayName', ['Wykrycia ' alg.name]);
-end
-hold(ax1, 'off');
-legend(ax1, 'Location', 'northeast', 'FontSize', 9, 'Interpreter', 'none');
-title(ax1, sprintf('1. Periodogram Range-Doppler (przed %s)', alg.name), ...
-    'FontSize', 11, 'FontWeight', 'bold', 'Interpreter', 'none');
-xlabel(ax1, 'Prędkość radialna [m/s]', 'Interpreter', 'none');
-ylabel(ax1, 'Odległość bistatyczna [m]', 'Interpreter', 'none');
-grid(ax1, 'on');
-box(ax1, 'on');
+plot_rdm_panel(ax1, axis_velocity, axis_range, Per_dB_base, [], c_lims, v_lims, r_lims, ...
+    targets_true, targets_det, alg.name, sprintf('1. Periodogram Range-Doppler (przed %s)', alg.name), false);
 
-% Panel 2: Residual periodogram after coherent target subtraction
 ax2 = subplot(1, 2, 2);
-imagesc(ax2, axis_velocity, axis_range, Per_dB_after);
-axis(ax2, 'xy');
-colormap(ax2, 'jet');
-clim(ax2, c_lims);
-xlim(ax2, v_lims);
-ylim(ax2, r_lims);
-hold(ax2, 'on');
-plot(ax2, [targets_true.velocity_mps], [targets_true.range_m], ...
-    'wo', 'MarkerSize', 10, 'LineWidth', 1.8, 'DisplayName', 'Cele rzeczywiste');
-hold(ax2, 'off');
-legend(ax2, 'Location', 'northeast', 'FontSize', 9, 'Interpreter', 'none');
-cbar = colorbar(ax2);
-cbar.Label.String = 'Moc [dB]';
-cbar.Label.Interpreter = 'none';
-title(ax2, sprintf('2. Periodogram rezydualny (po %s)', alg.name), ...
-    'FontSize', 11, 'FontWeight', 'bold', 'Interpreter', 'none');
-xlabel(ax2, 'Prędkość radialna [m/s]', 'Interpreter', 'none');
-ylabel(ax2, 'Odległość bistatyczna [m]', 'Interpreter', 'none');
-grid(ax2, 'on');
-box(ax2, 'on');
+plot_rdm_panel(ax2, axis_velocity, axis_range, Per_dB_after, mask_B, c_lims, v_lims, r_lims, ...
+    targets_true, [], alg.name, panel2_title, true);
 
 sgtitle(fig_title, 'FontSize', 13, 'FontWeight', 'bold', 'Interpreter', 'none');
 
@@ -338,4 +230,37 @@ else
     close(fig);
     fig = [];
 end
+end
+
+function plot_rdm_panel(ax, axis_velocity, axis_range, Per_dB, mask_B, c_lims, v_lims, r_lims, ...
+    targets_true, targets_det, alg_name, panel_title, show_cbar)
+img = imagesc(ax, axis_velocity, axis_range, Per_dB);
+if ~isempty(mask_B)
+    set(img, 'AlphaData', double(mask_B));
+    set(ax, 'Color', [0.15, 0.15, 0.15]);
+end
+axis(ax, 'xy');
+colormap(ax, 'parula');
+clim(ax, c_lims);
+xlim(ax, v_lims);
+ylim(ax, r_lims);
+hold(ax, 'on');
+plot(ax, [targets_true.velocity_mps], [targets_true.range_m], ...
+    'wo', 'MarkerSize', 10, 'LineWidth', 1.8, 'DisplayName', 'Cele rzeczywiste');
+if ~isempty(targets_det)
+    plot(ax, [targets_det.v_hat], [targets_det.d_hat], ...
+        'kx', 'MarkerSize', 11, 'LineWidth', 2.0, 'DisplayName', ['Wykrycia ' alg_name]);
+end
+hold(ax, 'off');
+legend(ax, 'Location', 'northeast', 'FontSize', 9, 'Color', 'white', 'Interpreter', 'none');
+if show_cbar
+    cbar = colorbar(ax);
+    cbar.Label.String = 'Moc periodogramu [dB]';
+    cbar.Label.Interpreter = 'none';
+end
+title(ax, panel_title, 'FontSize', 11, 'FontWeight', 'bold', 'Interpreter', 'none');
+xlabel(ax, 'Prędkość radialna [m/s]', 'Interpreter', 'none');
+ylabel(ax, 'Odległość bistatyczna [m]', 'Interpreter', 'none');
+grid(ax, 'on');
+box(ax, 'on');
 end

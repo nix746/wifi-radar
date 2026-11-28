@@ -21,7 +21,6 @@ fprintf('=================================================================\n');
 project_root = fullfile(script_path, '..', '..', '..');
 addpath(project_root);
 init_paths();
-rng(42);
 
 wifi_standard = '802.11ax';
 cbw           = 'CBW40';
@@ -47,7 +46,7 @@ for i = 1:n_mcs
         [waveform, fs, params, cfg] = step1_transmitter(wifi_standard, cbw, mcs);
         [rx_signal, fc, intrinsic_delay] = step2_channel(waveform, fs, channel_model, cfg, targets);
         radar_data                       = step3_receiver(rx_signal, waveform, fs, fc, params, [], [], intrinsic_delay);
-        [~, ~, ~, ~, pnfr]          = step4_interpreter(radar_data, fs, fc);
+        [~, ~, ~, ~, pnfr]               = step4_interpreter(radar_data, fs, fc, [], [], [], false);
 
         zeta_runs(k_run) = radar_data.zeta_dB;
         pnfr_runs(k_run) = pnfr.pnfr_dB(1);

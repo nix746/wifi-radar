@@ -29,13 +29,14 @@ if nargin < 3 || isempty(force_recompute), force_recompute = false; end
 
 if ~isempty(cache_file) && ~force_recompute && isfile(cache_file)
     S = load(cache_file, 'mc');
-    if isfield(S, 'mc') && isfield(S.mc, 'cfg') && isequaln(S.mc.cfg, cfg)
+    if isfield(S, 'mc') && isfield(S.mc, 'cfg') && isequaln(S.mc.cfg, cfg) ...
+            && isfield(S.mc, 'summary') && ~isfield(S.mc.summary, 'pd_comp')
         mc = S.mc;
         fprintf('  Loaded cached Monte Carlo results: %s\n', cache_file);
         fprintf('%s', mc.report);
         return;
     end
-    fprintf('  Cache %s does not match the scenario config. Recomputing.\n', cache_file);
+    fprintf('  Cache %s does not match the current schema/config. Recomputing.\n', cache_file);
 end
 
 alg_ids = {'binary', 'coherent'};
@@ -82,38 +83,32 @@ end
 fc = [];
 
 % Raw per-target records
-max_tgt        = cfg.n_trials * sum(arrayfun(@(c) max(c.count_set), cfg.classes));
-rec_trial      = zeros(max_tgt, 1);
-rec_class      = zeros(max_tgt, 1);
-rec_rcs        = zeros(max_tgt, 1);
-rec_range      = zeros(max_tgt, 1);
-rec_vel        = zeros(max_tgt, 1);
-rec_cbw_mhz    = zeros(max_tgt, 1);
-rec_mcs        = zeros(max_tgt, 1);
-rec_sync_err   = nan(max_tgt, 1);
-rec_sync_err_m = nan(max_tgt, 1);
-rec_hit        = false(max_tgt, n_alg);
-rec_hit_comp   = false(max_tgt, n_alg);
-rec_err_r      = nan(max_tgt, n_alg);
-rec_err_v      = nan(max_tgt, n_alg);
-rec_pnfr       = nan(max_tgt, n_alg);
-n_rec          = 0;
+max_tgt     = cfg.n_trials * sum(arrayfun(@(c) max(c.count_set), cfg.classes));
+rec_trial   = zeros(max_tgt, 1);
+rec_class   = zeros(max_tgt, 1);
+rec_rcs     = zeros(max_tgt, 1);
+rec_range   = zeros(max_tgt, 1);
+rec_vel     = zeros(max_tgt, 1);
+rec_cbw_mhz = zeros(max_tgt, 1);
+rec_mcs     = zeros(max_tgt, 1);
+rec_hit     = false(max_tgt, n_alg);
+rec_err_r   = nan(max_tgt, n_alg);
+rec_err_v   = nan(max_tgt, n_alg);
+rec_pnfr    = nan(max_tgt, n_alg);
+n_rec       = 0;
 
 % Per-trial records
-trial_cbw_mhz    = nan(cfg.n_trials, 1);
-trial_mcs        = nan(cfg.n_trials, 1);
-trial_fs         = nan(cfg.n_trials, 1);
-trial_gate_r     = nan(cfg.n_trials, 1);
-trial_gate_v     = nan(cfg.n_trials, 1);
-trial_dv_ray     = nan(cfg.n_trials, 1);
-trial_sync_err   = nan(cfg.n_trials, 1);
-trial_sync_err_m = nan(cfg.n_trials, 1);
-trial_failed     = false(cfg.n_trials, 1);
-trial_n_det      = nan(cfg.n_trials, n_alg);
-trial_n_fa       = nan(cfg.n_trials, n_alg);
-trial_n_fa_comp  = nan(cfg.n_trials, n_alg);
-trial_iter       = nan(cfg.n_trials, n_alg);
-trial_resid      = nan(cfg.n_trials, n_alg);
+trial_cbw_mhz = nan(cfg.n_trials, 1);
+trial_mcs     = nan(cfg.n_trials, 1);
+trial_fs      = nan(cfg.n_trials, 1);
+trial_gate_r  = nan(cfg.n_trials, 1);
+trial_gate_v  = nan(cfg.n_trials, 1);
+trial_dv_ray  = nan(cfg.n_trials, 1);
+trial_failed  = false(cfg.n_trials, 1);
+trial_n_det   = nan(cfg.n_trials, n_alg);
+trial_n_fa    = nan(cfg.n_trials, n_alg);
+trial_iter    = nan(cfg.n_trials, n_alg);
+trial_resid   = nan(cfg.n_trials, n_alg);
 
 t_start = tic;
 for tr = 1:cfg.n_trials
@@ -164,18 +159,10 @@ for tr = 1:cfg.n_trials
             cfg.channel_model, cfg_wlan, targets, p_rx_arg);
         radar_data = run_quiet(@step3_receiver, 1, rx, waveform, fs, fc, params, [], [], intrinsic_delay);
     catch err
-        % End-to-end failure (e.g. lost packet sync): all targets count as missed
         trial_failed(tr) = true;
         warning('Trial %d failed in receiver chain: %s', tr, err.message);
         continue;
     end
-
-    sync_err             = radar_data.sync_idx - intrinsic_delay;
-    sync_err_m           = sync_err * dr_ray_tr;
-    trial_sync_err(tr)   = sync_err;
-    trial_sync_err_m(tr) = sync_err_m;
-    rec_sync_err(idx)    = sync_err;
-    rec_sync_err_m(idx)  = sync_err_m;
 
     T_cpi_tr  = radar_data.n_symbols * (radar_data.Nfft + radar_data.Ncp) / fs;
     dv_ray_tr = c0 / (2 * fc * T_cpi_tr); % Doppler (velocity) Rayleigh resolution
@@ -198,10 +185,7 @@ for tr = 1:cfg.n_trials
         end
 
         [hit, det_idx] = associate(d_hat, v_hat, r_true, v_true, gate_r_tr, gate_v_tr);
-        hit_comp       = associate(d_hat + sync_err_m, v_hat, r_true, v_true, gate_r_tr, gate_v_tr);
-
-        rec_hit(idx, a)      = hit;
-        rec_hit_comp(idx, a) = hit_comp;
+        rec_hit(idx, a) = hit;
 
         m = find(hit);
         if ~isempty(m)
@@ -213,11 +197,10 @@ for tr = 1:cfg.n_trials
             rec_pnfr(idx(m), a)  = p_m(:);
         end
 
-        trial_n_det(tr, a)     = numel(d_hat);
-        trial_n_fa(tr, a)      = numel(d_hat) - nnz(hit);
-        trial_n_fa_comp(tr, a) = numel(d_hat) - nnz(hit_comp);
-        trial_iter(tr, a)      = dg.num_iterations;
-        trial_resid(tr, a)     = dg.num_residuals;
+        trial_n_det(tr, a) = numel(d_hat);
+        trial_n_fa(tr, a)  = numel(d_hat) - nnz(hit);
+        trial_iter(tr, a)  = dg.num_iterations;
+        trial_resid(tr, a) = dg.num_residuals;
     end
 
     if mod(tr, 10) == 0 || tr == cfg.n_trials
@@ -227,21 +210,18 @@ end
 elapsed_s = toc(t_start);
 
 % Trim raw records
-keep           = 1:n_rec;
-rec_trial      = rec_trial(keep);
-rec_class      = rec_class(keep);
-rec_rcs        = rec_rcs(keep);
-rec_range      = rec_range(keep);
-rec_vel        = rec_vel(keep);
-rec_cbw_mhz    = rec_cbw_mhz(keep);
-rec_mcs        = rec_mcs(keep);
-rec_sync_err   = rec_sync_err(keep);
-rec_sync_err_m = rec_sync_err_m(keep);
-rec_hit        = rec_hit(keep, :);
-rec_hit_comp   = rec_hit_comp(keep, :);
-rec_err_r      = rec_err_r(keep, :);
-rec_err_v      = rec_err_v(keep, :);
-rec_pnfr       = rec_pnfr(keep, :);
+keep        = 1:n_rec;
+rec_trial   = rec_trial(keep);
+rec_class   = rec_class(keep);
+rec_rcs     = rec_rcs(keep);
+rec_range   = rec_range(keep);
+rec_vel     = rec_vel(keep);
+rec_cbw_mhz = rec_cbw_mhz(keep);
+rec_mcs     = rec_mcs(keep);
+rec_hit     = rec_hit(keep, :);
+rec_err_r   = rec_err_r(keep, :);
+rec_err_v   = rec_err_v(keep, :);
+rec_pnfr    = rec_pnfr(keep, :);
 
 % Per-bin detection probability with 95% Wilson intervals
 edges   = cfg.range_edges(:).';
@@ -251,8 +231,7 @@ bin_idx = discretize(rec_range, edges);
 
 bins = struct('edges', edges, 'centers', centers, ...
     'n', zeros(n_alg, n_cls, n_bin), 'k', zeros(n_alg, n_cls, n_bin), ...
-    'pd', nan(n_alg, n_cls, n_bin), 'ci_lo', nan(n_alg, n_cls, n_bin), 'ci_hi', nan(n_alg, n_cls, n_bin), ...
-    'k_comp', zeros(n_alg, n_cls, n_bin), 'pd_comp', nan(n_alg, n_cls, n_bin));
+    'pd', nan(n_alg, n_cls, n_bin), 'ci_lo', nan(n_alg, n_cls, n_bin), 'ci_hi', nan(n_alg, n_cls, n_bin));
 
 for a = 1:n_alg
     for c = 1:n_cls
@@ -260,14 +239,11 @@ for a = 1:n_alg
             sel = (rec_class == c) & (bin_idx == b);
             n   = nnz(sel);
             k   = nnz(rec_hit(sel, a));
-            kc  = nnz(rec_hit_comp(sel, a));
             [lo, hi] = wilson_ci(k, n);
-            bins.n(a, c, b)      = n;
-            bins.k(a, c, b)      = k;
-            bins.k_comp(a, c, b) = kc;
+            bins.n(a, c, b) = n;
+            bins.k(a, c, b) = k;
             if n > 0
-                bins.pd(a, c, b)      = k / n;
-                bins.pd_comp(a, c, b) = kc / n;
+                bins.pd(a, c, b) = k / n;
             end
             bins.ci_lo(a, c, b) = lo;
             bins.ci_hi(a, c, b) = hi;
@@ -281,7 +257,6 @@ summary.n_targets = zeros(1, n_cls);
 summary.pd        = nan(n_alg, n_cls);
 summary.pd_lo     = nan(n_alg, n_cls);
 summary.pd_hi     = nan(n_alg, n_cls);
-summary.pd_comp   = nan(n_alg, n_cls);
 summary.rmse_r    = nan(n_alg, n_cls);
 summary.rmse_v    = nan(n_alg, n_cls);
 summary.pnfr_mean = nan(n_alg, n_cls);
@@ -294,8 +269,7 @@ for c = 1:n_cls
         n = nnz(sel);
         k = nnz(rec_hit(sel, a));
         if n > 0
-            summary.pd(a, c)      = k / n;
-            summary.pd_comp(a, c) = nnz(rec_hit_comp(sel, a)) / n;
+            summary.pd(a, c) = k / n;
             [summary.pd_lo(a, c), summary.pd_hi(a, c)] = wilson_ci(k, n);
         end
         er = rec_err_r(sel, a);  er = er(~isnan(er));
@@ -312,11 +286,10 @@ for c = 1:n_cls
     end
 end
 ok = ~trial_failed;
-summary.mean_n_det      = mean(trial_n_det(ok, :), 1);
-summary.mean_n_fa       = mean(trial_n_fa(ok, :), 1);
-summary.mean_n_fa_comp  = mean(trial_n_fa_comp(ok, :), 1);
-summary.mean_iter       = mean(trial_iter(ok, :), 1);
-summary.mean_resid      = mean(trial_resid(ok, :), 1);
+summary.mean_n_det = mean(trial_n_det(ok, :), 1);
+summary.mean_n_fa  = mean(trial_n_fa(ok, :), 1);
+summary.mean_iter  = mean(trial_iter(ok, :), 1);
+summary.mean_resid = mean(trial_resid(ok, :), 1);
 
 % Empty-scene (K = 0) empirical false-alarm verification
 n_empty        = 10;
@@ -331,9 +304,9 @@ for et = 1:n_empty
     end
     tx_e = tx_cache{icbw_e, imcs_e};
     try
-        [rx_e, fc_e] = run_quiet(@step2_channel, 2, tx_e.waveform, tx_e.fs, ...
+        [rx_e, fc_e, id_e] = run_quiet(@step2_channel, 3, tx_e.waveform, tx_e.fs, ...
             cfg.channel_model, tx_e.cfg_wlan, t_empty, p_rx_arg);
-        rd_e = run_quiet(@step3_receiver, 1, rx_e, tx_e.waveform, tx_e.fs, fc_e, tx_e.params);
+        rd_e = run_quiet(@step3_receiver, 1, rx_e, tx_e.waveform, tx_e.fs, fc_e, tx_e.params, [], [], id_e);
         for a = 1:n_alg
             det_e = run_quiet(@step4_interpreter, 1, rd_e, tx_e.fs, fc_e, ...
                 cfg.p_FA, algs{a}, p_rx_arg, false);
@@ -343,15 +316,10 @@ for et = 1:n_empty
         empty_fa_count(et, :) = NaN;
     end
 end
-summary.empty_n_trials   = n_empty;
-summary.empty_fa_mean    = mean(empty_fa_count, 1, 'omitnan');
-summary.empty_fa_prob    = mean(empty_fa_count > 0, 1, 'omitnan');
-se = trial_sync_err(ok);
-summary.sync_frac0    = mean(se == 0);
-summary.sync_frac_le1 = mean(abs(se) <= 1);
-summary.sync_median   = median(se);
-summary.sync_max      = max(abs(se));
-summary.n_failed      = nnz(trial_failed);
+summary.empty_n_trials = n_empty;
+summary.empty_fa_mean  = mean(empty_fa_count, 1, 'omitnan');
+summary.empty_fa_prob  = mean(empty_fa_count > 0, 1, 'omitnan');
+summary.n_failed       = nnz(trial_failed);
 
 gate_r_vals = unique(trial_gate_r(ok));
 if isempty(gate_r_vals)
@@ -366,28 +334,25 @@ gate_v_meta = median(trial_gate_v(ok), 'omitnan');
 dv_ray_meta = median(trial_dv_ray(ok), 'omitnan');
 
 mc = struct();
-mc.cfg       = cfg;
-mc.alg_ids   = alg_ids;
-mc.alg_names = cellfun(@(s) s.name, algs, 'UniformOutput', false);
-mc.alg_desc  = cellfun(@(s) s.description_pl, algs, 'UniformOutput', false);
+mc.cfg        = cfg;
+mc.alg_ids    = alg_ids;
+mc.alg_names  = cellfun(@(s) s.name, algs, 'UniformOutput', false);
+mc.alg_desc   = cellfun(@(s) s.description_pl, algs, 'UniformOutput', false);
 mc.class_keys = {cfg.classes.key};
-mc.bins      = bins;
-mc.summary   = summary;
-mc.meta      = struct('fs', fs_meta, 'fc', fc, 'gate_r', gate_r_meta, 'gate_v', gate_v_meta, ...
+mc.bins       = bins;
+mc.summary    = summary;
+mc.meta       = struct('fs', fs_meta, 'fc', fc, 'gate_r', gate_r_meta, 'gate_v', gate_v_meta, ...
     'dv_rayleigh', dv_ray_meta, 'cbw_pool', {cbw_pool}, 'mcs_pool', mcs_pool, ...
     'elapsed_s', elapsed_s, 'created', char(datetime('now')));
-mc.raw       = struct('trial', rec_trial, 'class', rec_class, 'rcs', rec_rcs, ...
+mc.raw        = struct('trial', rec_trial, 'class', rec_class, 'rcs', rec_rcs, ...
     'range_m', rec_range, 'velocity_mps', rec_vel, 'cbw_mhz', rec_cbw_mhz, 'mcs', rec_mcs, ...
-    'sync_err', rec_sync_err, 'sync_err_m', rec_sync_err_m, ...
-    'hit', rec_hit, 'hit_comp', rec_hit_comp, ...
-    'err_r', rec_err_r, 'err_v', rec_err_v, 'pnfr_dB', rec_pnfr, ...
+    'hit', rec_hit, 'err_r', rec_err_r, 'err_v', rec_err_v, 'pnfr_dB', rec_pnfr, ...
     'trial_cbw_mhz', trial_cbw_mhz, 'trial_mcs', trial_mcs, ...
     'trial_gate_r', trial_gate_r, 'trial_gate_v', trial_gate_v, ...
-    'trial_sync_err', trial_sync_err, 'trial_sync_err_m', trial_sync_err_m, ...
     'trial_failed', trial_failed, ...
-    'trial_n_det', trial_n_det, 'trial_n_fa', trial_n_fa, 'trial_n_fa_comp', trial_n_fa_comp, ...
+    'trial_n_det', trial_n_det, 'trial_n_fa', trial_n_fa, ...
     'trial_iter', trial_iter, 'trial_resid', trial_resid);
-mc.report    = build_report(mc);
+mc.report     = build_report(mc);
 
 fprintf('%s', mc.report);
 
@@ -563,20 +528,18 @@ txt = [txt, sprintf('  %s %s %s | %s | %s | p_FA %.0e | %d trials (%d failed) | 
     cfg.n_trials, S.n_failed, mc.meta.elapsed_s)];
 txt = [txt, sprintf('  Gate: dR = %s, dv = %.2f m/s (%.2f x Rayleigh %.2f m/s)\n', ...
     dr_str, mc.meta.gate_v, cfg.gate_v_factor, mc.meta.dv_rayleigh)];
-txt = [txt, sprintf('  Packet sync error: 0 spl in %.1f%%, |err| <= 1 spl in %.1f%%, median %g spl, max %g spl\n', ...
-    100 * S.sync_frac0, 100 * S.sync_frac_le1, S.sync_median, S.sync_max)];
 
 bin_hdr = strjoin(arrayfun(@(lo, hi) sprintf('%5.0f-%-3.0f', lo, hi), ...
     B.edges(1:end-1), B.edges(2:end), 'UniformOutput', false), ' ');
 
 for a = 1:n_alg
     txt = [txt, sprintf('\n  --- %s ---\n', mc.alg_names{a})]; %#ok<AGROW>
-    txt = [txt, sprintf('  mean detections/frame %.2f | false alarms/frame %.2f (sync-comp %.2f) | empty K=0 FA/frame %.2f (P_FA %.1f%%) | iterations %.1f | residuals %.1f\n', ...
-        S.mean_n_det(a), S.mean_n_fa(a), S.mean_n_fa_comp(a), S.empty_fa_mean(a), 100 * S.empty_fa_prob(a), S.mean_iter(a), S.mean_resid(a))]; %#ok<AGROW>
+    txt = [txt, sprintf('  mean detections/frame %.2f | false alarms/frame %.2f | empty K=0 FA/frame %.2f (P_FA %.1f%%) | iterations %.1f | residuals %.1f\n', ...
+        S.mean_n_det(a), S.mean_n_fa(a), S.empty_fa_mean(a), 100 * S.empty_fa_prob(a), S.mean_iter(a), S.mean_resid(a))]; %#ok<AGROW>
     for c = 1:n_cls
-        txt = [txt, sprintf('  %-12s N=%4d | P_D %5.1f%% [%4.1f, %4.1f] | sync-comp %5.1f%% | R50 %s | R80 %s | RMSE_R %.2f m | RMSE_v %.2f m/s | PNFR %.1f dB\n', ...
+        txt = [txt, sprintf('  %-12s N=%4d | P_D %5.1f%% [%4.1f, %4.1f] | R50 %s | R80 %s | RMSE_R %.2f m | RMSE_v %.2f m/s | PNFR %.1f dB\n', ...
             mc.class_keys{c}, S.n_targets(c), 100 * S.pd(a, c), 100 * S.pd_lo(a, c), 100 * S.pd_hi(a, c), ...
-            100 * S.pd_comp(a, c), fmt_range(S.r50(a, c), B.edges), fmt_range(S.r80(a, c), B.edges), ...
+            fmt_range(S.r50(a, c), B.edges), fmt_range(S.r80(a, c), B.edges), ...
             S.rmse_r(a, c), S.rmse_v(a, c), S.pnfr_mean(a, c))]; %#ok<AGROW>
     end
     txt = [txt, sprintf('  P_D per range bin [m]: %s\n', bin_hdr)]; %#ok<AGROW>
