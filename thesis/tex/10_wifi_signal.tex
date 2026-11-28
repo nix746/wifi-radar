@@ -13,31 +13,7 @@
 
 Sieci WLAN zgodne z~rodziną standardów IEEE 802.11 pracują w~nielicencjonowanych pasmach 2,4, 5 i~6~GHz, a~ich punkty dostępowe są rozmieszczone gęsto w~budynkach i~przestrzeni miejskiej. Z~punktu widzenia radaru pasywnego jest to szerokopasmowy iluminator okazjonalny o~małej mocy, przydatny przede wszystkim w~scenariuszach krótkozasięgowych \cite{colone2014,sorbianWykorzystanieSieciWifi2025}. W~pracy rozważono dwie warstwy fizyczne: Non-HT standardu IEEE 802.11a \cite{1999} oraz HE-SU standardu IEEE 802.11ax \cite{2021}. Obie wykorzystują modulację OFDM (podrozdział~\ref{subsec:ofdm_modulation}), lecz różnią się parametrami siatki czas--częstotliwość, zestawionymi w~tabeli~\ref{tab:wifi_params}. Pominięto warstwę MAC, kodowanie kanałowe i~przeplot, ponieważ odbiornik radarowy operuje bezpośrednio na symbolach konstelacji przypisanych do podnośnych.
 
-\begin{table}[htbp]
-    \centering
-    \caption[Parametry warstwy fizycznej IEEE 802.11a i~802.11ax istotne dla przetwarzania radarowego]{Parametry warstwy fizycznej IEEE 802.11a i~802.11ax istotne dla przetwarzania radarowego \cite{1999,2021}}
-    \label{tab:wifi_params}
-    \small
-    \begin{tabular}{|l|c|c|}
-        \hline
-        \textbf{Parametr} & \textbf{802.11a (Non-HT)} & \textbf{802.11ax (HE-SU)} \\
-        \hline
-        Pasma częstotliwości & 5~GHz & 2,4 / 5 / 6~GHz \\
-        Szerokości kanału & 20~MHz & 20 / 40 / 80 / 160~MHz \\
-        Rozmiar FFT $N_{\mathrm{FFT}}$ & 64 & 256 / 512 / 1024 / 2048 \\
-        Odstęp podnośnych $\Delta f$ & 312,5~kHz & 78,125~kHz \\
-        Czas użyteczny symbolu $T_u$ & 3,2~$\mu$s & 12,8~$\mu$s \\
-        Prefiks cykliczny $T_{\mathrm{CP}}$ & 0,8~$\mu$s & 0,8 / 1,6 / 3,2~$\mu$s \\
-        Czas symbolu $T_{\mathrm{sym}}$ (dla $T_{\mathrm{CP}} = 0{,}8~\mu$s) & 4,0~$\mu$s & 13,6~$\mu$s \\
-        Podnośne aktywne (danych + pilotowe) & 52 (48 + 4) & 242 / 484 / 996 / 1992 \\
-        Podnośne pilotowe & 4 & 8 / 16 / 16 / 32 \\
-        Podnośne zerowe w~centrum pasma (DC) & 1 & 3 / 5 / 5 / 23 \\
-        Podnośne ochronne (lewe / prawe) & 6 / 5 & 6/5 (20~MHz), 12/11 (pozostałe) \\
-        Pola treningowe preambuły & L-STF, L-LTF & L-STF, L-LTF, HE-STF, HE-LTF \\
-        Modulacje pola danych & BPSK -- 64-QAM & BPSK -- 1024-QAM \\
-        \hline
-    \end{tabular}
-\end{table}
+\input{tables/tab_wifi_params}
 
 Każda transmisja ma postać ramki PPDU (ang. \textit{PHY Protocol Data Unit}), złożonej z~preambuły i~pola danych. W~standardzie 802.11a preambuła obejmuje krótkie pole treningowe L-STF (8~$\mu$s), długie pole treningowe L-LTF (8~$\mu$s) oraz pole sygnalizacyjne L-SIG (4~$\mu$s) \cite{1999}. W~ramce HE-SU sekwencję tę zachowano dla kompatybilności wstecznej i~uzupełniono o~pola RL-SIG, HE-SIG-A, HE-STF i~HE-LTF \cite{2021}. Pola treningowe (L-LTF oraz HE-LTF) zawierają zdefiniowane w~standardzie sekwencje o~stałej amplitudzie symboli ($|X_k| = 1$). Dzięki temu energia nadawana na każdej podnośnej jest jednakowa, co ułatwia odbiornikowi komunikacyjnemu precyzyjne wyznaczenie transmitancji kanału. Pole danych przenosi natomiast losowe symbole danych o~modulacji wynikającej z~wybranego schematu MCS (ang. \textit{Modulation and Coding Scheme}) -- od BPSK i~QPSK po modulacje kwadraturowe wyższych rzędów: 16-QAM i~64-QAM w~802.11a oraz do 1024-QAM w~802.11ax.
 

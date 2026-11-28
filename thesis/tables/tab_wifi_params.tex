@@ -1,0 +1,25 @@
+\begin{table}[htbp]
+    \centering
+    \caption[Parametry warstwy fizycznej IEEE 802.11a i~802.11ax istotne dla przetwarzania radarowego]{Parametry warstwy fizycznej IEEE 802.11a i~802.11ax istotne dla przetwarzania radarowego \cite{1999,2021}}
+    \label{tab:wifi_params}
+    \small
+    \begin{tabular}{|l|c|c|}
+        \hline
+        \textbf{Parametr} & \textbf{802.11a (Non-HT)} & \textbf{802.11ax (HE-SU)} \\
+        \hline
+        Pasma częstotliwości & 5~GHz & 2,4 / 5 / 6~GHz \\
+        Szerokości kanału & 20~MHz & 20 / 40 / 80 / 160~MHz \\
+        Rozmiar FFT $N_{\mathrm{FFT}}$ & 64 & 256 / 512 / 1024 / 2048 \\
+        Odstęp podnośnych $\Delta f$ & 312,5~kHz & 78,125~kHz \\
+        Czas użyteczny symbolu $T_u$ & 3,2~$\mu$s & 12,8~$\mu$s \\
+        Prefiks cykliczny $T_{\mathrm{CP}}$ & 0,8~$\mu$s & 0,8 / 1,6 / 3,2~$\mu$s \\
+        Czas symbolu $T_{\mathrm{sym}}$ (dla $T_{\mathrm{CP}} = 0{,}8~\mu$s) & 4,0~$\mu$s & 13,6~$\mu$s \\
+        Podnośne aktywne (danych + pilotowe) & 52 (48 + 4) & 242 / 484 / 996 / 1992 \\
+        Podnośne pilotowe & 4 & 8 / 16 / 16 / 32 \\
+        Podnośne zerowe w~centrum pasma (DC) & 1 & 3 / 5 / 5 / 23 \\
+        Podnośne ochronne (lewe / prawe) & 6 / 5 & 6/5 (20~MHz), 12/11 (pozostałe) \\
+        Pola treningowe preambuły & L-STF, L-LTF & L-STF, L-LTF, HE-STF, HE-LTF \\
+        Modulacje pola danych & BPSK -- 64-QAM & BPSK -- 1024-QAM \\
+        \hline
+    \end{tabular}
+\end{table}

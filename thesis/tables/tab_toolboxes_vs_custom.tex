@@ -1,0 +1,26 @@
+\begin{table}[H]
+    \centering
+    \linespread{1.05}\selectfont
+    \caption{Podział funkcjonalności symulatora pomiędzy pakiety narzędziowe środowiska MATLAB a~autorską implementację DSP}
+    \label{tab:toolboxes_vs_custom}
+    \footnotesize
+    \begin{tabular}{|p{2.6cm}|p{4.8cm}|p{2.1cm}|p{4.9cm}|}
+        \hline
+        \textbf{Warstwa / Pakiet} & \textbf{Wykorzystane funkcje / Moduły} & \textbf{Etap potoku} & \textbf{Rola w~symulatorze} \\
+        \hline
+        MATLAB (rdzeń) & \texttt{fft}, \texttt{ifft}, \texttt{fftshift}, \texttt{ifftshift}, \texttt{rng}, \texttt{init\_paths.m} & Cały potok & Operacje macierzowe na liczbach zespolonych, transformaty 1D/2D, zarządzanie ścieżkami i~determinizm obliczeń \\
+        \hline
+        WLAN Toolbox & \texttt{wlanNonHTConfig}, \texttt{wlanHESUConfig}, \texttt{wlanHEOFDMInfo}, \texttt{wlanFieldIndices}, \texttt{wlanSampleRate}, \texttt{transmitTime}, \texttt{wlanWaveform\-Generator} & Nadajnik (\texttt{step1}) & Zgodna ze standardami IEEE~802.11a/ax parametryzacja i~generacja ramek PPDU w~paśmie podstawowym \\
+        \hline
+        WLAN Toolbox & \texttt{wlanTGaxChannel} & Kanał (\texttt{step2}) & Symulacja wielodrogowego kanału wewnątrzbudynkowego (profile Model-A/B/C/E) jako źródła DPI i~ech stałych \\
+        \hline
+        WLAN Toolbox & \texttt{wlanPacketDetect}, \texttt{wlanSymbol\-TimingEstimate} & Odbiornik (\texttt{step3}) & Zgrubne wykrycie pakietu (L-STF) oraz wyznaczenie metryki korelacyjnej dla preambuły (L-LTF) \\
+        \hline
+        Communications Toolbox & \texttt{awgn} & Kanał (\texttt{step2}) & Dodawanie zespolonego szumu termicznego AWGN o~zadanym stosunku SNR względem mocy odniesienia \\
+        \hline
+        Signal Processing Toolbox & \texttt{blackmanharris} & Odbiornik (\texttt{step3}) & Wyznaczenie jednowymiarowych wag okna Blackmana--Harrisa przed autorską normalizacją i~złożeniem okna 2D \\
+        \hline
+        Implementacja własna (\texttt{src/}, \texttt{lib/}) & \texttt{get\_wifi\_params}, \texttt{configure\_targets}, \texttt{demodulate}, \texttt{estimate\_channel}, \texttt{interpolate\_\allowbreak dc\_nulls}, \texttt{compute\_\allowbreak range\_\allowbreak doppler\_map}, \texttt{calculate\_\allowbreak physical\_axes}, \texttt{binary\_*}, \texttt{coherent\_*}, \texttt{compute\_pnfr} & Cały tor radarowy (\texttt{step1}--\texttt{step4}) & Skalowanie ramek, synteza celów ruchomych z~opóźnieniem ułamkowym, synchronizacja \textit{leading-edge}, demodulacja, ZF, MTI, interpolacja DC, periodogram 2D, CFAR, Binary/Coherent~STC i~metryka PNFR \\
+        \hline
+    \end{tabular}
+\end{table}
