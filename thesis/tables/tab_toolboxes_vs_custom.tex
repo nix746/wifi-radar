@@ -14,13 +14,11 @@
         \hline
         WLAN Toolbox & \texttt{wlanTGaxChannel} & Kanał (\texttt{step2}) & Symulacja wielodrogowego kanału wewnątrzbudynkowego (profile Model-A/B/C/E) jako źródła DPI i~ech stałych \\
         \hline
-        WLAN Toolbox & \texttt{wlanPacketDetect}, \texttt{wlanSymbol\-TimingEstimate} & Odbiornik (\texttt{step3}) & Zgrubne wykrycie pakietu (L-STF) oraz wyznaczenie metryki korelacyjnej dla preambuły (L-LTF) \\
-        \hline
         Communications Toolbox & \texttt{awgn} & Kanał (\texttt{step2}) & Dodawanie zespolonego szumu termicznego AWGN o~zadanym stosunku SNR względem mocy odniesienia \\
         \hline
         Signal Processing Toolbox & \texttt{blackmanharris} & Odbiornik (\texttt{step3}) & Wyznaczenie jednowymiarowych wag okna Blackmana--Harrisa przed autorską normalizacją i~złożeniem okna 2D \\
         \hline
-        Implementacja własna (\texttt{src/}, \texttt{lib/}) & \texttt{get\_wifi\_params}, \texttt{configure\_targets}, \texttt{demodulate}, \texttt{estimate\_channel}, \texttt{interpolate\_\allowbreak dc\_nulls}, \texttt{compute\_\allowbreak range\_\allowbreak doppler\_map}, \texttt{calculate\_\allowbreak physical\_axes}, \texttt{binary\_*}, \texttt{coherent\_*}, \texttt{compute\_pnfr} & Cały tor radarowy (\texttt{step1}--\texttt{step4}) & Skalowanie ramek, synteza celów ruchomych z~opóźnieniem ułamkowym, synchronizacja \textit{leading-edge}, demodulacja, ZF, MTI, interpolacja DC, periodogram 2D, CFAR, Binary/Coherent~STC i~metryka PNFR \\
+        Implementacja własna (\texttt{src/}, \texttt{lib/}) & \texttt{get\_wifi\_params}, \texttt{configure\_targets}, \texttt{demodulate}, \texttt{estimate\_channel}, \texttt{interpolate\_\allowbreak dc\_nulls}, \texttt{compute\_\allowbreak range\_\allowbreak doppler\_map}, \texttt{calculate\_\allowbreak physical\_axes}, \texttt{binary\_*}, \texttt{coherent\_*}, \texttt{compute\_pnfr} & Cały tor radarowy (\texttt{step1}--\texttt{step4}) & Skalowanie ramek, synteza celów ruchomych z~opóźnieniem ułamkowym, wyzwalacz sprzętowy (\texttt{sync\_idx}), demodulacja, ZF, MTI, interpolacja DC, periodogram 2D, CFAR, Binary/Coherent~STC i~metryka PNFR \\
         \hline
     \end{tabular}
 \end{table}

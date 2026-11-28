@@ -20,19 +20,19 @@ Konfigurację ścieżek zautomatyzowano w~skrypcie \texttt{init\_paths.m}, dodaj
 
 W~projekcie rozdzielono gotowe pakiety narzędziowe firmy MathWorks od autorskiego kodu przetwarzania sygnałów. Z~pakietów skorzystano wyłącznie w~zakresie zweryfikowanych modeli standardów oraz podstawowych prymitywów:
 \begin{itemize}
-    \item \textbf{WLAN Toolbox} -- zastosowano do zgodnej ze standardem syntezy ramek IEEE~802.11a/ax, symulacji wielodrogowego kanału wewnątrzbudynkowego (\texttt{wlanTGaxChannel}) oraz wstępnej synchronizacji pakietu.
+    \item \textbf{WLAN Toolbox} -- zastosowano do zgodnej ze standardem syntezy ramek IEEE~802.11a/ax oraz symulacji wielodrogowego kanału wewnątrzbudynkowego (\texttt{wlanTGaxChannel}).
     \item \textbf{Communications Toolbox} -- użyto w~module kanału (\texttt{step2\_channel.m}) do dodawania zespolonego szumu \texttt{awgn} odniesionego do mocy nominalnej sygnału.
     \item \textbf{Signal Processing Toolbox} -- wykorzystano wyłącznie do wygenerowania wektorów wag okna Blackmana--Harrisa (\texttt{blackmanharris}); normalizację energetyczną i~złożenie okna 2D zaimplementowano samodzielnie.
 \end{itemize}
 
-Świadomie zrezygnowano z~wyspecjalizowanych pakietów radiolokacyjnych (\textit{Radar Toolbox}, \textit{Phased Array System Toolbox}). Cały tor radarowy -- synchronizację pierwszego czoła, demodulację OFDM, estymację kanału ZF, filtrację MTI, interpolację luki DC, periodogram 2D oraz detektory Binary~STC i~Coherent~STC z~progiem CFAR -- napisano od podstaw w~czystym języku MATLAB. Zapewniło to pełną zgodność z~modelem z~rozdziału~\ref{sec:passive_radar} oraz dostęp do macierzy pośrednich w~badaniach z~rozdziału~\ref{sec:simulation_results}. Szczegółowy podział funkcji zestawiono w~tabeli~\ref{tab:toolboxes_vs_custom}.
+Świadomie zrezygnowano z~wyspecjalizowanych pakietów radiolokacyjnych (\textit{Radar Toolbox}, \textit{Phased Array System Toolbox}). Cały tor radarowy -- wyzwalanie sprzętowe ramki, demodulację OFDM, estymację kanału ZF, filtrację MTI, interpolację luki DC, periodogram 2D oraz detektory Binary~STC i~Coherent~STC z~progiem CFAR -- napisano od podstaw w~czystym języku MATLAB. Zapewniło to pełną zgodność z~modelem z~rozdziału~\ref{sec:passive_radar} oraz dostęp do macierzy pośrednich w~badaniach z~rozdziału~\ref{sec:simulation_results}. Szczegółowy podział funkcji zestawiono w~tabeli~\ref{tab:toolboxes_vs_custom}.
 
 \input{tables/tab_toolboxes_vs_custom}
 
 \subsection{Ogólna architektura oprogramowania i~przepływ danych}
 \label{subsec:software_architecture}
 
-Oprogramowanie zorganizowano w~architekturze dwupoziomowej. Poziom nadrzędny stanowią cztery fasady z~katalogu \texttt{src/}, odwzorowujące bloki fizyczne systemu: nadajnik (\texttt{step1\_\allowbreak transmitter}), kanał (\texttt{step2\_\allowbreak channel}), przetwarzanie odbiornika (\texttt{step3\_\allowbreak receiver}) oraz detekcję celów (\texttt{step4\_\allowbreak interpreter}). Fasady obsługują argumenty domyślne i~kolejność wywołań, nie zawierając obliczeń numerycznych. Wszystkie operacje elementarne wydzielono do bezstanowych funkcji w~bibliotece \texttt{lib/}, co umożliwiło ich niezależne testowanie i~wielokrotne użycie.
+Oprogramowanie zorganizowano w~architekturze dwupoziomowej. Poziom nadrzędny stanowią cztery fasady z~katalogu \texttt{src/}, odwzorowujące bloki fizyczne systemu: nadajnik (\texttt{step1\_\allowbreak transmitter}), kanał (\texttt{step2\_\allowbreak channel}), przetwarzanie odbiornika (\texttt{step3\_\allowbreak receiver}) oraz detekcję celów (\texttt{step4\_\allowbreak interpreter}). Fasady orkiestrują przepływ danych i~obsługują argumenty domyślne, delegując większość obliczeń numerycznych do bezstanowych funkcji w~bibliotece \texttt{lib/}, co umożliwiło ich niezależne testowanie i~wielokrotne użycie.
 
 Nad potokiem działa warstwa sterująca, obejmująca inicjalizację (\texttt{init\_paths.m}), skrypty demonstracyjne i~generatory wykresów (\texttt{scripts/}), badania Monte Carlo oraz testy regresyjne (\texttt{tests/\allowbreak verify\_\allowbreak regression.m}). Aby umożliwić wizualizację etapów pośrednich, struktura \texttt{radar\_data} z~\texttt{step3\_receiver} udostępnia dodatkowo macierze \texttt{H\_raw}, \texttt{H\_no\_static}, \texttt{H\_shifted}, okno \texttt{W} oraz wzmocnienie szumu \texttt{zeta\_dB}.
 

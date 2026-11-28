@@ -138,11 +138,10 @@
 \node[stagehdr] at (0.3, -10.77)
     {3. Odbiornik -- przetwarzanie sygnału: {\ttfamily\footnotesize src/step3\_receiver.m}};
 
-\node[tbbox, text width=5.45cm, minimum height=18.5mm, anchor=north west] (wsync) at (0.3, -11.28) {%
-    \textbf{[WLAN Toolbox]} {\ttfamily\scriptsize wlanPacketDetect}\\
-    + {\ttfamily\scriptsize wlanSymbolTimingEstimate}\\[1pt]
-    {\scriptsize + autorski \textit{leading-edge} (L-LTF)}\\
-    {\scriptsize lub wyzwalacz sprzętowy}
+\node[libbox, text width=5.45cm, minimum height=18.5mm, anchor=north west] (wsync) at (0.3, -11.28) {%
+    {\ttfamily\scriptsize step3\_receiver.m} {\scriptsize (wyzwalacz sprzętowy)}\\[2pt]
+    {\scriptsize wspólny zegar Tx--Rx ({\ttfamily sync\_idx})}\\
+    {\scriptsize odcięcie preambuły w~torach Tx i~Rx}
 };
 \node[libbox, text width=3.95cm, minimum height=18.5mm, anchor=north west] (demod) at (6.38, -11.28) {%
     {\ttfamily\scriptsize lib/demodulate.m}\\[2pt]
@@ -190,7 +189,7 @@
 };
 \node[libbox, text width=6.5cm, minimum height=13.2mm, anchor=south west] (cstc) at (6.35, -20.42) {%
     {\ttfamily\scriptsize lib/coherent\_successive\_target\_cancellation.m}\\[1pt]
-    {\scriptsize próg CFAR + Krok 4 (rezydua) + replika 2D-FFT}
+    {\scriptsize próg CFAR + Krok 4 (rezydua) + replika rank-1 / 2D-FFT}
 };
 \node[libbox, text width=3.15cm, minimum height=19.5mm, anchor=east] (pnfr) at (17.7, -18.80) {%
     {\ttfamily\scriptsize lib/compute\_pnfr.m}\\[2pt]

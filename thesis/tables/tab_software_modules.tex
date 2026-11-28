@@ -14,7 +14,7 @@
         \hline
         \texttt{step2\_\allowbreak channel.m} & Kanał TGax (DPI i~echa stałe), synteza ech celów ruchomych, szum termiczny wg budżetu mocy & \texttt{waveform}, \texttt{fs}, \texttt{model}, \texttt{cfg}, \texttt{targets}, \texttt{p\_rx\_dBm}, \texttt{nf\_dB} $\rightarrow$ \texttt{signal}, \texttt{fc}, \texttt{intrinsic\_delay} & \ref{subsec:pbr_fundamentals} \\
         \hline
-        \texttt{step3\_\allowbreak receiver.m} & Synchronizacja ramki, demodulacja, estymacja i~kondycjonowanie transmitancji, mapa odległość--prędkość & \texttt{signal}, \texttt{waveform}, \texttt{fs}, \texttt{fc}, \texttt{params}, \texttt{sync\_idx} $\rightarrow$ \texttt{radar\_data} & \ref{subsec:ofdm_modulation}, \ref{subsec:channel_estimation}--\ref{subsec:range_doppler_map} \\
+        \texttt{step3\_\allowbreak receiver.m} & Wyzwalanie ramki, demodulacja, estymacja i~kondycjonowanie transmitancji, mapa odległość--prędkość & \texttt{signal}, \texttt{waveform}, \texttt{fs}, \texttt{fc}, \texttt{params}, \texttt{k\_pri}, \texttt{sync\_idx} $\rightarrow$ \texttt{radar\_data} & \ref{subsec:ofdm_modulation}, \ref{subsec:channel_estimation}--\ref{subsec:range_doppler_map} \\
         \hline
         \texttt{step4\_\allowbreak interpreter.m} & Wybór detektora, progowanie CFAR, ekstrakcja celów, metryka PNFR & \texttt{radar\_data}, \texttt{p\_FA}, \texttt{stc\_method} $\rightarrow$ \texttt{targets}, \texttt{CPer\_F}, \texttt{Per\_F}, \texttt{eta}, \texttt{pnfr}, \texttt{diag\_info} & \ref{subsec:target_detection_extraction} \\
         \hline
@@ -38,15 +38,15 @@
         \hline
         \texttt{compute\_range\_\allowbreak doppler\_map.m} & Okno 2D Blackmana--Harrisa, dopełnianie zerami, periodogram zespolony i~periodogram mocy & \texttt{H\_shifted}, \texttt{Nfft}, \texttt{n\_symbols}, \texttt{active\_mask} $\rightarrow$ \texttt{CPer\_F}, \texttt{W}, \texttt{Per\_F}, \texttt{N\_per}, \texttt{M\_per} & \ref{subsec:range_doppler_map} \\
         \hline
-        \texttt{calculate\_\allowbreak physical\_axes.m} & Odwzorowanie indeksów DFT/IDFT na osie odległości i~prędkości & \texttt{fs}, \texttt{fc}, \texttt{Nfft}, \texttt{Ncp}, \texttt{N\_per}, \texttt{M\_per} $\rightarrow$ \texttt{axis\_range}, \texttt{axis\_velocity} & \ref{subsec:pbr_fundamentals}, \ref{subsec:range_doppler_map} \\
+        \texttt{calculate\_\allowbreak physical\_axes.m} & Odwzorowanie indeksów DFT/IDFT na osie odległości i~prędkości & \texttt{fs}, \texttt{fc}, \texttt{Nfft}, \texttt{Ncp}, \texttt{N\_per}, \texttt{M\_per}, \texttt{k\_pri} $\rightarrow$ \texttt{axis\_range}, \texttt{axis\_velocity} & \ref{subsec:pbr_fundamentals}, \ref{subsec:range_doppler_map} \\
         \hline
         \multicolumn{4}{|l|}{\textit{Detekcja i~ocena wyników (\texttt{lib/})}} \\
         \hline
         \texttt{get\_detection\_\allowbreak algorithm.m} & Centralny rejestr detektorów (identyfikator, nazwa, uchwyt wykonawczy) & \texttt{method} $\rightarrow$ \texttt{alg} & \ref{subsec:target_detection_extraction} \\
         \hline
-        \texttt{binary\_\allowbreak successive\_\allowbreak target\_\allowbreak cancellation.m} & Próg CFAR, iteracyjna detekcja z~maskowaniem binarnym listka głównego & \texttt{Per\_F}, \texttt{W}, \texttt{p\_FA} $\rightarrow$ \texttt{targets}, \texttt{B}, \texttt{eta}, \texttt{diag\_info} & \ref{subsec:target_detection_extraction} \\
+        \texttt{binary\_\allowbreak successive\_\allowbreak target\_\allowbreak cancellation.m} & Próg CFAR, iteracyjna detekcja z~maskowaniem binarnym listka głównego & \texttt{Per\_F}, \texttt{W}, \texttt{p\_FA}, \texttt{p\_rx\_dBm}, \texttt{k\_pri} $\rightarrow$ \texttt{targets}, \texttt{B}, \texttt{eta}, \texttt{diag\_info} & \ref{subsec:target_detection_extraction} \\
         \hline
-        \texttt{coherent\_\allowbreak successive\_\allowbreak target\_\allowbreak cancellation.m} & Próg CFAR, iteracyjna detekcja z~koherentnym odejmowaniem repliki celu & \texttt{CPer\_F}, \texttt{Per\_F}, \texttt{W}, \texttt{p\_FA} $\rightarrow$ \texttt{targets}, \texttt{CPer\_F}, \texttt{eta}, \texttt{diag\_info} & \ref{subsec:target_detection_extraction} \\
+        \texttt{coherent\_\allowbreak successive\_\allowbreak target\_\allowbreak cancellation.m} & Próg CFAR, iteracyjna detekcja z~koherentnym odejmowaniem repliki celu & \texttt{CPer\_F}, \texttt{Per\_F}, \texttt{W}, \texttt{p\_FA}, \texttt{p\_rx\_dBm}, \texttt{k\_pri} $\rightarrow$ \texttt{targets}, \texttt{CPer\_F}, \texttt{eta}, \texttt{diag\_info} & \ref{subsec:target_detection_extraction} \\
         \hline
         \texttt{compute\_pnfr.m} & Kontrast szczytu celu względem tła szumowo-zakłóceniowego (PNFR) & \texttt{CPer}, \texttt{target\_idx}, \texttt{guard} $\rightarrow$ \texttt{metrics} & \ref{subsec:target_detection_extraction} \\
         \hline
