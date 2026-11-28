@@ -2,8 +2,8 @@ function fig = gen_fig_3_1_channel_matrix_h(show_figure, save_png)
 % GEN_FIG_3_1_CHANNEL_MATRIX_H
 % Experiment IMPL-1: Channel transfer matrix H(k,l) in the time-frequency domain.
 % Figure 3.1 for Chapter 3 of the thesis (IEEE 802.11ax, CBW80, TGax Model-C):
-%   (a) Direct channel estimate before static echo removal (showing DPI crosstalk, multipath fading, and DC gap)
-%   (b) Transfer matrix after static echo removal (slow-time mean subtraction) and linear DC interpolation
+%   (a) Direct channel estimate before static echo removal (showing DPI crosstalk and multipath fading)
+%   (b) Transfer matrix after static echo removal (slow-time mean subtraction)
 %
 % Output file: thesis/img/ch3_impl/rys_3_1_macierz_transmitancji_h.png
 
@@ -36,13 +36,13 @@ targets = [ ...
 
 radar_data = step3_receiver(rx_signal, waveform, fs, fc, params, [], [], intrinsic_delay);
 H_raw     = radar_data.H_raw;
-H_proc    = radar_data.H_shifted;
+H_proc    = radar_data.H_no_static;
 n_symbols = radar_data.n_symbols;
 Nfft      = radar_data.Nfft;
 
 % 3. Validate DPI and static clutter suppression at v = 0 m/s on the Range-Doppler map
-C_raw_rdm  = compute_range_doppler_map(interpolate_dc_nulls(H_raw, params.dc_indices), Nfft, n_symbols, params.active_mask, 4, true);
-C_proc_rdm = radar_data.CPer_F;
+C_raw_rdm  = compute_range_doppler_map(H_raw, Nfft, n_symbols, params.active_mask, 4, true);
+C_proc_rdm = compute_range_doppler_map(H_proc, Nfft, n_symbols, params.active_mask, 4, true);
 [~, v0_idx] = min(abs(radar_data.axis_velocity));
 p_v0_raw  = mean(abs(C_raw_rdm(:, v0_idx)).^2);
 p_v0_proc = mean(abs(C_proc_rdm(:, v0_idx)).^2);
@@ -88,7 +88,7 @@ set(gca, 'FontSize', 10, 'LineWidth', 1.0, 'Box', 'on');
 grid on; box on;
 set(gca, 'GridColor', [1 1 1], 'GridAlpha', 0.25);
 
-% Panel (b): Transfer matrix after slow-time mean subtraction and DC interpolation
+% Panel (b): Transfer matrix after slow-time mean subtraction
 subplot(1, 2, 2);
 imagesc(sym_axis, k_range, H_proc_dB);
 axis xy;
@@ -99,7 +99,7 @@ c2.Label.String = 'Moduł transmitancji |H(k,l)| [dB]';
 c2.Label.FontSize = 10.5;
 c2.Label.Interpreter = 'none';
 
-title('b) Po odjęciu średniej czasowej i interpolacji podnośnych DC', 'FontSize', 11.5, 'FontWeight', 'bold', 'Interpreter', 'none');
+title('b) Po odjęciu średniej czasowej', 'FontSize', 11.5, 'FontWeight', 'bold', 'Interpreter', 'none');
 xlabel('Numer symbolu OFDM (czas wolny)', 'FontSize', 11, 'Interpreter', 'none');
 ylabel('Indeks podnośnej k (częstotliwość)', 'FontSize', 11, 'Interpreter', 'none');
 set(gca, 'FontSize', 10, 'LineWidth', 1.0, 'Box', 'on');
