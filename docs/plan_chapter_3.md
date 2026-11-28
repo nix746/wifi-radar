@@ -1,26 +1,26 @@
 # Plan Redakcji Rozdziału 3: Opis oprogramowania
 
-Dokument stanowi kompletny, śledzony plan pisania **Rozdziału 3** pracy dyplomowej (plik źródłowy: [`thesis/tex/30_radar_implementation.tex`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/thesis/tex/30_radar_implementation.tex), tytuł rozdziału w nowym układzie pracy: **`3. Opis oprogramowania`**). Plan jest w pełni spójny z kodem w [`src/`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/src/) i [`lib/`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/), z nowo przyjętą strukturą pracy ([`docs/plan_structure_migration.md`](plan_structure_migration.md)) oraz z teorią opisaną w Rozdziałach 1 i 2 ([`docs/plan_chapter_2.md`](plan_chapter_2.md)).
+Dokument stanowi kompletny, śledzony plan pisania **Rozdziału 3** pracy dyplomowej (plik źródłowy: [`thesis/tex/30_radar_implementation.tex`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/thesis/tex/30_radar_implementation.tex), tytuł rozdziału: **`3. Opis oprogramowania`**). Plan jest w pełni spójny z aktualnym kodem w [`src/`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/src/) i [`lib/`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/), tabelami w [`thesis/tables/`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/thesis/tables/), wygenerowanymi mikrolistingami w [`thesis/listings/`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/thesis/listings/), strukturą pracy ([`docs/plan_structure_migration.md`](plan_structure_migration.md)) oraz teorią z Rozdziałów 1 i 2 ([`docs/plan_chapter_2.md`](plan_chapter_2.md)).
 
 > [!IMPORTANT]
-> **Kontekst nowej struktury pracy:** W zaktualizowanym układzie pracy teoria sygnału Wi-Fi 802.11 / OFDM stanowi **Rozdział 1 (`1. Sygnał 802.11`)**, teoria radaru pasywnego stanowi **Rozdział 2 (`2. Radar pasywny`)**, a niniejszy **Rozdział 3 (`3. Opis oprogramowania`)** dokumentuje środowisko programistyczne, architekturę symulatora, implementację wszystkich bloków oraz świadome uproszczenia modelowe (w tym brak *ray-tracingu* 3D). Szczegółowe definicje matematyczne pozostają w Rozdziałach 1–2, a Rozdział 3 odwołuje się do nich przez `\ref{...}` i `\eqref{...}`.
+> **Kontekst struktury pracy:** Teoria sygnału Wi-Fi 802.11 / OFDM stanowi **Rozdział 1 (`1. Sygnał 802.11`)**, teoria radaru pasywnego stanowi **Rozdział 2 (`2. Radar pasywny`)**, a niniejszy **Rozdział 3 (`3. Opis oprogramowania`)** dokumentuje środowisko programistyczne, architekturę symulatora, implementację wszystkich bloków (wraz z 12 zwartymi mikrolistingami 1:1 z równaniami) oraz świadome uproszczenia modelowe (w tym brak *ray-tracingu* 3D). Szczegółowe definicje matematyczne pozostają w Rozdziałach 1–2, a Rozdział 3 odwołuje się do nich przez `\ref{...}` i `\eqref{...}`.
 
 ---
 
 ## 1. Tablica Śledzenia Postępów Redakcji
 
-| Podrozdział | Tytuł docelowy | Limit stron | Rysunki / Tabele | Status redakcji | Status weryfikacji |
-| :---: | :--- | :---: | :---: | :---: | :---: |
-| **3.1** | Środowisko symulacyjne MATLAB i wykorzystane pakiety narzędziowe | 1,2–1,5 str. | 1 tab. (`tab:toolboxes_vs_custom`) | [x] Napisano | [ ] Do weryfikacji |
-| **3.2** | Ogólna architektura oprogramowania i przepływ danych | 1,5 str. | 1 rys. (nowy **Rys. 3.1**: schemat blokowy zależności), 1 tab. (`tab:software_modules`) | [x] Napisano | [ ] Do weryfikacji |
-| **3.3** | Implementacja nadajnika sygnału IEEE 802.11 | 0,8–1,0 str. | 0 rys. | [ ] Do napisania | [ ] Do weryfikacji |
-| **3.4** | Implementacja modelu kanału propagacyjnego i celów ruchomych | 2,0 str. | 0 rys. | [ ] Do napisania | [ ] Do weryfikacji |
-| **3.5** | Implementacja odbiornika radarowego *(wprowadzenie + 3.5.1–3.5.4)* | **5,0–6,0 str.** | **3 rys.** (istniejące PNG) | [ ] Do napisania | [ ] Do weryfikacji |
-| *3.5.1* | *Synchronizacja czasowa ramki i demodulacja OFDM* | 1,0–1,2 str. | 0 rys. | [ ] Do napisania | [ ] Do weryfikacji |
-| *3.5.2* | *Estymacja odpowiedzi kanału, tłumienie ech stałych i interpolacja luki DC* | 1,3–1,5 str. | 1 rys. (**Rys. 3.2**: `rys_3_1_macierz_transmitancji_h.png`) | [ ] Do napisania | [ ] Do weryfikacji |
-| *3.5.3* | *Wyznaczanie mapy odległość–prędkość i kalibracja osi fizycznych* | 1,3–1,5 str. | 2 rys. (**Rys. 3.3**: `rys_3_2_mapa_range_doppler.png`, **Rys. 3.4**: `rys_3_3_etapy_przetwarzania.png`) | [ ] Do napisania | [ ] Do weryfikacji |
-| *3.5.4* | *Detekcja progowa CFAR, iteracyjna ekstrakcja celów i weryfikacja oprogramowania* | 1,5–1,8 str. | 0 rys. (ew. 1 tab. podsumowująca weryfikację) | [ ] Do napisania | [ ] Do weryfikacji |
-| **SUMA** | **Rozdział 3 (całość)** | **10,0–12,5 str.** | **4 rys., 2–3 tab.** | **Postęp: 0/5** | **Do napisania po migracji struktury** |
+| Podrozdział | Tytuł docelowy | Limit stron | Rysunki / Tabele / Listingi | Status redakcji | Status weryfikacji |
+| :---: | :--- | :---: | :--- | :---: | :---: |
+| **3.1** | Środowisko symulacyjne MATLAB i wykorzystane pakiety narzędziowe | 1,2–1,5 str. | 1 tab. ([`tab_toolboxes_vs_custom.tex`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/thesis/tables/tab_toolboxes_vs_custom.tex)), 0 rys., 0 list. | [x] Napisano | [x] Skorygowano (`sync_idx`) |
+| **3.2** | Ogólna architektura oprogramowania i przepływ danych | 1,5 str. | **Rys. 3.1** ([`fig_software_architecture.tex`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/thesis/tex/fig_software_architecture.tex)), 1 tab. ([`tab_software_modules.tex`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/thesis/tables/tab_software_modules.tex)), 0 list. | [x] Napisano | [x] Skorygowano |
+| **3.3** | Implementacja nadajnika sygnału IEEE 802.11 | 0,8–1,0 str. | 0 rys., 0 tab., **0 list.** *(pominięty celowo)* | [x] Napisano | [ ] Do weryfikacji |
+| **3.4** | Implementacja modelu kanału propagacyjnego i celów ruchomych | 1,8–2,0 str. | 0 rys., 1 tab. (parametry TGn/TGax + RCS), **3 mikrolistingi** (`02_channel/01`–`03`) | [ ] Do napisania | [ ] Do weryfikacji |
+| **3.5** | Implementacja odbiornika radarowego *(wprowadzenie + 3.5.1–3.5.4)* | **4,5–5,5 str.** | **3 rys.** (istniejące PNG), 1 tab. (Binary vs Coherent STC), **9 mikrolistingów** (`03_receiver/01`–`09`) | [ ] Do napisania | [ ] Do weryfikacji |
+| *3.5.1* | *Wyzwalanie ramki i demodulacja OFDM* | 0,8–1,0 str. | 0 rys., **1 mikrolisting** (`03_receiver/01`) | [ ] Do napisania | [ ] Do weryfikacji |
+| *3.5.2* | *Estymacja odpowiedzi kanału, tłumienie ech stałych i interpolacja luki DC* | 1,3–1,5 str. | **Rys. 3.2** (`rys_3_1_macierz_transmitancji_h.png`), **2 mikrolistingi** (`03_receiver/02`–`03`) | [ ] Do napisania | [ ] Do weryfikacji |
+| *3.5.3* | *Wyznaczanie mapy odległość–prędkość i kalibracja osi fizycznych* | 1,2–1,4 str. | **Rys. 3.3** (`rys_3_2_mapa_range_doppler.png`), **3 mikrolistingi** (`03_receiver/04`–`06`) | [ ] Do napisania | [ ] Do weryfikacji |
+| *3.5.4* | *Detekcja progowa CFAR, ekstrakcja celów (Binary/Coherent STC), PNFR i weryfikacja* | 1,5–1,8 str. | **Rys. 3.4** (`rys_3_3_etapy_przetwarzania.png`), 1 tab. (Binary vs Coherent), **3 mikrolistingi** (`03_receiver/07`–`09`) | [ ] Do napisania | [ ] Do weryfikacji |
+| **SUMA** | **Rozdział 3 (całość)** | **10,0–11,5 str.** | **4 rys., 4 tab., 12 mikrolistingów (0 + 3 + 9)** | **Postęp: 3/5** | **Do napisania: 3.4 i 3.5** |
 
 ---
 
@@ -28,28 +28,28 @@ Dokument stanowi kompletny, śledzony plan pisania **Rozdziału 3** pracy dyplom
 
 1. **Forma gramatyczna i styl inżynierski:**
    - Stosujemy wyłącznie **formę bezosobową czasu przeszłego** (*„zaimplementowano”*, *„zastosowano”*, *„wyznaczono”*, *„zweryfikowano”*), bez pierwszej osoby liczby pojedynczej (*„zrobiłem”*, *„napisałem”*).
-   - Zwięzłe, przyczynowo-skutkowe zdania wyjaśniające *dlaczego* przyjęto dane rozwiązanie programistyczne (np. dlaczego potrzebne jest podejście *leading-edge* w synchronizacji, dlaczego `awgn` kotwiczy moc do `clutter_signal`, dlaczego w `coherent_successive_target_cancellation.m` ograniczono liczbę iteracji i zastosowano `log1p`/`expm1`).
+   - Zwięzłe, przyczynowo-skutkowe zdania wyjaśniające *dlaczego* przyjęto dane rozwiązanie programistyczne (np. dlaczego w `step2_channel.m` szum `awgn` jest kotwiczony do nominalnej mocy `waveform`, dlaczego `calculate_physical_axes.m` używa `m_idx` zamiast `linspace`, dlaczego w `coherent_successive_target_cancellation.m` zastosowano `log1p`/`expm1` oraz ograniczenie `max_iter = 200`).
 2. **Rozdział teorii od implementacji (brak dublowania wzorów z Rozdz. 1–2):**
    - Pełne wyprowadzenia matematyczne znajdują się w Rozdziałach 1 i 2. W Rozdziale 3 konsekwentnie odsyłamy do właściwych podrozdziałów i równań (`\ref{subsec:...}`, `\eqref{...}`), a opisujemy **architekturę kodu, struktury danych, wymiary macierzy, obsługę przypadków brzegowych, stabilność numeryczną oraz mapowanie zmiennych matematycznych na implementację MATLAB**.
-3. **Zasada czystości kodu w tekście (listingi przeniesione do Dodatku A):**
-   - W głównej treści Rozdziału 3 nie wklejamy długich bloków kodu źródłowego. Przywołujemy wyłącznie nazwy plików/funkcji (`\texttt{...}`), sygnatury wywołań oraz pojedyncze kluczowe wyrażenia numeryczne.
-   - Wybrane, reprezentatywne fragmenty kodu w środowisku `minted` umieszczamy w **Dodatku A** (`\ref{app:listings}`), na który Rozdział 3 wskazuje w odpowiednich miejscach.
+3. **Zasada zwartych mikrolistingów 1:1 z równaniami (bezpośrednio w 3.4 i 3.5):**
+   - W tekście Rozdziału 3 nie wklejamy pełnych plików z kontrolą `nargin`, logami `fprintf` i obsługą diagnostyki. Zamiast tego w podrozdziałach **3.4** i **3.5** osadzamy przez `\inputminted{matlab}{...}` **12 oczyszczonych mikrolistingów (5–12 linii każdy)** z katalogu `thesis/listings/`, pogrupowanych w osobne foldery etapowe (`02_channel/` — 3 listingi, `03_receiver/` — 9 listingów; etap nadajnika `01_transmitter` pominięty celowo).
+   - Każdy mikrolisting znajduje się tuż przy opisie odpowiadającego mu przekształcenia matematycznego i posiada własny podpis `\caption` oraz etykietę `\label{lst:...}` (z polską nazwą `Listing` skonfigurowaną w [`00_preambule.tex`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/thesis/tex/00_preambule.tex)).
 4. **Wszystkie obiekty jawnie przywołane i zinterpretowane:**
-   - Każdy z 4 rysunków (schemat blokowy + 3 wykresy diagnostyczne z `thesis/img/ch3_impl/`) i każda tabela musi mieć jawne odwołanie `\ref{...}` oraz komentarz inżynierski w tekście.
+   - Każdy z **4 rysunków** (`Rys. 3.1` schemat TikZ + `Rys. 3.2–3.4` z `thesis/img/ch3_impl/`), każda z **4 tabel** i każdy z **12 listingów** musi mieć jawne odwołanie `\ref{...}` oraz komentarz inżynierski w tekście.
 5. **Status pakietów narzędziowych MATLAB-a:**
    - Zgodnie z [`docs/plan_deliverables.md`](plan_deliverables.md) pakiety MathWorks (**WLAN Toolbox**, **Communications Toolbox**, **Signal Processing Toolbox**) oraz przykłady MathWorks **nie wchodzą do bibliografii jako artykuły naukowe** — ich rolę i zakres użytych funkcji dokumentuje się jawnie w podrozdziale **3.1** oraz na schemacie blokowym w **3.2**.
 
 ---
 
-## 3. Projekt Schematu Blokowego Zależności Między Funkcjami (Nowy Rys. 3.1)
+## 3. Schemat Blokowy Zależności (Rys. 3.1) i Wykresy Rozdziału 3 (Rys. 3.2–3.4)
 
-### 3.1. Forma graficzna i realizacja techniczna
-- **Rekomendowana technologia:** wektorowy diagram **TikZ** osadzony bezpośrednio w `thesis/tex/30_radar_implementation.tex` (lub wyodrębniony do włączanego pliku w `thesis/tex/`). Zapewnia identyczną czcionkę jak reszta tekstu pracy, idealną ostrość w druku oraz łatwą edycję w Git. Wymaga dodania `\usepackage{tikz}` i `\usetikzlibrary{arrows.meta, positioning, fit, backgrounds, shapes.geometric}` w [`thesis/tex/00_preambule.tex`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/thesis/tex/00_preambule.tex).
-- **Wyróżnienie wizualne na schemacie (3 warstwy kolorystyczne/ramkowe):**
-  1. **Fasady potoku głównego (`src/`):** 4 główne etapy (`step1_transmitter`, `step2_channel`, `step3_receiver`, `step4_interpreter`).
-  2. **Funkcje pomocnicze i numeryczne (`lib/`):** moduły wywoływane przez dany etap.
-  3. **Pakiety narzędziowe MATLAB (Toolboxes):** wyraźnie oznaczone obrysem przerywanym lub inną barwą bloki *WLAN Toolbox*, *Communications Toolbox* i *Signal Processing Toolbox*, aby czytelnik na pierwszy rzut oka odróżnił gotowe komponenty środowiska od autorskiego kodu DSP.
-  4. **Warstwa sterująca i testowa (bez duplikacji logiki DSP — zasada DRY):** `init_paths.m`, skrypty `scripts/figures/*`, `scripts/run_random_demo.m`, `lib/run_detection_monte_carlo.m` oraz `tests/verify_regression.m`.
+### 3.1. Forma graficzna schematu Rys. 3.1
+- Wektorowy diagram **TikZ** wyodrębniony do pliku [`thesis/tex/fig_software_architecture.tex`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/thesis/tex/fig_software_architecture.tex) i włączany w podrozdziale 3.2.
+- **Warstwy wizualne na schemacie:**
+  1. **Warstwa sterująca i testowa:** `init_paths.m`, `scripts/run_random_demo.m`, `scripts/figures/*`, `scripts/experiments/*`, `tests/verify_regression.m`.
+  2. **Fasady potoku głównego (`src/`):** 4 główne etapy (`step1_transmitter`, `step2_channel`, `step3_receiver`, `step4_interpreter`).
+  3. **Kod autorski DSP (`lib/`):** ramki ciągłe niebieskie (w tym wyzwalacz sprzętowy `sync_idx` w `step3_receiver.m`).
+  4. **Pakiety narzędziowe MATLAB (Toolboxes):** ramki pomarańczowe przerywane (*WLAN Toolbox* wyłącznie w `step1` i `step2`, *Communications Toolbox* `awgn()` w `step2`, *Signal Processing Toolbox* `blackmanharris` w `step3`).
 
 ### 3.2. Diagram roboczy zależności i przepływu danych
 
@@ -58,8 +58,8 @@ flowchart TB
     subgraph CTRL["Warstwa inicjalizacji, eksperymentów i testów (DRY — bez duplikacji DSP)"]
         direction LR
         INIT["init_paths.m"]
-        SCRIPTS["scripts/run_random_demo.m<br/>scripts/figures/run_all_figures.m<br/>scripts/figures/ch3_impl/*, ch4_sim/*"]
-        MC["lib/run_detection_monte_carlo.m<br/>+ lib/plot_detection_vs_range.m"]
+        SCRIPTS["scripts/run_random_demo.m<br/>scripts/figures/*"]
+        MC["scripts/experiments/*<br/>run_detection_monte_carlo.m<br/>run_range_limit_sweep.m"]
         TESTS["tests/verify_regression.m<br/>(Golden Master &amp; unit/E2E)"]
     end
 
@@ -73,18 +73,18 @@ flowchart TB
     subgraph S2["2. Kanał: src/step2_channel.m"]
         direction TB
         GCF["lib/get_carrier_frequency.m"]
-        CT["lib/configure_targets.m"]
-        WCH["[WLAN Toolbox]<br/>wlanTGaxChannel<br/>(Model A/B/C/E, DPI + clutter)"]
-        CTB["[Communications Toolbox]<br/>awgn()"]
+        CT["lib/configure_targets.m<br/>(+ get_tgax_propagation_params.m)"]
+        WCH["[WLAN Toolbox] wlanTGaxChannel (Model-A/B/C/E: DPI + clutter)<br/>+ autorska synteza celów (opóźnienie ułamkowe FFT + Doppler)"]
+        CTB["[Communications Toolbox] awgn()<br/>(budżet szumu P_N = k_B T_0 B F, kotwiczenie do waveform)"]
         GCF --> WCH
         CT --> WCH --> CTB
     end
 
     subgraph S3["3. Odbiornik — przetwarzanie sygnału: src/step3_receiver.m"]
         direction TB
-        WSYNC["[WLAN Toolbox]<br/>wlanPacketDetect + wlanSymbolTimingEstimate<br/>+ autorski leading-edge (L-LTF)"]
+        WSYNC["step3_receiver.m (wyzwalacz sprzętowy)<br/>wspólny zegar Tx-Rx (sync_idx) + odcięcie preambuły"]
         DEMOD["lib/demodulate.m<br/>(usunięcie CP + FFT)"]
-        EST["lib/estimate_channel.m<br/>(ZF, MTI: -mean)<br/>wywołuje: lib/interpolate_dc_nulls.m"]
+        EST["lib/estimate_channel.m<br/>(ZF, MTI: -mean, zeta_dB)<br/>wywołuje: lib/interpolate_dc_nulls.m"]
         RDM["lib/compute_range_doppler_map.m<br/>([Signal Processing Toolbox]: blackmanharris<br/>+ 2D IFFT/FFT + zero-padding 4x)"]
         AX["lib/calculate_physical_axes.m"]
         WSYNC --> DEMOD --> EST --> RDM --> AX
@@ -94,7 +94,7 @@ flowchart TB
         direction TB
         REG["lib/get_detection_algorithm.m"]
         BSTC["lib/binary_successive_target_cancellation.m<br/>(CFAR + maskowanie elipsą null-to-null)"]
-        CSTC["lib/coherent_successive_target_cancellation.m<br/>(CFAR + Krok 4 rezydua + replika 2D-FFT)"]
+        CSTC["lib/coherent_successive_target_cancellation.m<br/>(CFAR + Krok 4 rezydua + replika rank-1 / 2D-FFT)"]
         PNFR["lib/compute_pnfr.m"]
         REG -->|"'binary'"| BSTC
         REG -->|"'coherent'"| CSTC
@@ -114,159 +114,123 @@ flowchart TB
     S4 -->|"targets, CPer_F, Per_F, eta, pnfr, diag_info"| SCRIPTS
 ```
 
-### 3.3. Wpływ nowego schematu na numerację rysunków w Rozdziale 3
-Dodanie schematu blokowego jako pierwszego rysunku w Rozdziale 3 powoduje naturalne przesunięcie numeracji wyświetlanej przez LaTeX:
-- **Rys. 3.1** *(nowy, TikZ)*: Schemat blokowy architektury oprogramowania i zależności między funkcjami (`\label{fig:software_architecture}`).
-- **Rys. 3.2** *(plik `thesis/img/ch3_impl/rys_3_1_macierz_transmitancji_h.png`)*: Macierz transmitancji $\hat{H}(k,l)$ przed i po odjęciu średniej czasowej oraz interpolacji luki DC (`\label{fig:impl_channel_matrix}`).
-- **Rys. 3.3** *(plik `thesis/img/ch3_impl/rys_3_2_mapa_range_doppler.png`)*: Porównanie periodogramu Range–Doppler (bazowy vs po przetworzeniu DSP, 3D i 2D, `\label{fig:impl_range_doppler}`).
-- **Rys. 3.4** *(plik `thesis/img/ch3_impl/rys_3_3_etapy_przetwarzania.png`)*: Dekompozycja 4 etapów przetwarzania w odbiorniku i interpreterze (`\label{fig:impl_processing_stages}`).
+### 3.3. Przypisanie i numeracja wszystkich rysunków w Rozdziale 3
+Wszystkie trzy wykresy w `thesis/img/ch3_impl/` dotyczą jednolitego scenariusza referencyjnego (**802.11ax, `CBW80`, `MCS 0`, `Model-C`**, dwa cele: **pieszy $7{,}5\ \text{m}, -4{,}0\ \text{m/s}$** oraz **samochód $18{,}0\ \text{m}, +14{,}0\ \text{m/s}$**, domyślne $P_{\mathrm{rx}} = -50\ \text{dBm}$, $F = 7\ \text{dB}$):
+
+- **Rys. 3.1** *(podrozdział **3.2**, TikZ: [`fig_software_architecture.tex`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/thesis/tex/fig_software_architecture.tex))*: Schemat blokowy architektury oprogramowania i zależności między funkcjami (`\label{fig:software_architecture}`).
+- **Rys. 3.2** *(podrozdział **3.5.2**, plik [`rys_3_1_macierz_transmitancji_h.png`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/thesis/img/ch3_impl/rys_3_1_macierz_transmitancji_h.png), skrypt [`gen_fig_3_1_channel_matrix_h.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/scripts/figures/ch3_impl/gen_fig_3_1_channel_matrix_h.m))*: Macierz transmitancji $|H(k,l)|$ przed (`H_raw`) i po odjęciu średniej czasowej (`H_no_static` — przed interpolacją DC, stąd wyraźna centralna luka 5 pustych podnośnych DC wymagająca kolejnego kroku) (`\label{fig:impl_channel_matrix}`).
+- **Rys. 3.3** *(podrozdział **3.5.3**, plik [`rys_3_2_mapa_range_doppler.png`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/thesis/img/ch3_impl/rys_3_2_mapa_range_doppler.png), skrypt [`gen_fig_3_2_range_doppler.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/scripts/figures/ch3_impl/gen_fig_3_2_range_doppler.m))*: Zestawienie $2 \times 2$ (widok 3D całej mapy jednoznacznej oraz zbliżenie 2D $R \in [0, 30]\ \text{m}, v \in [-25, +25]\ \text{m/s}$, oś Y `Odległość [m]`) porównujące periodogram bazowy z mapą po MTI, interpolacji DC i oknie 2D Blackmana–Harrisa (`\label{fig:impl_range_doppler}`).
+- **Rys. 3.4** *(podrozdział **3.5.4**, plik [`rys_3_3_etapy_przetwarzania.png`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/thesis/img/ch3_impl/rys_3_3_etapy_przetwarzania.png), skrypt [`gen_fig_3_3_processing_stages.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/scripts/figures/ch3_impl/gen_fig_3_3_processing_stages.m))*: Dekompozycja 4 etapów przetwarzania w kadrze 2D ($R \in [0, 30]\ \text{m}, v \in [-25, +25]\ \text{m/s}$, oś Y `Odległość [m]`): Krok 0 (bazowy) $\to$ Krok 1 (odjęcie średniej czasowej) $\to$ Krok 2 (interpolacja DC + okno 2D Blackmana–Harrisa + detekcje) $\to$ Krok 3 (periodogram rezydualny po ekstrakcji Coherent STC) (`\label{fig:impl_processing_stages}`).
 
 > [!NOTE]
-> Nazwy plików PNG na dysku w `thesis/img/ch3_impl/` i nazwy skryptów w `scripts/figures/ch3_impl/` pozostawiamy bez zmian, aby nie naruszać działania `scripts/figures/run_all_figures.m` oraz historii testów; LaTeX automatycznie nadaje właściwe numery 3.1–3.4 w kolejności pojawienia się w tekście.
+> Nazwy plików PNG na dysku w `thesis/img/ch3_impl/` i nazwy skryptów w `scripts/figures/ch3_impl/` pozostają bez zmian, aby nie naruszać działania `scripts/figures/run_all_figures.m`; LaTeX automatycznie nadaje numery 3.1–3.4 w kolejności pojawienia się w tekście.
 
 ---
 
 ## 4. Szczegółowy Plan Redakcji Podrozdziałów (Krok po Kroku)
 
-### Podrozdział 3.1: Środowisko symulacyjne MATLAB i wykorzystane pakiety narzędziowe
+### Podrozdział 3.1: Środowisko symulacyjne MATLAB i wykorzystane pakiety narzędziowe *(napisano, zweryfikowano)*
 - **Docelowa objętość:** 1,2–1,5 strony.
-- **Obiekty:** 1 tabela (`tab:toolboxes_vs_custom`).
-- **Plan akapitów:**
-  1. **Akapit 1 — Środowisko bazowe MATLAB i profil obliczeń:**
-     - Wskazanie środowiska uruchomieniowego (**MATLAB R2024b / R2025b**), natywnie zoptymalizowanego do wektorowych i macierzowych operacji na liczbach zespolonych (macierze podnośnych $N_{\mathrm{FFT}} \times M$, dwuwymiarowe transformaty Fouriera `fft`/`ifft` z dopełnianiem zerami, szybkie indeksowanie logiczne).
-     - Omówienie konfiguracji ścieżek roboczych poprzez skrypt [`init_paths.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/init_paths.m) (dodanie `src/`, `lib/` oraz rekurencyjnie `scripts/`) i deterministycznego sterowania generatorem liczb pseudolosowych (`rng(..., 'twister')`) zapewniającego powtarzalność eksperymentów i testów regresyjnych.
-  2. **Akapit 2 — Zakres użycia pakietów narzędziowych (Toolboxes) vs. brak „czarnych skrzynek” radarowych:**
-     - Wyjaśnienie podziału kompetencji między gotowe biblioteki MathWorks a autorską implementację DSP:
-       - **WLAN Toolbox:** wykorzystany wyłącznie do zgodnej ze standardami IEEE 802.11a/802.11ax generacji przebiegów transmisyjnych (`wlanNonHTConfig`, `wlanHESUConfig`, `wlanHEOFDMInfo`, `wlanFieldIndices`, `wlanSampleRate`, `transmitTime`, `wlanWaveformGenerator`), standaryzowanej symulacji kanału wielodrogowego (`wlanTGaxChannel`) oraz wstępnej synchronizacji ramki w odbiorniku (`wlanPacketDetect`, `wlanSymbolTimingEstimate`).
-       - **Communications Toolbox:** wykorzystany w module kanału do kontrolowanego dodawania zespolonego szumu termicznego AWGN (`awgn`).
-       - **Signal Processing Toolbox:** wykorzystany w jednym miejscu — do wygenerowania wektorów wag 4-wyrazowego okna Blackmana–Harrisa (`blackmanharris`) w [`lib/compute_range_doppler_map.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/compute_range_doppler_map.m). *(Uwaga korekcyjna wobec starszych notatek: funkcja `blackmanharris` pochodzi właśnie z Signal Processing Toolbox, natomiast normalizacja energetyczna i złożenie okna 2D na paśmie aktywnym są autorskie).*
-       - **Świadoma rezygnacja z Radar Toolbox / Phased Array System Toolbox:** cały tor przetwarzania radarowego (demodulacja po usunięciu CP, estymacja CFR metodą Zero-Forcing, filtracja MTI w czasie wolnym, interpolacja luki DC, periodogram 2D, kalibracja osi fizycznych oraz algorytmy detekcji Binary STC i Coherent STC z progiem CFAR) został napisany od podstaw w czystym MATLAB-ie, co zapewnia pełną przejrzystość matematyczną i kontrolę nad każdym etapem przetwarzania.
-  3. **Tabela `tab:toolboxes_vs_custom`:**
-     - Kolumny: *Warstwa / Pakiet*, *Wykorzystane funkcje / Moduły*, *Etap potoku*, *Rola w symulatorze*.
+- **Obiekty:** 1 tabela (`tab:toolboxes_vs_custom` w [`thesis/tables/tab_toolboxes_vs_custom.tex`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/thesis/tables/tab_toolboxes_vs_custom.tex)), 0 listingów.
+- **Zakres:** MATLAB R2024b, `init_paths.m`, `rng(seed, 'twister')`, podział na **WLAN Toolbox** (synteza ramek + `wlanTGaxChannel`), **Communications Toolbox** (`awgn`), **Signal Processing Toolbox** (`blackmanharris`) oraz własną implementację całego toru radarowego w `src/` i `lib/` (z wyzwalaczem sprzętowym `sync_idx`).
 
 ---
 
-### Podrozdział 3.2: Ogólna architektura oprogramowania i przepływ danych
+### Podrozdział 3.2: Ogólna architektura oprogramowania i przepływ danych *(napisano, zweryfikowano)*
 - **Docelowa objętość:** 1,5 strony.
-- **Obiekty:** **Rys. 3.1** (schemat blokowy zależności — `\ref{fig:software_architecture}`), 1 tabela (`tab:software_modules`).
-- **Plan akapitów:**
-  1. **Akapit 1 — Podział na fasady potoku (`src/`) i bibliotekę numeryczną (`lib/`):**
-     - Opis dwupoziomowej architektury repozytorium: cztery funkcje orkiestrujące w [`src/`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/src/) (`step1_transmitter`, `step2_channel`, `step3_receiver`, `step4_interpreter`) odwzorowują fizyczny podział systemu na nadajnik, kanał i odbiornik, podczas gdy atomowe operacje numeryczne i pomocnicze wydzielono do czystych funkcji w [`lib/`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/).
-     - Podkreślenie zasady **DRY** (*Don't Repeat Yourself*): skrypty demonstracyjne (`scripts/run_random_demo.m`), generatory wykresów (`scripts/figures/`), silnik Monte Carlo (`lib/run_detection_monte_carlo.m`) oraz testy regresyjne (`tests/verify_regression.m`) wywołują bezpośrednio produkcyjne funkcje z `src/` i `lib/` bez powielania kodu DSP. W tym celu struktura `radar_data` zwracana przez `step3_receiver` udostępnia również macierze pośrednie (`H_raw`, `H_no_static`, `H_shifted`, `W`, `Per_F`, `CPer_F`).
-  2. **Akapit 2 — Omówienie schematu blokowego zależności (Rys. 3.1) i odzwierciedlenia układu fizycznego:**
-     - Przywołanie **Rys. 3.1** (`\ref{fig:software_architecture}`) i prześledzenie przepływu danych: `waveform, fs, params, cfg` $\to$ `signal, fc, intrinsic_delay` $\to$ `radar_data` $\to$ `targets, CPer_F, Per_F, eta, pnfr, diag_info`.
-     - Jawne powiązanie architektury programowej z geometrią opisaną w Rozdziale 2 (`\ref{subsec:pbr_fundamentals}`): ponieważ w układzie współlokowanym (monostatycznym z dwiema odizolowanymi antenami Tx i Rx) odbiornik znajduje się przy nadajniku, `step3_receiver` otrzymuje bezpośrednio bezszumowy sygnał odniesienia `waveform` z `step1_transmitter` obok sygnału odebranego `signal` z `step2_channel`.
-  3. **Tabela `tab:software_modules` (Nawigacyjna mapa modułów i powiązań z teorią):**
-     - Zestawienie wszystkich plików `src/` (4) oraz `lib/` (15 — z pogrupowaniem lub kompletną listą głównych funkcji DSP i narzędzi ewaluacyjnych), z kolumnami: *Plik (`src/` lub `lib/`)*, *Główna odpowiedzialność*, *Kluczowe wejścia / wyjścia*, *Odniesienie teoretyczne (Rozdz. 1–2)*.
+- **Obiekty:** **Rys. 3.1** (`\ref{fig:software_architecture}`), 1 tabela (`tab:software_modules` w [`thesis/tables/tab_software_modules.tex`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/thesis/tables/tab_software_modules.tex)), 0 listingów.
+- **Zakres:** dwupoziomowy podział `src/` + `lib/`, zasada DRY, udostępnianie macierzy pośrednich w `radar_data`, odzwierciedlenie geometrii współlokowanej (tor odniesienia `waveform` + wspólny zegar `sync_idx`).
 
 ---
 
-### Podrozdział 3.3: Implementacja nadajnika sygnału IEEE 802.11
-- **Docelowa objętość:** 0,8–1,0 strony *(celowo zwięzły — zgodnie z założeniem, że nadajnik bazuje na gotowym generatorze WLAN Toolbox i nie wymaga rozbudowanego opisu)*.
-- **Obiekty:** 0 rysunków.
-- **Plan akapitów:**
-  1. **Akapit 1 — Synteza przebiegu bazowego przy użyciu WLAN Toolbox (`step1_transmitter.m`):**
-     - Wyjaśnienie, że nadajnik (`src/step1_transmitter.m`) celowo wykorzystuje certyfikowany generator fali z pakietu WLAN Toolbox (`wlanWaveformGenerator`), co gwarantuje 100% zgodności preambuł, kodowania, pilotów i mapowania podnośnych ze specyfikacjami IEEE 802.11a oraz 802.11ax (Rozdział 1, `\ref{subsec:wifi_signal}`, tabela `tab:wifi_params`).
-     - Opis interfejsu wejściowego `(WIFI_STANDARD, cbw, mcs, psdu_length)`: wygenerowanie losowego strumienia bitów `randi([0, 1], psdu_length * 8, 1)` i przekazanie go wraz z obiektem konfiguracyjnym `cfg` (`wlanNonHTConfig` lub `wlanHESUConfig`) do `wlanWaveformGenerator`, zwracającego zespolony wektor pasma podstawowego `waveform` oraz częstotliwość próbkowania `fs = wlanSampleRate(cfg)`.
-  2. **Akapit 2 — Autorska parametryzacja i ekstrakcja metadanych siatki (`lib/get_wifi_params.m`):**
-     - Wskazanie wartości dodanej poza samym wywołaniem toolboxa — funkcja `get_wifi_params.m` ujednolica oba standardy pod wspólny interfejs odbiornika:
-       - wymuszenie spójnych wartości domyślnych (`CBW20` dla 802.11a z ostrzeżeniem przy próbie użycia szerszego pasma, zaciskanie indeksu MCS do `0..7` dla 802.11a i `0..11` dla 802.11ax, stały prefiks cykliczny `GuardInterval = 0.8` $\mu\text{s}$ w `wlanHESUConfig`),
-       - **automatyczne skalowanie długości ładunku (`PSDULength` / `APEPLength`)** w przypadku pominięcia argumentu `psdu_length`: rozmiar ładunku jest przeliczany proporcjonalnie do liczby podnośnych danych i stopy bitowej MCS tak, aby utrzymać stały czas trwania ramki ($\approx 3{,}87\ \text{ms}$, czyli $M = 280$ symboli w 802.11ax i $M = 963$ w 802.11a; w 802.11a z uwzględnieniem limitu sprzętowego 4095 bajtów w polu L-SIG). Umożliwia to rzetelne izolowanie wpływu pasma $B$ i rzędu modulacji MCS w eksperymentach Rozdziału 4 przy niezmienionym czasie CPI,
-       - wyznaczenie początku pola danych `payload_start` (przez `wlanFieldIndices`), binarnej maski aktywnych podnośnych `active_mask` w dziedzinie wycentrowanej (`fftshift`) oraz dokładnych indeksów wewnętrznych prążków zerowych `dc_indices` (w tym obu wewnętrznych luk podkanałów 80 MHz przy `CBW160`, wyliczanych dynamicznie przez `setdiff` z `ofdminfo.ActiveFrequencyIndices`).
+### Podrozdział 3.3: Implementacja nadajnika sygnału IEEE 802.11 *(napisano)*
+- **Docelowa objętość:** 0,8–1,0 strony.
+- **Obiekty:** 0 rysunków, 0 tabel, **0 listingów** *(celowo pominięte — nadajnik korzysta z gotowego `wlanWaveformGenerator`, a autorska parametryzacja `get_wifi_params.m` opisana jest słownie)*.
+- **Zakres:** `step1_transmitter.m` + `get_wifi_params.m` (ujednolicenie 802.11a/ax, automatyczne skalowanie ładunku dla stałego czasu ramki $\approx 3{,}87\ \text{ms}$, maska `active_mask`, indeksy luk DC przez `setdiff` z obsługą podwójnej luki `CBW160`).
 
 ---
 
-### Podrozdział 3.4: Implementacja modelu kanału propagacyjnego i celów ruchomych
-- **Docelowa objętość:** 2,0 strony.
-- **Obiekty:** 0 rysunków.
+### Podrozdział 3.4: Implementacja modelu kanału propagacyjnego i celów ruchomych *(do napisania)*
+- **Docelowa objętość:** 1,8–2,0 strony.
+- **Obiekty:** 0 rysunków, **1 krótka tabela** (parametry modelu TGn/TGax z `get_tgax_propagation_params.m` + predefiniowane przekroje RCS), **3 mikrolistingi**:
+  - `thesis/listings/02_channel/01_target_radar_equation.m` (`\label{lst:ch_target_radar_eq}`),
+  - `thesis/listings/02_channel/02_target_fractional_delay.m` (`\label{lst:ch_fractional_delay}`),
+  - `thesis/listings/02_channel/03_thermal_noise_awgn.m` (`\label{lst:ch_thermal_noise}`).
 - **Plan akapitów:**
-  1. **Akapit 1 — Kluczowe założenie modelowe: model propagacyjny zamiast *ray-tracingu* 3D:**
-     - **Wyraźne i jednoznaczne zastrzeżenie metodologiczne:** w pracy **nie zaimplementowano geometrycznego symulatora śledzenia promieni (*ray-tracingu* 3D)** ani elektromagnetycznego modelu sprzężenia międzyantenowego i analogowego układu tłumienia samoprzekłóceń (SIC).
-     - Zamiast tego w [`src/step2_channel.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/src/step2_channel.m) zastosowano **hybrydowy uproszczony model propagacyjny**, złożony z dwóch addytywnych gałęzi: (1) standaryzowanego statystycznego modelu kanału wielodrogowego `wlanTGaxChannel` generującego resztkowy przesłuch bezpośredni (DPI) i stacjonarny clutter otoczenia, oraz (2) analitycznego, deterministycznego toru syntezy ech celów ruchomych.
-     - Uzasadnienie inżynierskie tego uproszczenia: model TGax dostarcza powtarzalnych, opisanych w standardzie profili opóźnień mocy (PDP) dla typowych przestrzeni wewnętrznych i halowych bez konieczności definiowania trójwymiarowej geometrii pomieszczeń i współczynników odbicia materiałów. Świadomym kosztem uproszczenia jest brak zależności od kątów nadejścia/odejścia (AoA/AoD), efektów przesłaniania (*shadowing*) oraz odbić wielokrotnych między samymi celami ruchomymi — konsekwencje te omówiono również w Rozdziale 4 i Wnioskach końcowych (`\ref{sec:conclusion}`).
-  2. **Akapit 2 — Tło wielodrogowe i resztkowy przesłuch bezpośredni (`wlanTGaxChannel`):**
-     - Konfiguracja obiektu `wlanTGaxChannel`: tryb `DelayProfile` (`Model-A`, `Model-B`, `Model-C`, `Model-E`, z normalizacją skróconych nazw `'A'`–`'E'`), `LargeScaleFadingEffect = 'None'` oraz `NormalizeChannelOutputs = false`.
-     - Wyjaśnienie roli trybu `LargeScaleFadingEffect = 'None'`: przy domyślnej odległości odniesienia modelu TGax ($3\ \text{m} < d_{\mathrm{BP}}$) odpowiada on propagacji LOS (*Line-of-Sight*), dzięki czemu pierwszy klaster kanału zachowuje składową bezpośrednią pełniącą w symulatorze rolę resztkowego przesłuchu DPI po izolacji antenowej, a kolejne klastry o zróżnicowanym rozrzucie opóźnień ($\tau_{\mathrm{rms}} \in \{0, 15, 30, 100\}\ \text{ns}$) odwzorowują statyczne odbicia wielodrogowe otoczenia (podstawa do badania tłumienia clutteru w Rozdziale 4, `\ref{subsec:sim_clutter_suppression}`).
-     - Odczyt wewnętrznego opóźnienia filtru interpolującego `intrinsic_delay = info(tgax).ChannelFilterDelay`, które służy zarówno do wyrównania opóźnień celów w kanale, jak i jako wzorzec odniesienia przy ocenie błędu synchronizacji odbiornika w badaniach Monte Carlo.
-  3. **Akapit 3 — Parametryzacja fizyczna celów (`configure_targets.m`, `get_carrier_frequency.m`):**
-     - Opis [`lib/get_carrier_frequency.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/get_carrier_frequency.m): mapowanie pasm `'2.4GHz'` ($2{,}437\ \text{GHz}$), `'5GHz'` ($5{,}500\ \text{GHz}$, domyślne), `'6GHz'` ($6{,}200\ \text{GHz}$) lub dowolnej częstotliwości liczbowej na $f_c$.
-     - Opis [`lib/configure_targets.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/configure_targets.m): przeliczenie opisu fizycznego celu (`range_m`, `velocity_mps`, `type`/`rcs`, opcjonalnie ręczny `gain`) na opóźnienie w próbkach `delays = range_m / (c0 / (2 * fs))`, przesunięcie Dopplera `dopplers = 2 * fc * vel_mps / c0` (zgodnie z równaniami dwudrożnymi z Rozdziału 2, `\ref{subsec:pbr_fundamentals}`) oraz amplitudę echa `taps` według skalowania równania radiolokacji Brauna:
-       $$b_h = b_{\mathrm{ref}} \left(\frac{d_{\mathrm{ref}}}{\max(R, 1{,}0\ \text{m})}\right)^2 \sqrt{\frac{\sigma}{\sigma_{\mathrm{ref}}}}$$
-       z parametrami odniesienia $d_{\mathrm{ref}} = 10\ \text{m}$, $\sigma_{\mathrm{ref}} = 1\ \text{m}^2$, $b_{\mathrm{ref}} = 0{,}03$ oraz predefiniowanymi przekrojami czynnymi RCS (`car` $10{,}0\ \text{m}^2$, `human` $1{,}0\ \text{m}^2$, `pet` $0{,}1\ \text{m}^2$, `drone` $0{,}05\ \text{m}^2$).
-  4. **Akapit 4 — Synteza opóźnień ułamkowych, efektu Dopplera i szumu AWGN (`step2_channel.m`):**
-     - Implementacja pętli po celach ruchomych: przesunięcie o całkowitą liczbę próbek `d_int = floor(delays(k) + intrinsic_delay)` oraz precyzyjna realizacja części ułamkowej `d_frac` (*fractional delay*) w dziedzinie częstotliwości przez wymnożenie widma przez liniową rampę fazową $\exp(-j 2\pi k_{\mathrm{freq}} d_{\mathrm{frac}} / N)$ (`ifft(fft(delayed) .* ...)`). Zapewnia to ciągłe, podpróbkowe położenie celów (*off-grid*) bez błędów kwantyzacji do siatki próbkowania $c_0 / (2 f_s)$.
-     - Nałożenie zespolonej modulacji dopplerowskiej $\exp(j 2\pi f_{D,k} t)$ oraz zsumowanie `signal = clutter_signal + target_signal`.
-     - Sposób dodawania szumu AWGN (`awgn(signal, snr_dB, ref_power_dBW)`): moc odniesienia `ref_power_dBW` wyliczana jest wyłącznie względem `clutter_signal` (DPI + tło stacjonarne), a nie względem sumy `signal`. Dzięki temu zmiana obecności lub przekroju RCS celu nie zaburza poziomu podłogi szumowej odbiornika, co zapewnia fizyczną poprawność scenariuszy porównawczych i statystycznych.
+  1. **Akapit 1 — Kluczowe założenie modelowe (hybrydowy model propagacyjny zamiast *ray-tracingu* 3D):**
+     - Jednoznaczne zastrzeżenie metodologiczne: w pracy **nie zaimplementowano geometrycznego symulatora śledzenia promieni (*ray-tracingu* 3D)** ani elektromagnetycznego modelu sprzężenia międzyantenowego i analogowego układu SIC.
+     - Zastosowano dwugałęziowy model addytywny w [`src/step2_channel.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/src/step2_channel.m): statystyczny kanał wielodrogowy `wlanTGaxChannel` (resztkowy przesłuch DPI + statyczny clutter) oraz deterministyczną ścieżkę ech celów ruchomych. Świadome ograniczenia: brak zależności od kątów AoA/AoD, przesłaniania (*shadowing*) i wielokrotnych odbić między celami (rozwinięte we Wnioskach końcowych, `\ref{sec:conclusion}`).
+  2. **Akapit 2 — Tło wielodrogowe i resztkowy przesłuch DPI (`wlanTGaxChannel`):**
+     - Konfiguracja `wlanTGaxChannel`: profile `Model-A`, `Model-B`, `Model-C`, `Model-E` (normalizacja skrótów `'A'`–`'E'`), `LargeScaleFadingEffect = 'None'`, `NormalizeChannelOutputs = false`, `EnvironmentalSpeed = 0.001`, `FluorescentEffect = false`.
+     - Rola ustawień: brak wielkoskalowego tłumienia ścieżki w `wlanTGaxChannel` (bo poziom przesłuchu resztkowego zadawany jest jawnie przez budżet mocy $P_{\mathrm{rx}}$, domyślnie $-50\ \text{dBm}$ przy $P_{\mathrm{Tx}} = 20\ \text{dBm}$ i ok. $70\ \text{dB}$ izolacji Tx–Rx + SIC), zachowanie pierwszego klastra LOS jako resztkowego DPI oraz kolejnych klastrów jako statycznego clutteru otoczenia.
+     - Odczyt `intrinsic_delay = info(tgax).ChannelFilterDelay`, służącego do wyrównania opóźnień celów w kanale oraz wyzwalania ramki w odbiorniku (`sync_idx`).
+  3. **Akapit 3 — Fizyczna parametryzacja celów (`configure_targets.m`, `get_carrier_frequency.m`, `get_tgax_propagation_params.m`) + Tabela + Listing `\ref{lst:ch_target_radar_eq}`:**
+     - Opis `get_carrier_frequency.m` (`2.4GHz` = $2{,}437\ \text{GHz}$, `5GHz` = $5{,}500\ \text{GHz}$, `6GHz` = $6{,}200\ \text{GHz}$).
+     - Opis `configure_targets.m` z osadzeniem **Listingu `01_target_radar_equation.m`**: przeliczenie `(range_m, velocity_mps, type/rcs)` na opóźnienie w próbkach `del_spl`, przesunięcie Dopplera `dop_hz`, moc echa $P_{\mathrm{target,LOS}}$ z monostatycznego równania radiolokacji Brauna (odniesioną do $P_{\mathrm{rx}}$, przy $P_{\mathrm{Tx}} = 0{,}1\ \text{W}$ i $G = 1$), **dwuodcinkowe tłumienie NLOS** dla $R > d_{\mathrm{bp}}$ według modelu TGn/TGax ($n_{\mathrm{LOS}} = 2{,}0$, $n_{\mathrm{NLOS}} = 3{,}5$) oraz nadanie zespolonej fazy nośnej $\exp(-j 2\pi f_c \tau_s)$.
+     - Krótka tabela zestawiająca odległości przełamania $d_{\mathrm{bp}}$ dla modeli `A`–`F` oraz domyślne przekroje RCS (`car` $10{,}0\ \text{m}^2$, `human` $1{,}0\ \text{m}^2$, `pet` $0{,}1\ \text{m}^2$, `drone` $0{,}05\ \text{m}^2$).
+  4. **Akapit 4 — Synteza opóźnień ułamkowych, modulacja Dopplera i budżet szumu AWGN (`step2_channel.m`) + Listingi `\ref{lst:ch_fractional_delay}` i `\ref{lst:ch_thermal_noise}`:**
+     - Osadzenie **Listingu `02_target_fractional_delay.m`**: podział opóźnienia na część całkowitą `d_int` i ułamkową `d_frac` realizowaną liniową rampą fazową w dziedzinie FFT (eliminacja kwantyzacji położenia celów do siatki próbkowania $c_0/(2f_s)$), modulacja dopplerowska na osi `t_eff` (ze wzmianką o wsparciu dla podpróbkowania w czasie wolnym `k_pri > 1`, modyfikującego odstęp między symbolami danych).
+     - Osadzenie **Listingu `03_thermal_noise_awgn.m`**: fizyczny budżet szumu termicznego $P_N = k_B T_0 B F$ ($T_0 = 290\ \text{K}$, domyślny współczynnik szumów $F = 7\ \text{dB}$), z którego wprost wynika degradacja $\mathrm{SNR}_{\mathrm{eff}}$ o $9\ \text{dB}$ przy poszerzeniu pasma z $20\ \text{MHz}$ do $160\ \text{MHz}$, oraz zakotwiczenie funkcji `awgn` do nominalnej mocy `waveform` (niezależnie od zaników TGax i obecności celów).
 
 ---
 
-### Podrozdział 3.5: Implementacja odbiornika radarowego
-*(Najobszerniejszy podrozdział Rozdziału 3 — stanowi rdzeń wkładu własnego; podzielony na krótkie wprowadzenie oraz 4 logiczne podpodrozdziały `3.5.1`–`3.5.4` z gęstymi odwołaniami do Rozdziału 1 i Rozdziału 2).*
+### Podrozdział 3.5: Implementacja odbiornika radarowego *(do napisania)*
+- **Docelowa objętość:** 4,5–5,5 strony.
+- **Akapit wprowadzający (3–4 zdania):** podział na moduł przetwarzania sygnałowego [`src/step3_receiver.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/src/step3_receiver.m) i moduł detekcji [`src/step4_interpreter.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/src/step4_interpreter.m); powiązanie z podrozdziałami `3.5.1`–`3.5.4`.
 
-- **Akapit wprowadzający (3–4 zdania):**
-  - Wyjaśnienie podziału logicznego odbiornika na dwa moduły programowe: [`src/step3_receiver.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/src/step3_receiver.m) (synchronizacja, demodulacja OFDM, estymacja i kondycjonowanie transmitancji kanału oraz wyznaczenie zespolonej mapy Range–Doppler) i [`src/step4_interpreter.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/src/step4_interpreter.m) (progowanie CFAR, iteracyjna detekcja i estymacja parametrów fizycznych celów oraz wyznaczenie kontrastu PNFR). Wskazanie odwzorowania kolejnych etapów teorii z Rozdziału 2 w poniższych punktach `3.5.1`–`3.5.4`.
-
-#### 3.5.1. Synchronizacja czasowa ramki i demodulacja OFDM
-- **Docelowa objętość:** 1,0–1,2 strony.
+#### 3.5.1. Wyzwalanie ramki i demodulacja OFDM
+- **Docelowa objętość:** 0,8–1,0 strony.
+- **Obiekty:** 0 rysunków, **1 mikrolisting**: `thesis/listings/03_receiver/01_ofdm_demodulation.m` (`\label{lst:rx_demodulation}`).
 - **Odwołania do teorii:** Rozdział 1 (`\ref{subsec:wifi_signal}`, `\ref{subsec:ofdm_modulation}`, `\eqref{eq:ofdm_discrete_ifft}`, `\eqref{eq:ofdm_symbol_duration}`).
 - **Treść:**
-  - Rozwiązanie parametrów ramki w `step3_receiver.m` (obsługa przekazanej struktury `params` z `step1_transmitter` lub odtworzenie przez `get_wifi_params`).
-  - Dwuetapowa synchronizacja czasowa oparta na WLAN Toolbox i autorskiej rafinacji:
-    1. Zgrubne wykrycie początku pakietu na polu L-STF za pomocą `wlanPacketDetect(signal, cbw)` (z przerwaniem i błędem w razie braku detekcji).
-    2. Wyznaczenie metryki korelacyjnej `M` na polu L-LTF w ograniczonym oknie preambuły (`24 us`, obejmującym L-STF + L-LTF = `16 us` z zapasem `8 us`) za pomocą `wlanSymbolTimingEstimate`.
-    3. **Autorska detekcja pierwszego czoła (*leading-edge / first-arrival path*):** uzasadnienie problemu w kanałach silnie wielodrogowych (`Model-E`), gdzie odbity klaster opóźniony bywa silniejszy od ścieżki bezpośredniej LOS — klasyczne maksimum `max(M)` blokuje się wówczas na opóźnionym echu, przesuwając całą oś odległości na mapie RDM. W implementacji przeszukuje się okno wsteczne `lookback = min(Ncp, round(1.6e-6 * fs))` przed maksimum `n_peak`, wyznacza pierwszy indeks przekraczający próg `0.20 * M_max` (bezpiecznie ponad listkami bocznymi autokorelacji L-LTF $\approx 0{,}034$) i przesuwa wskaźnik w górę lokalnego zbocza do pierwszego lokalnego maksimum `n_first`.
-  - Odcięcie preambuły w obu torach: `y_cut = signal(sync_idx + params.payload_start : end)` oraz `x_cut = waveform(params.payload_start : end)`.
-  - Manualna demodulacja OFDM w [`lib/demodulate.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/demodulate.m): wyznaczenie całkowitej liczby pełnych symboli `n_syms = floor(length(signal) / (n_fft + n_cp))`, przycięcie wektora, przekształcenie do macierzy `(n_fft + n_cp) x n_syms`, odrzucenie pierwszych `n_cp` próbek prefiksu cyklicznego i wykonanie kolumnowej transformaty `fft(..., n_fft, 1)` (odwrotność `\eqref{eq:ofdm_discrete_ifft}`), a następnie wyrównanie liczby kolumn `n_symbols = min(n_symbols_rx, n_symbols_tx)` dla macierzy `F_rx` i `F_tx`.
+  - Rozwiązanie parametrów ramki w `step3_receiver.m` (przekazana struktura `params` z nadajnika lub odtworzenie przez `get_wifi_params`).
+  - Współlokowane wyzwalanie sprzętowe (`sync_idx`, `payload_start_rx = sync_idx + params.payload_start`): dzięki wspólnemu zegarowi i połączeniu Tx–Rx w jednym urządzeniu pominięto estymację synchronizacji na preambule, dokładnie wyrównując oba tory: `y_cut = signal(payload_start_rx : end)` i `x_cut = waveform(params.payload_start : end)`.
+  - Ręczna demodulacja w [`lib/demodulate.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/demodulate.m) + **Listing `01_ofdm_demodulation.m`**: wyznaczenie liczby pełnych symboli, przekształcenie do macierzy `(n_fft + n_cp) x n_syms`, odrzucenie prefiksu cyklicznego CP, kolumnowe `fft` i wyrównanie liczby kolumn `n_symbols = min(n_symbols_rx, n_symbols_tx)`.
 
 #### 3.5.2. Estymacja odpowiedzi kanału, tłumienie ech stałych i interpolacja luki DC
 - **Docelowa objętość:** 1,3–1,5 strony.
-- **Obiekty:** **Rys. 3.2** (`thesis/img/ch3_impl/rys_3_1_macierz_transmitancji_h.png`, `\ref{fig:impl_channel_matrix}`).
+- **Obiekty:** **Rys. 3.2** ([`rys_3_1_macierz_transmitancji_h.png`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/thesis/img/ch3_impl/rys_3_1_macierz_transmitancji_h.png), `\label{fig:impl_channel_matrix}`), **2 mikrolistingi**:
+  - `thesis/listings/03_receiver/02_cfr_zf_and_mti.m` (`\label{lst:rx_cfr_mti}`),
+  - `thesis/listings/03_receiver/03_dc_null_interpolation.m` (`\label{lst:rx_dc_interp}`).
 - **Odwołania do teorii:** Rozdział 1 (`\ref{subsec:wifi_signal}`), Rozdział 2 (`\ref{subsec:channel_estimation}`, `\ref{subsec:clutter_filtering}`).
 - **Treść:**
-  - Szczegółowy opis [`lib/estimate_channel.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/estimate_channel.m) realizującego trzy operacje na macierzach `F_rx`, `F_tx` o wymiarze $N_{\mathrm{FFT}} \times M$:
-    1. **Estymacja CFR metodą Zero-Forcing:** dzielenie element po elemencie `H = F_rx ./ (F_tx + 1e-9)` z regularyzacją $\varepsilon = 10^{-9}$ oraz wyzerowanie pasm ochronnych i luki DC maską `ifftshift(params.active_mask)`. Równolegle wyznaczany jest bezwymiarowy współczynnik wzmocnienia szumu $\zeta_{\mathrm{ZF}}$ w dB na aktywnych podnośnych `X_act` (`10 * log10(mean(pwr_x) * mean(1 ./ (pwr_x + epsilon^2)))`), odzwierciedlający teorię z Rozdziału 2 (`\ref{subsec:channel_estimation}`) i wykorzystywany bezpośrednio w Eksperymencie E3.
-    2. **Przesunięcie widma i filtr MTI w czasie wolnym:** wycentrowanie osi częstotliwości (`H_raw_shifted = fftshift(H, 1)`) oraz odjęcie średniej po drugim wymiarze (`H_no_static_shifted = H_raw_shifted - mean(H_raw_shifted, 2)`), realizujące filtr MTI rzędu zerowego z Rozdziału 2 (`\ref{subsec:clutter_filtering}`).
-    3. **Adaptacyjna interpolacja luki DC w [`lib/interpolate_dc_nulls.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/interpolate_dc_nulls.m):** automatyczne wykrywanie spójnych przedziałów pustych podnośnych wewnętrznych za pomocą analizy różnic indeksów (`diff(dc) > 1`). Dla każdej wykrytej luki $[k_L+1, \dots, k_R-1]$ o szerokości $G$ wyznaczane są wagi liniowe `weights = (1:G).' / (G + 1)` między skrajnymi aktywnymi podnośnymi `H(idx_left, :)` i `H(idx_right, :)`. Rozwiązanie to obsługuje jednolicie zarówno pojedynczą lukę 802.11a ($G=1$), centralne luki 802.11ax ($G \in \{3, 5, 23\}$), jak i podwójne 5-podnośne luki podkanałów 80 MHz w trybie `CBW160`.
-  - **Prezentacja i interpretacja Rys. 3.2 (`rys_3_1_macierz_transmitancji_h.png`):**
-    - Skrypt generujący: `scripts/figures/ch3_impl/gen_fig_3_1_channel_matrix_h.m` (802.11ax, `CBW80`, `MCS 0`, `Model-C`, $\mathrm{SNR} = 25\ \text{dB}$, dwa cele: pieszy $22{,}5\ \text{m}, -4{,}0\ \text{m/s}$ i samochód $67{,}5\ \text{m}, +18{,}0\ \text{m/s}$).
-    - Omówienie obu paneli: (a) surowa macierz `H_raw` zdominowana przez silny przesłuch DPI i selektywne zaniki wielodrogowe oraz wyraźną czarną szczeliną 5 zerowych podnośnych DC pośrodku; (b) macierz `H_shifted` po filtracji MTI (stłumienie składowej stacjonarnej DPI $> 120\ \text{dB}$, spadek całkowitej mocy macierzy o $24{,}89\ \text{dB}$) oraz po interpolacji luki DC, przywracającej ciągłość widma w osi częstotliwości i odsłaniającej fazowo-amplitudową strukturę ech obiektów ruchomych.
+  - Omówienie [`lib/estimate_channel.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/estimate_channel.m) z **Listingiem `02_cfr_zf_and_mti.m`**:
+    1. Estymacja CFR metodą Zero-Forcing z regularyzacją $\varepsilon = 10^{-9}$ i maską `ifftshift(params.active_mask)`.
+    2. Wyznaczenie bezwymiarowego współczynnika wzmocnienia szumu $\zeta_{\mathrm{ZF}}$ w dB na aktywnych podnośnych `X_act` (wykorzystywanego w Eksperymencie E3, `\ref{subsec:sim_mcs_noise_enhancement}`).
+    3. Centrowanie osi częstotliwości (`fftshift`) i filtr MTI rzędu zerowego (`H_raw_shifted - mean(H_raw_shifted, 2)`).
+  - Omówienie [`lib/interpolate_dc_nulls.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/interpolate_dc_nulls.m) z **Listingiem `03_dc_null_interpolation.m`**: wykrywanie spójnych luk wewnętrznych przez `diff(dc) > 1` i wektorowa interpolacja liniowa między skrajnymi aktywnymi podnośnymi (jednolita obsługa 802.11a oraz 802.11ax `CBW20`–`CBW160`, w tym podwójnych luk podkanałów).
+  - **Prezentacja i interpretacja Rys. 3.2 (`rys_3_1_macierz_transmitancji_h.png`):** scenariusz referencyjny (`802.11ax, CBW80, MCS 0, Model-C`, pieszy $7{,}5\ \text{m}, -4{,}0\ \text{m/s}$, samochód $18{,}0\ \text{m}, +14{,}0\ \text{m/s}$); panel (a) `H_raw` zdominowany przez DPI i selektywne zaniki wielodrogowe; panel (b) `H_no_static` po filtracji MTI (usunięcie składowej stałej i odsłonięcie fazowo-amplitudowej modulacji celów ruchomych, przy nadal widocznej 5-podnośnej luce DC uzasadniającej krok interpolacji).
 
 #### 3.5.3. Wyznaczanie mapy odległość–prędkość i kalibracja osi fizycznych
-- **Docelowa objętość:** 1,3–1,5 strony.
-- **Obiekty:** **Rys. 3.3** (`thesis/img/ch3_impl/rys_3_2_mapa_range_doppler.png`, `\ref{fig:impl_range_doppler}`) oraz **Rys. 3.4** (`thesis/img/ch3_impl/rys_3_3_etapy_przetwarzania.png`, `\ref{fig:impl_processing_stages}`).
+- **Docelowa objętość:** 1,2–1,4 strony.
+- **Obiekty:** **Rys. 3.3** ([`rys_3_2_mapa_range_doppler.png`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/thesis/img/ch3_impl/rys_3_2_mapa_range_doppler.png), `\label{fig:impl_range_doppler}`), **3 mikrolistingi**:
+  - `thesis/listings/03_receiver/04_window_2d_blackman_harris.m` (`\label{lst:rx_window_2d}`),
+  - `thesis/listings/03_receiver/05_range_doppler_periodogram.m` (`\label{lst:rx_periodogram}`),
+  - `thesis/listings/03_receiver/06_physical_axes.m` (`\label{lst:rx_axes}`).
 - **Odwołania do teorii:** Rozdział 2 (`\ref{subsec:pbr_fundamentals}`, `\ref{subsec:range_doppler_map}`).
 - **Treść:**
-  - Implementacja [`lib/compute_range_doppler_map.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/compute_range_doppler_map.m):
-    - Wyznaczenie rozpiętości pasma aktywnego `L_active = idx(end) - idx(1) + 1` na podstawie `active_mask` (kluczowe: okno wagowe nie obejmuje zerowych pasm ochronnych, dzięki czemu jego boki opadają płynnie dokładnie na krańcach pasma użytecznego).
-    - Konstrukcja separowalnego okna 2D Blackmana–Harrisa `W = win_f .* win_t` (funkcja `blackmanharris`), przy czym oba jednowymiarowe wektory są normalizowane tak, aby średnia energia okna po aktywnym obszarze była jednostkowa (`w * sqrt(L) / norm(w)`).
-    - Obliczenie rozmiarów siatki po 4-krotnym dopełnieniu zerami (*zero-padding*): `N_per = pad_factor * 2^nextpow2(Nfft)`, `M_per = pad_factor * 2^nextpow2(n_symbols)` (`pad_factor = 4`).
-    - Wyznaczenie zespolonego periodogramu `CPer_F = fftshift(N_per * ifft(fft(H_win, M_per, 2), N_per, 1), 2)` — wyjaśnienie dwóch szczegółów implementacyjnych: (1) mnożenia przez `N_per` w celu skompensowania domyślnego skalowania `1/N_per` funkcji `ifft` w MATLAB-ie (tak aby amplitudy były zgodne z równaniami periodogramu z Rozdz. 2, `\ref{subsec:range_doppler_map}`), oraz (2) wycentrowania `fftshift(..., 2)` wyłącznie po osi Dopplera (oś odległości pozostaje jednostronna $[0, R_{\max})$).
-    - Wyznaczenie znormalizowanego rzeczywistego periodogramu mocy `Per_F = (1 / (N_act * n_symbols)) * abs(CPer_F).^2`.
-  - Implementacja [`lib/calculate_physical_axes.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/calculate_physical_axes.m):
-    - Dokładne odwzorowanie indeksów DFT/IDFT na jednostki fizyczne (`axis_range`, `axis_velocity`) z zastosowaniem symetrycznego indeksowania `m_idx = floor(-M_per / 2) : (ceil(M_per / 2) - 1)` dla osi prędkości. Podkreślenie, dlaczego nie wolno używać funkcji `linspace(-v_unamb/2, v_unamb/2, M_per)` — `fftshift` umieszcza bin zerowy `0 Hz` w indeksie `M_per/2 + 1`, więc `linspace` wprowadzałoby systematyczne przesunięcie o pół kroku siatki (asymetrię między celami zbliżającymi się i oddalającymi).
-  - **Prezentacja i interpretacja Rys. 3.3 (`rys_3_2_mapa_range_doppler.png`) oraz Rys. 3.4 (`rys_3_3_etapy_przetwarzania.png`):**
-    - Oba rysunki wygenerowane dla tego samego scenariusza referencyjnego co Rys. 3.2 (`CBW80`, `Model-C`, pieszy + samochód).
-    - **Rys. 3.3** (`gen_fig_3_2_range_doppler.m`): zestawienie $2 \times 2$ (widok 3D całej mapy jednoznacznej oraz zbliżenie 2D na strefę celów) porównujące surowy periodogram bazowy (zdominowany przez potężny grzbiet na $v = 0\ \text{m/s}$ i pasma przecieku od okna prostokątnego) z mapą po usunięciu echa stałego, interpolacji DC i oknie 2D Blackmana–Harrisa, na której wyraźnie wyłaniają się oba cele ruchome, poprawnie zlokalizowane przez Coherent STC.
-    - **Rys. 3.4** (`gen_fig_3_3_processing_stages.m`): dekompozycja 4 kolejnych etapów przetwarzania w jednakowym kadrze 2D ($R \in [0, 85]\ \text{m}$, $v \in [-25, +25]\ \text{m/s}$): Krok 0 (periodogram bazowy) $\to$ Krok 1 (po odjęciu średniej czasowej — znika grzbiet $v=0$, lecz pozostają wysokie listki boczne okna prostokątnego oraz podniesiona podłoga zakłóceń od luki DC) $\to$ Krok 2 (po interpolacji DC i oknie 2D Blackmana–Harrisa — redukcja tła i wykrycie obu celów) $\to$ Krok 3 (periodogram rezydualny po ekstrakcji celów algorytmem Coherent STC, z tłem poniżej progu CFAR).
+  - Okno 2D w [`lib/compute_range_doppler_map.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/compute_range_doppler_map.m) z **Listingiem `04_window_2d_blackman_harris.m`**: dopasowanie okna `blackmanharris` wyłącznie do rozpiętości pasma aktywnego `L_active` (bez pasm ochronnych) oraz normalizacja obu wektorów 1D do jednostkowej średniej energii (`w * sqrt(L) / norm(w)`).
+  - Periodogram 2D z **Listingiem `05_range_doppler_periodogram.m`**: 4-krotne dopełnianie zerami do potęg dwójki (`N_per`, `M_per`), mnożenie przez `N_per` kompensujące skalowanie `1/N_per` funkcji `ifft`, wycentrowanie `fftshift(..., 2)` wyłącznie osi Dopplera oraz normalizacja mocy `Per_F` przez `N_act * n_symbols`.
+  - Kalibracja osi w [`lib/calculate_physical_axes.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/calculate_physical_axes.m) z **Listingiem `06_physical_axes.m`**: uwzględnienie `k_pri` w okresie symbolu $T_O$ oraz symetryczne indeksowanie `m_idx = floor(-M_per/2) : (ceil(M_per/2)-1)` (dlaczego `linspace` wprowadzałoby przesunięcie o pół binu wobec `fftshift`).
+  - **Prezentacja i interpretacja Rys. 3.3 (`rys_3_2_mapa_range_doppler.png`):** zestawienie $2 \times 2$ (widok 3D całej mapy oraz zbliżenie 2D $R \in [0, 30]\ \text{m}, v \in [-25, +25]\ \text{m/s}$, oś Y `Odległość [m]`) dla tego samego scenariusza co Rys. 3.2 — kontrast między surowym periodogramem bazowym (grzbiet na $v=0\ \text{m/s}$ i przeciek widmowy okna prostokątnego) a mapą po kondycjonowaniu z poprawnymi wykryciami pieszego i samochodu przez Coherent STC.
 
-#### 3.5.4. Detekcja progowa CFAR, iteracyjna ekstrakcja celów i weryfikacja oprogramowania
+#### 3.5.4. Detekcja progowa CFAR, iteracyjna ekstrakcja celów, PNFR i weryfikacja oprogramowania
 - **Docelowa objętość:** 1,5–1,8 strony.
-- **Obiekty:** 0 rysunków (ewentualnie zwięzła tabela podsumowująca zestaw testów w `verify_regression.m` lub opis zwarty w tekście).
-- **Odwołania do teorii:** Rozdział 2 (`\ref{subsec:target_detection_extraction}`), Rozdział 4 (`\ref{subsec:sim_clean_performance}`), Dodatek A (`\ref{app:listings}`).
+- **Obiekty:** **Rys. 3.4** ([`rys_3_3_etapy_przetwarzania.png`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/thesis/img/ch3_impl/rys_3_3_etapy_przetwarzania.png), `\label{fig:impl_processing_stages}`), **1 tabela porównawcza** (Binary STC vs Coherent STC), **3 mikrolistingi**:
+  - `thesis/listings/03_receiver/07_cfar_threshold.m` (`\label{lst:rx_cfar}`),
+  - `thesis/listings/03_receiver/08_binary_stc_masking.m` (`\label{lst:rx_binary_stc}`),
+  - `thesis/listings/03_receiver/09_coherent_stc_subtraction.m` (`\label{lst:rx_coherent_stc}`).
+- **Odwołania do teorii:** Rozdział 2 (`\ref{subsec:target_detection_extraction}`), Rozdział 4 (`\ref{subsec:sim_clean_performance}`).
 - **Treść:**
-  - Fasada [`src/step4_interpreter.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/src/step4_interpreter.m) oraz wzorzec centralnego rejestru [`lib/get_detection_algorithm.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/get_detection_algorithm.m): ujednolicony interfejs wyboru detektora (`'binary'` jako metoda domyślna lub `'coherent'`), normalizacja parametrów wejściowych i zwracanie spójnej struktury diagnostycznej `diag_info` (`num_iterations`, `num_residuals`, `sigma2_hat`, `N_max`, `N_win`, `M_win`, `p_FA`).
-  - Wspólne mechanizmy numeryczne obu detektorów (odpowiadające równaniom z Rozdz. 2, `\ref{subsec:target_detection_extraction}`):
-    1. **Estymacja mocy szumu $\hat{\sigma}^2$ poza $N_{\max}$:** wyznaczenie granicy bez ISI `N_max = ceil((Ncp / Nfft) * N_Per)` oraz obustronnego marginesu ochronnego `n_guard` (`row_start = N_max + n_guard + 1` do `row_end = N_Per - n_guard`), który chroni estymator ML przed wyciekiem energii celów przy $N_{\max}$ oraz przed zawinięciem cyklicznym piku z $R = 0$ na koniec osi odległości.
-    2. **Stabilne numerycznie wyznaczanie progu CFAR $\eta$:** zastosowanie funkcji `expm1` i `log1p` (`p_FA_bin = -expm1(log1p(-p_FA) / (N * M))`), zapobiegających katastrofalnemu skróceniu mantysy przy bardzo małych wartościach $p_{\mathrm{FA}} / (NM)$.
-    3. **Dwuwymiarowa interpolacja paraboliczna piku (`quadratic_peak_interp`):** wyznaczana na periodogramie mocy `Per_F` z użyciem indeksowania modulo (`mod(..., N_Per)` / `mod(..., M_Per)`) zapewniającego poprawność na brzegach zawinięcia widma, z ograniczeniem przesunięcia podpikselowego $\delta_n, \delta_m \in [-0{,}5;\ +0{,}5]$ oraz kalibracją estymaty $\hat{\sigma}_{\mathrm{RCS}}$ za pomocą stałej `c_norm` i zysku koherentnego okna `G_win = sum(W(:))^2 / (N*M)^2`.
-  - Różnice implementacyjne obu wariantów STC:
-    - **Binary STC ([`lib/binary_successive_target_cancellation.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/binary_successive_target_cancellation.m)):** wyliczenie szerokości listka głównego do pierwszych zer (*null-to-null*) funkcją `compute_mainlobe_null_width`, utrzymywanie maski logicznej `B` i cykliczne zerowanie elipsy o półosiach `(N_win/2, M_win/2)` w metryce `min(dn, N_Per - dn)`. Zwrócenie historii masek `B_history` wyłącznie przy obecności 5. argumentu wyjściowego (`nargout >= 5`) — brak zbędnego narzutu pamięciowego w pętlach Monte Carlo.
-    - **Coherent STC ([`lib/coherent_successive_target_cancellation.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/coherent_successive_target_cancellation.m)):** wyliczenie efektywnej szerokości `-3 dB` listka głównego w `compute_mainlobe_3dB_width` z liniową interpolacją progu `0.5`; kontrola rezyduów dekonwolucji w **Kroku 4** (porównanie dystansu cyklicznego wobec wszystkich wcześniej wykrytych celów w elipsie `-3 dB` — odrzucenie rezyduum bez dopisywania do `targets`, lecz z jego koherentnym odjęciem w Kroku 6–7); synteza idealnej macierzy pojedynczego celu `F_target`, nałożenie okna `W`, wyznaczenie `CPer_target`, normalizacja w punkcie piku `CPer_target(rn, dm)` i koherentne odjęcie zespolone od `CPer_F`; zabezpieczenie `max_iter = 200` przed niestabilnością pętli.
-  - Wyznaczanie kontrastu **PNFR** w [`lib/compute_pnfr.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/compute_pnfr.m): przeszukiwanie lokalnego maksimum w oknie $\pm 1$ bin wokół pozycji piku, wykluczenie stref ochronnych (*guard boxes*, domyślnie $\pm 16$ binów w obu osiach z zawinięciem cyklicznym `mod`) ze wszystkich wykrytych celów i obliczenie średniej mocy tła `floor_lin`.
-  - **Weryfikacja poprawności oprogramowania i zaplecze statystyczne (Monte Carlo):**
-    - Omówienie zestawu testów automatycznych [`tests/verify_regression.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/tests/verify_regression.m): (1) weryfikacja regresyjna wobec wzorca odniesienia *Golden Master* (`tests/golden_*.mat`, próg zgodności numerycznej $< 10^{-12}$ dla przebiegu, sygnału kanału, mapy RDM oraz wyników Binary/Coherent STC), (2) testy jednostkowe syntetyczne na czystym AWGN (weryfikacja $\hat{\sigma}^2$ i $\eta$), pojedynczym celu *off-grid* i symetrii prędkości $\pm 12\ \text{m/s}$, (3) testy kompletnego potoku *end-to-end* (w tym scenariusz E5 dynamiki $30\ \text{dB}$ potwierdzający maskowanie pieszego w Binary STC i poprawne odsłonięcie w Coherent STC) oraz (4) testy rejestru `get_detection_algorithm`.
-    - Krótka wzmianka o module ewaluacyjnym [`lib/run_detection_monte_carlo.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/run_detection_monte_carlo.m) i [`lib/plot_detection_vs_range.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/plot_detection_vs_range.m), które realizują wielopróbowe symulacje stochastyczne z asocjacją 1-do-1 w bramce Rayleigha, estymacją błędu synchronizacji oraz wyznaczaniem $95\%$ przedziałów ufności Wilsona (szczegółowo wykorzystane w Rozdziale 4).
-    - Odesłanie czytelnika do wybranych fragmentów kodu źródłowego w **Dodatku A** (`\ref{app:listings}`).
+  - Fasada [`src/step4_interpreter.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/src/step4_interpreter.m) i centralny rejestr [`lib/get_detection_algorithm.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/get_detection_algorithm.m) (`'binary'` domyślny, `'coherent'`, struktura `diag_info`).
+  - Estymator ML mocy szumu i próg CFAR z **Listingiem `07_cfar_threshold.m`**: strefa poza $N_{\max} = \lceil (N_{\mathrm{CP}}/N_{\mathrm{FFT}}) N_{\mathrm{per}} \rceil$ z obustronnym marginesem `n_guard = ceil(N_win_null)` chroniącym przed wyciekiem i zawinięciem z $R = 0$, oraz stabilne numerycznie wyznaczenie `p_FA_bin` funkcjami `expm1`/`log1p`.
+  - Wspólny szkielet iteracyjny obu detektorów (opis słowny bez powtarzania kodu): wyszukanie maksimum `Per_F`, warunek stopu `< eta`, dwuwymiarowa interpolacja paraboliczna piku `quadratic_peak_interp` z zawinięciem `mod` i ograniczeniem $\delta_n, \delta_m \in [-0{,}5;\ +0{,}5]$ oraz kalibracja $\hat{d}, \hat{v}, \hat{\sigma}_{\mathrm{RCS}}$ (z uwzględnieniem zysku okna $G_{\mathrm{win}}$ i $P_{\mathrm{rx}}$).
+  - Porównanie obu wariantów STC (**Tabela porównawcza** + **Listingi `08_binary_stc_masking.m` i `09_coherent_stc_subtraction.m`**):
+    - **Binary STC:** wykluczenie zamaskowanych binów w `Per_search` oraz periodyczne zerowanie elipsy listka głównego *null-to-null* w masce binarnej `B` (brak usuwania listków bocznych spoza elipsy).
+    - **Coherent STC:** w Kroku 4 wykorzystuje ten sam warunek periodycznej elipsy co Binary STC, lecz z węższą szerokością `-3 dB` (`compute_mainlobe_3dB_width`), odrzucając rezydua dekonwolucji bez dopisywania duplikatu do `targets`; w Krokach 6–8 realizuje szybką syntezę separowalnej repliki rank-1 (`v_r * v_d`) dopasowanej do filtru MTI (`e_d - mean(e_d)` przy `mti_applied = true`, lub pełny 2D-FFT dla okna nieseparowalnego) i koherentne odejmowanie zespolone od `CPer_F` z zabezpieczeniem `max_iter = 200`.
+  - **Prezentacja i interpretacja Rys. 3.4 (`rys_3_3_etapy_przetwarzania.png`):** dekompozycja 4 kolejnych kroków na kadrze 2D ($R \in [0, 30]\ \text{m}, v \in [-25, +25]\ \text{m/s}$, oś Y `Odległość [m]`): Krok 0 (bazowy) $\to$ Krok 1 (po MTI — znika grzbiet $v=0$, pozostaje tło od luki DC i listków bocznych okna prostokątnego) $\to$ Krok 2 (po interpolacji DC i oknie 2D Blackmana–Harrisa — wyraźne detekcje obu celów) $\to$ Krok 3 (periodogram rezydualny po Coherent STC — usunięcie zarówno głównych maksimów, jak i ich listków bocznych poniżej progu CFAR).
+  - Metryka kontrastu [`lib/compute_pnfr.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/lib/compute_pnfr.m): przeszukanie lokalnego maksimum w $\pm 1$ binie wokół wykrycia i uśrednienie podłogi szumowo-zakłóceniowej poza strefami ochronnymi o rozmiarze równym połowie szerokości *null-to-null* okna (`ceil(N_win_null/2)`, `ceil(M_win_null/2)`).
+  - Krótka informacja o automatycznej weryfikacji w [`tests/verify_regression.m`](file:///c:/Users/tymwo/Projects/MATLAB/WiFi%20Radar/tests/verify_regression.m) (testy *Golden Master* względem `tests/golden_*.mat`, testy jednostkowe AWGN/*off-grid*/symetrii prędkości oraz *end-to-end*) oraz wzmianka o narzędziach statystycznych Monte Carlo w `scripts/experiments/` i `lib/` użytych w Rozdziale 4.
 
 ---
 
@@ -274,35 +238,45 @@ Dodanie schematu blokowego jako pierwszego rysunku w Rozdziale 3 powoduje natura
 
 | Rodzaj odwołania | Etykieta docelowa (`\ref` / `\eqref`) | Miejsce definicji | Zastosowanie w Rozdziale 3 |
 | :--- | :--- | :--- | :--- |
-| Rozdział 1 | `\ref{sec:wifi_signal}`, `\ref{subsec:wifi_signal}`, `\ref{tab:wifi_params}` | `10_wifi_signal.tex` | Parametry PHY 802.11a/ax, ramki PPDU, luka DC (3.3, 3.5.1, 3.5.2) |
+| Rozdział 1 | `\ref{sec:wifi_signal}`, `\ref{subsec:wifi_signal}`, `\ref{tab:wifi_params}` | `10_wifi_signal.tex`, `tab_wifi_params.tex` | Parametry PHY 802.11a/ax, ramki PPDU, luka DC (3.3, 3.5.1, 3.5.2) |
 | Rozdział 1 (wzory) | `\ref{subsec:ofdm_modulation}`, `\eqref{eq:ofdm_discrete_ifft}`, `\eqref{eq:ofdm_symbol_duration}` | `10_wifi_signal.tex` | Synteza IFFT/FFT i usuwanie prefiksu cyklicznego CP (3.3, 3.5.1) |
 | Rozdział 2 | `\ref{subsec:pbr_fundamentals}` | `20_passive_radar.tex` | Układ współlokowany z dwiema antenami, $\tau = 2R/c$, $f_D = 2vf_c/c$ (3.2, 3.4, 3.5.3) |
 | Rozdział 2 | `\ref{subsec:channel_estimation}` | `20_passive_radar.tex` | Estymacja CFR metodą ZF i wzmocnienie szumu $\zeta_{\mathrm{ZF}}$ (3.5.2) |
 | Rozdział 2 | `\ref{subsec:clutter_filtering}` | `20_passive_radar.tex` | Filtr MTI rzędu 0 i interpolacja wielopunktowa luki DC (3.5.2) |
 | Rozdział 2 | `\ref{subsec:range_doppler_map}` | `20_passive_radar.tex` | Periodogram 2D, okno Blackmana–Harrisa, zero-padding (3.5.3) |
 | Rozdział 2 | `\ref{subsec:target_detection_extraction}` | `20_passive_radar.tex` | Próg CFAR $\eta$, estymacja ML $\hat{\sigma}^2$, 2D interp., Binary/Coherent STC, PNFR (3.5.4) |
-| Rozdział 4 | `\ref{subsec:sim_clutter_suppression}`, `\ref{subsec:sim_clean_performance}` | `40_simulation_results.tex` | Zapowiedź badań E4 (TGax + *leading-edge*) oraz E5 / Monte Carlo (3.4, 3.5.1, 3.5.4) |
+| Rozdział 4 | `\ref{subsec:sim_bandwidth_resolution}`, `\ref{subsec:sim_mcs_noise_enhancement}`, `\ref{subsec:sim_clutter_suppression}`, `\ref{subsec:sim_clean_performance}` | `40_simulation_results.tex` | Eksperymenty pasma, MCS, tłumienia clutteru oraz Coherent STC / Monte Carlo (3.3, 3.4, 3.5.2, 3.5.4) |
 | Wnioski | `\ref{sec:conclusion}` | `50_conclusion.tex` | Rozwinięcie ograniczeń braku ray-tracingu 3D i modelu SIC (3.4) |
-| Dodatek A | `\ref{app:listings}` | `60_appendices.tex` | Wybrane listingi MATLAB i instrukcja uruchomienia symulatora (3.2, 3.5) |
 
 ---
 
-## 6. Powiązanie z Dodatkiem A i Checklista Przed Zamknięciem Rozdziału 3
+## 6. Rejestr Mikrolistingów i Checklista Przed Zamknięciem Rozdziału 3
 
-### 6.1. Planowane listingi w Dodatku A (`thesis/tex/60_appendices.tex`)
-Aby Rozdział 3 pozostał czytelny i wolny od wielostronicowych bloków kodu, w Dodatku A należy umieścić 4 zwarte listingi w `minted` (z pominięciem redundantnych nagłówków `fprintf`) oraz skróconą instrukcję odtworzenia wyników:
-1. **Listing A.1:** `src/step2_channel.m` + `lib/configure_targets.m` — realizacja opóźnień ułamkowych w dziedzinie częstotliwości, translacja celów i zakotwiczenie szumu `awgn` do `clutter_signal`.
-2. **Listing A.2:** `src/step3_receiver.m` (sekcja synchronizacji *leading-edge*) + `lib/estimate_channel.m` + `lib/interpolate_dc_nulls.m`.
-3. **Listing A.3:** `lib/compute_range_doppler_map.m` + `lib/calculate_physical_axes.m` — normalizowane okno 2D Blackmana–Harrisa, 2D-FFT i kalibracja osi fizycznych.
-4. **Listing A.4:** `lib/coherent_successive_target_cancellation.m` (pętla główna CFAR, Krok 4 odrzucania rezyduów i koherentne odjęcie repliki).
+### 6.1. Wygenerowane mikrolistingi w `thesis/listings/` (0 + 3 + 9 = 12 plików)
+
+| Etap / Katalog | Plik listingu | Linie | Etykieta LaTeX | Podrozdział | Status |
+| :--- | :--- | :---: | :--- | :---: | :---: |
+| **1. Nadajnik** | *(pominięty celowo)* | — | — | 3.3 | [x] Zatwierdzono |
+| **2. Kanał** (`02_channel/`) | `01_target_radar_equation.m` | 11 | `\label{lst:ch_target_radar_eq}` | 3.4 | [x] Wygenerowano |
+| | `02_target_fractional_delay.m` | 9 | `\label{lst:ch_fractional_delay}` | 3.4 | [x] Wygenerowano |
+| | `03_thermal_noise_awgn.m` | 6 | `\label{lst:ch_thermal_noise}` | 3.4 | [x] Wygenerowano |
+| **3. Odbiornik** (`03_receiver/`) | `01_ofdm_demodulation.m` | 7 | `\label{lst:rx_demodulation}` | 3.5.1 | [x] Wygenerowano |
+| | `02_cfr_zf_and_mti.m` | 12 | `\label{lst:rx_cfr_mti}` | 3.5.2 | [x] Wygenerowano |
+| | `03_dc_null_interpolation.m` | 12 | `\label{lst:rx_dc_interp}` | 3.5.2 | [x] Wygenerowano |
+| | `04_window_2d_blackman_harris.m` | 9 | `\label{lst:rx_window_2d}` | 3.5.3 | [x] Wygenerowano |
+| | `05_range_doppler_periodogram.m` | 5 | `\label{lst:rx_periodogram}` | 3.5.3 | [x] Wygenerowano |
+| | `06_physical_axes.m` | 8 | `\label{lst:rx_axes}` | 3.5.3 | [x] Wygenerowano |
+| | `07_cfar_threshold.m` | 8 | `\label{lst:rx_cfar}` | 3.5.4 | [x] Wygenerowano |
+| | `08_binary_stc_masking.m` | 10 | `\label{lst:rx_binary_stc}` | 3.5.4 | [x] Wygenerowano |
+| | `09_coherent_stc_subtraction.m` | 10 | `\label{lst:rx_coherent_stc}` | 3.5.4 | [x] Wygenerowano |
 
 ### 6.2. Checklista weryfikacyjna Rozdziału 3
 - [ ] **Spójność ze strukturą pracy:** Numeracja podrozdziałów `3.1`–`3.5` (z `3.5.1`–`3.5.4`), tytuł rozdziału `Opis oprogramowania`, poprawne odwołania do Rozdziału 1 (`1. Sygnał 802.11`) i Rozdziału 2 (`2. Radar pasywny`).
-- [ ] **Zgodność 1:1 z kodem:** Każda wymieniona w tekście nazwa pliku, funkcji, parametru (`LeadingEdge = 0.20 * M_max`, `epsilon = 1e-9`, `pad_factor = 4`, `max_iter = 200`, `guard = [16, 16]`, `LargeScaleFadingEffect = 'None'`) odpowiada aktualnej zawartości `src/` i `lib/`.
-- [ ] **Toolboxy:** Jawnie i poprawnie wymienione wszystkie 3 użyte toolboxy (*WLAN Toolbox*, *Communications Toolbox*, *Signal Processing Toolbox* dla `blackmanharris`), bez umieszczania ich jako artykuły w bibliografii.
-- [ ] **Uproszczenie kanału:** Brak *ray-tracingu* 3D i modelu SIC wyraźnie opisany i uzasadniony w podrozdziale 3.4.
-- [ ] **Rysunki i tabele:** Schemat blokowy (Rys. 3.1) + 3 wykresy z `thesis/img/ch3_impl/` (Rys. 3.2–3.4) oraz tabele przywołane i zinterpretowane w tekście.
-- [ ] **Kompilacja PDF:** `pdflatex` + `bibtex` przechodzą bez błędów i niezdefiniowanych odwołań `??`.
+- [ ] **Zgodność 1:1 z kodem:** Każda wymieniona w tekście nazwa pliku, funkcji i parametru (`sync_idx`, `p_rx_dBm = -50.0`, `nf_dB = 7.0`, `epsilon = 1e-9`, `pad_factor = 4`, `max_iter = 200`, `mti_applied = true`, `LargeScaleFadingEffect = 'None'`) odpowiada aktualnej zawartości `src/` i `lib/`.
+- [x] **Toolboxy:** Jawnie i poprawnie wymienione wszystkie 3 użyte toolboxy (*WLAN Toolbox*, *Communications Toolbox*, *Signal Processing Toolbox* dla `blackmanharris`), bez umieszczania ich jako artykuły w bibliografii i bez nieaktualnego `wlanPacketDetect` / *leading-edge*.
+- [ ] **Uproszczenia modelowe:** Brak *ray-tracingu* 3D i modelu SIC jawnie opisany i uzasadniony w podrozdziale 3.4.
+- [ ] **Rysunki, tabele i listingi:** Schemat blokowy (Rys. 3.1) + 3 wykresy z `thesis/img/ch3_impl/` (Rys. 3.2–3.4 z poprawioną osią `Odległość [m]`), 4 tabele oraz wszystkie 12 mikrolistingów z `thesis/listings/` przywołane i zinterpretowane w tekście.
+- [ ] **Kompilacja PDF:** `pdflatex -shell-escape` + `bibtex` przechodzą bez błędów, brakujących odwołań `??` i przepełnień marginesów.
 
 ### 6.3. Zasady kompilacji PDF i ochrony spisu treści
 > [!CAUTION]
